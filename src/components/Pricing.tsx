@@ -14,27 +14,7 @@ const PricingPlans: React.FC = () => {
   const session = useSession()
   const { data, isLoading, mutate } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
   const currentPlan = data?.data.data?.planType
-
-  // const [selectedPlan, setSelectedPlan] = useState<null | string>(null);
-  // const [clientSecret, setClientSecret] = useState<string | null>(null);
-  // const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
-  // const handlePlanSelect = async (planType: string) => {
-  //   setSelectedPlan(planType);
-  //   try {
-  //     const response = await axiosInstance.post(`/user/${session.data?.user?.id}/buy-plan`, {
-  //       planType
-  //     })
-  //     const data = await response.data
-  //     if (data.success) {
-  //       setClientSecret(data.clientSecret);
-  //     } else {
-  //       toast.error('Something went wrong. Please try again later.');
-  //     }
-  //   } catch (error) {
-  // Handle error
-  //   }
-  // };
-
+  
   const handlePlanSelect = async (planType: string) => {
     try {
       const axiosInstance = await getAxiosInstance()
