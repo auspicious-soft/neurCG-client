@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { useEffect } from "react";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from 'date-fns';
 import { signOut } from "next-auth/react";
+import { getDbImageUrl } from "@/utils";
 
 
 interface HeaderProps {
@@ -122,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
             <Image
-              src={userImage}
+              src={getDbImageUrl(dataOfUser?.profilePic || '')}
               alt="User Profile"
               width={34}
               height={34}

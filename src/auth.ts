@@ -15,7 +15,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: credentials.email,
             name: credentials.name,
             id: credentials._id,
-            myReferralCode: credentials.myReferralCode
+            myReferralCode: credentials.myReferralCode,
+            profilePic: credentials.profilePic
           }
         }
         else {
@@ -29,6 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id
         token.myReferralCode = (user as any).myReferralCode
+        token.picture = (user as any).profilePic
       }
       return token
     },
@@ -36,6 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string
         (session as any).user.myReferralCode = token.myReferralCode
+        session.user.image = token.picture  
       }
       return session
     },

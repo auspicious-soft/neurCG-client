@@ -14,3 +14,8 @@ export const getUserInfo = async (id: string) => {
     const axiosInstance = await getAxiosInstance();
     return axiosInstance.get(id);
 }
+
+export const updateUserInfo = async (id: string, formData: any) => {
+    const axiosInstance = await getAxiosInstance();
+    return axiosInstance.put(id, formData);          
+}

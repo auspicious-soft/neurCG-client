@@ -14,6 +14,7 @@ export const loginAction = async (payload: any) => {
                 name: res.data.data.firstName + ' ' + res.data.data.lastName,
                 _id: res.data.data._id,
                 myReferralCode: res.data.data.myReferralCode,
+                profilePic: res.data.data.profilePic,   
                 redirect: false,
             },
             )
