@@ -4,7 +4,7 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.png";
 import LoginCard from "@/components/LoginCard";
 import loginImg from "@/assets/images/loginimg.png";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { signupAction } from "@/actions";
@@ -13,7 +13,8 @@ import { useSession } from "next-auth/react";
 export default function Signup() {
   const { data: session } = useSession();
   const router = useRouter();
-
+  const searchParams = useSearchParams()
+  const referralCode = searchParams.get('referralCode') ?? '';
   useEffect(() => {
     if (session) {
       router.push("/");
@@ -29,7 +30,7 @@ export default function Signup() {
     const lastName = formData.get('lastName') as string;
 
     if (!email || !password || !firstName || !lastName) return toast.error('All fields are required');
-    const resss = await signupAction({ email, password, firstName, lastName });
+    const resss = await signupAction({ email, password, firstName, lastName, ...(referralCode && { referralCode }) });
     if (resss?.success) {
       toast.success('Signed up successfully');
       router.push('/login');
