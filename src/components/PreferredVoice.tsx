@@ -33,7 +33,11 @@ const voiceOptions: VoiceOption[] = [
   // Add more voices as needed
 ];
 
-const PreferredVoice = () => {
+interface PreferredVoiceProps {
+  setPreferredVoice: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const PreferredVoice: React.FC<PreferredVoiceProps> = ({ setPreferredVoice }) => {
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption | null>(null);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [playingAudioSrc, setPlayingAudioSrc] = useState<string | null>(null); // Track the currently playing audio source
@@ -47,6 +51,7 @@ const PreferredVoice = () => {
 
   const handleVoiceSelect = (option: VoiceOption | null) => {
     setSelectedVoice(option);
+    setPreferredVoice(option ? option.value : null);
   };
 
   const playAudio = (audioSrc: string) => {
@@ -99,23 +104,24 @@ const PreferredVoice = () => {
 
   return (
     <div className=" bg-white rounded-lg shadow-[0_0_40px_0_rgba(235,130,60,0.06)]">
-        <label htmlFor="" className="grid gap-2">
-          Preferred Voice
-          <Select
-            options={voiceOptions}
-            formatOptionLabel={formatOptionLabel}
-            isSearchable
-            className="custom-select outline-none text-[#828282]"
-            classNamePrefix="react-select"
-            placeholder="Select Voice"
-            onChange={handleVoiceSelect}
-            menuPortalTarget={menuPortalTarget}
-            styles={{
-              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-            }}
-          />
-        </label>
-      </div>    
+      <label htmlFor="" className="grid gap-2">
+        Preferred Voice
+        <Select
+          required
+          options={voiceOptions}
+          formatOptionLabel={formatOptionLabel}
+          isSearchable
+          className="custom-select outline-none text-[#828282]"
+          classNamePrefix="react-select"
+          placeholder="Select Voice"
+          onChange={handleVoiceSelect}
+          menuPortalTarget={menuPortalTarget}
+          styles={{
+            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          }}
+        />
+      </label>
+    </div>
   );
 };
 

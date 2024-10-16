@@ -1,19 +1,67 @@
-"use client"
+"use client";
+import React, { useState } from 'react';
 import AvatarSelection from '@/components/AvatarSelection';
 import Subtitles from '@/components/Subtitles';
 import TextSelection from '@/components/TextSelection';
-import React from 'react';
- 
+
 const Page = () => {
+    const [avatarId, setAvatarId] = useState<string | null>(null);
+    console.log('avatarId: ', avatarId);
+    const [myOwnImage, setMyOwnImage] = useState<string | null>(null);
+    const [text, setText] = useState<string>('');
+    const [textLanguage, setTextLanguage] = useState<string>('');
+    const [preferredVoice, setPreferredVoice] = useState<string | null>(null);
+    const [subtitles, setSubtitles] = useState(false);
+    const [subtitlesLanguage, setSubtitlesLanguage] = useState<string>('');
+
+    const handleAnimateClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault()
+        const data = { ...(avatarId && { avatarId }), ...(myOwnImage && { myOwnImage }), text, textLanguage, preferredVoice, subtitles, ...(subtitles && { subtitlesLanguage }) }
+        console.log('data: ', data);
+
+        fetch('/api/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
+
     return (
-        <div>
-            <AvatarSelection />
-            <TextSelection />
-            <Subtitles />
+        <form>
+            <AvatarSelection
+                setAvatarId={setAvatarId}
+                setMyOwnImage={setMyOwnImage}
+                myOwnImage={myOwnImage}
+                avatarId={avatarId}
+            />
+            <TextSelection
+                setText={setText}
+                setTextLanguage={setTextLanguage}
+                setPreferredVoice={setPreferredVoice}
+            />
+            <Subtitles
+                setSubtitles={setSubtitles}
+                setSubtitlesLanguage={setSubtitlesLanguage}
+                subtitles = {subtitles}
+            />
             <div className='flex justify-end mt-10'>
-                <button className='text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px]'>Animate</button>
+                <button type='submit'
+                    className='text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px]'
+                    onClick={handleAnimateClick}
+                >
+                    Animate
+                </button>
             </div>
-        </div>
+        </form>
     );
 }
 
