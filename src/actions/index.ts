@@ -52,17 +52,15 @@ export const getTokenCustom = async () => {
     return cookiesOfNextAuth?.value!
 }
 
-// Upload to S3
-
-
 // Get file from S3
-export const getImageUrl = async (userId: string, imageName: string) => {
+export const getImageUrl = async (dbImageKey: string) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `projects/${userId}/${imageName}`,
+        Key: `${dbImageKey}`,
     };
 
-    const command = new GetObjectCommand(params);
+    const command = new GetObjectCommand(params)
+    
     const url = await getSignedUrl(s3Client, command
         // , { expiresIn: 3600 }
     ); // URL valid for 1 hour
