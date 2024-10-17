@@ -53,23 +53,9 @@ export const getTokenCustom = async () => {
 }
 
 // Upload to S3
-export const uploadFile = async (file: any, userId: string) => {
-    const uploadParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `projects/${userId}/${file.name}`,
-        Body: file,
-        ContentType: file.type,
-    }
-    try {
-        const command = new PutObjectCommand(uploadParams);
-        await s3Client.send(command);
-        console.log("File uploaded successfully.");
-    } catch (error) {
-        console.error("Error uploading file:", error);
-    }
-}
 
-//Get file from S3
+
+// Get file from S3
 export const getImageUrl = async (userId: string, imageName: string) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
@@ -77,6 +63,8 @@ export const getImageUrl = async (userId: string, imageName: string) => {
     };
 
     const command = new GetObjectCommand(params);
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }) // URL valid for 1 hour
-    return url
+    const url = await getSignedUrl(s3Client, command
+        // , { expiresIn: 3600 }
+    ); // URL valid for 1 hour
+    return url;
 }

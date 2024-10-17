@@ -19,3 +19,8 @@ export const updateUserInfo = async (id: string, formData: any) => {
     const axiosInstance = await getAxiosInstance();
     return axiosInstance.put(id, formData);          
 }
+
+export const convertTextToVideo = async(id:string, payload: any) => {
+    const axiosInstance = await getAxiosInstance()
+    return axiosInstance.post(id, payload)
+}

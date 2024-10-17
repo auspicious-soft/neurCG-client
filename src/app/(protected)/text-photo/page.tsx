@@ -1,10 +1,16 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import AvatarSelection from '@/components/AvatarSelection';
 import Subtitles from '@/components/Subtitles';
 import TextSelection from '@/components/TextSelection';
+import { toast } from 'sonner';
+import { convertTextToVideo } from '@/services/user-service';
+import { useSession } from 'next-auth/react';
+import { getImageUrl } from '@/actions';
+import { generateSignedUrl } from '@/utils';
 
 const Page = () => {
+    const { data: session } = useSession()
     const [avatarId, setAvatarId] = useState<string | null>(null);
     const [myOwnImage, setMyOwnImage] = useState<File | null>(null);
     const [text, setText] = useState<string>('');
@@ -12,27 +18,72 @@ const Page = () => {
     const [preferredVoice, setPreferredVoice] = useState<string | File | null>(null)
     const [subtitles, setSubtitles] = useState(false);
     const [subtitlesLanguage, setSubtitlesLanguage] = useState<string>('');
-
-    const handleAnimateClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const [isPending, startTransition] = useTransition()
+    const handleAnimateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        const data = { ...(avatarId && { projectAvatar: avatarId }), ...(myOwnImage && { projectAvatar: myOwnImage }), text, textLanguage, preferredVoice, subtitles, ...(subtitles && { subtitlesLanguage }) }
-        console.log('data: ', data);
-
-        fetch('/api/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
+        
+        startTransition(async () => {
+            try {
+                const userId = session?.user?.id;
+                if (!userId) {
+                    throw new Error("User ID is not available");
+                }
+    
+                let projectAvatarUrl: string | undefined;
+                let preferredVoiceUrl: string | undefined;
+    
+                // Handle file uploads first
+                if (myOwnImage instanceof File) {
+                    // await uploadFile(myOwnImage, userId);
+                    const signedUrl = await generateSignedUrl(myOwnImage, userId)
+                    console.log('signedUrl: ', signedUrl);
+                    const uploadResponse = await fetch(signedUrl, {
+                        method: 'PUT',
+                        body: myOwnImage,
+                        headers: {
+                            'Content-Type': myOwnImage.type,
+                        },
+                        cache: 'no-store'
+                    })
+        
+                    if (uploadResponse.ok) {
+                        console.log("File uploaded successfully.");
+                    } else {
+                       toast.error('Something went wrong. Please try again')
+                    }
+                    // projectAvatarUrl = await getImageUrl(userId, myOwnImage.name);
+                    // console.log('projectAvatarUrl: ', projectAvatarUrl);
+                }
+    
+                // if (preferredVoice instanceof File) {
+                //     await uploadFile(preferredVoice, userId);
+                //     preferredVoiceUrl = await getImageUrl(userId, preferredVoice.name);
+                // }
+    
+                // // Prepare the data object with serializable values
+                // const data = {
+                //     projectAvatar: avatarId || projectAvatarUrl,
+                //     text,
+                //     textLanguage,
+                //     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
+                //     subtitles,
+                //     ...(subtitles && { subtitlesLanguage })
+                // };
+    
+                // // Remove any undefined values
+                // Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key]);
+    
+                // console.log('data: ', data);
+    
+                // const response = await convertTextToVideo(`/user/${userId}/text-to-video`, data);
+                // console.log('response: ', response);
+    
+            } catch (error) {
+                console.error('error: ', error);
+                toast.error('Something went wrong. Please try again')
+            }
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    };
+    }
 
     return (
         <form>
@@ -46,7 +97,7 @@ const Page = () => {
                 setText={setText}
                 setTextLanguage={setTextLanguage}
                 setPreferredVoice={setPreferredVoice}
-                preferredVoice = {preferredVoice}
+                preferredVoice={preferredVoice}
             />
             <Subtitles
                 setSubtitles={setSubtitles}
