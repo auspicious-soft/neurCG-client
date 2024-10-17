@@ -34,18 +34,22 @@ const voiceOptions: VoiceOption[] = [
 interface TextSelectionProps {
   setText: (text: string) => void;
   setTextLanguage: (language: string) => void;
-  setPreferredVoice: React.Dispatch<React.SetStateAction<string | null>>
+  setPreferredVoice: React.Dispatch<React.SetStateAction<string | File | null>>; // Updated to handle both string and File
+  preferredVoice: string | File | null
 }
 
-const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage, setPreferredVoice }) => {
-  const session = useSession()
+const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage, setPreferredVoice, preferredVoice }) => {
+  const session = useSession();
   const [isOpen, setIsOpen] = useState(true);
+  const [customVoice, setCustomVoice] = useState<string | null>(null);
+  const [customVoiceFileName, setCustomVoiceFileName] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null);
-  const { data } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
-  const planType = data?.data?.data?.planType
+  const { data } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false });
+  const planType = data?.data?.data?.planType;
   const toggleOpen = () => {
     setIsOpen(!isOpen);
-  };
+  }
+  const [isPredefinedSelected, setIsPredefinedSelected] = useState(false);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -57,11 +61,18 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
         contentRef.current.style.opacity = "0";
       }
     }
-  }, [isOpen]);
+    setIsPredefinedSelected(typeof preferredVoice === "string" )
+    if(isPredefinedSelected) {
+      setCustomVoice(null);
+      setCustomVoiceFileName(null);
+    }
+  }, [isOpen, isPredefinedSelected, preferredVoice]);
 
-  const handleVoiceSelect = (option: VoiceOption | null) => {
-    setPreferredVoice(option ? option.value : null);
-  };
+  // const handleVoiceSelect = (option: VoiceOption | null) => {
+  //   setPreferredVoice(option ? option.value : null);
+  //   setCustomVoice(null); // Clear custom voice when a predefined one is selected
+  //   setCustomVoiceFileName(null); // Clear custom voice file name
+  // };
 
   const playAudio = (audioSrc: string) => {
     const audio = new Audio(audioSrc);
@@ -71,6 +82,17 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
   const playAudioWithStopPropagation = (audioSrc: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent the click event from selecting the option
     playAudio(audioSrc);
+  };
+
+  const handleCustomVoiceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setCustomVoice(fileUrl);
+      setPreferredVoice(file); // Set the file object
+      setCustomVoiceFileName(file.name); // Set the file name
+      playAudio(fileUrl);
+    }
   };
 
   const formatOptionLabel = (option: VoiceOption) => (
@@ -130,7 +152,7 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
               </select>   
             </label>
             <div className="mb-5">
-            <PreferredVoice setPreferredVoice={setPreferredVoice} />
+              <PreferredVoice setPreferredVoice={setPreferredVoice}  preferredVoice = {preferredVoice} />
             </div>
             <label htmlFor="" className="grid gap-2">
               <p className="flex justify-between items-center font-inter">
@@ -142,17 +164,11 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
                   type="file"
                   accept="audio/*"
                   disabled={planType !== 'pro'}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const fileUrl = URL.createObjectURL(file);
-                      playAudio(fileUrl);
-                    }
-                  }}
+                  onChange={handleCustomVoiceChange}
                   className={`${planType !== 'pro' && 'cursor-not-allowed'} absolute top-0 left-0 h-full w-full opacity-0 !p-0`}
                 />
                 <div className="w-full flex items-center justify-between">
-                  <p className="text-[#828282] text-sm">Browse</p>
+                  <p className="text-[#828282] text-sm">{customVoiceFileName || "Browse"}</p> {/* Display file name or "Browse" */}
                   <button className="text-xs bg-[#E87223] text-white px-[28px] py-[9px] rounded-[3px]">Browse</button>
                 </div>
               </div>

@@ -14,8 +14,8 @@ const avatars = [avatar1, avatar2, avatar3, avatar4, avatar3];
 
 interface AvatarSelectionProps {
   setAvatarId: (id: string | null) => void;
-  setMyOwnImage: (image: string | null) => void;
-  myOwnImage: string | null;
+  setMyOwnImage: React.Dispatch<React.SetStateAction<File | null>>;
+  myOwnImage: File | null;
   avatarId: string | null;
 }
 
@@ -110,7 +110,13 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
       const croppedImage = await getCroppedImg(clickAvatar, croppedAreaPixels);
       setClickAvatar(croppedImage);
       setIsCropping(false);
-      setMyOwnImage(croppedImage); // Set custom image
+
+      // Convert the cropped image data URL to a File object
+      const response = await fetch(croppedImage);
+      const blob = await response.blob();
+      const file = new File([blob], "custom-avatar.png", { type: "image/png" });
+
+      setMyOwnImage(file); // Set custom image as File
       setAvatarId(null); // Clear avatar ID
     }
   };

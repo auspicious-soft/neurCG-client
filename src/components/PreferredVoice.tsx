@@ -13,31 +13,38 @@ interface VoiceOption {
 
 const voiceOptions: VoiceOption[] = [
   {
-    value: "david_gotham",
+    value: "male-david-gotham",
     label: "David Gotham",
     gender: "male",
-    audioSrc: "/assets/audio/audio1.mp3",
+    audioSrc: "/assets/audio/male.wav",
   },
   {
-    value: "sanya_jean",
+    value: "male-jacob-hardy",
+    label: "Jacob Hardy",
+    gender: "male",
+    audioSrc: "/assets/audio/male2.wav",
+  },
+  {
+    value: "female-sanya-jean",
     label: "Sanya Jean",
     gender: "female",
-    audioSrc: "/assets/audio/audio2.mp3",
+    audioSrc: "/assets/audio/female.wav", 
   },
   {
-    value: "marya_jean",
+    value: "female-marya-jean",
     label: "Marya Jean",
     gender: "female",
-    audioSrc: "/assets/audio/audio3.mp3",
+    audioSrc: "/assets/audio/female2.wav",
   },
   // Add more voices as needed
 ];
 
 interface PreferredVoiceProps {
-  setPreferredVoice: React.Dispatch<React.SetStateAction<string | null>>;
+  setPreferredVoice: React.Dispatch<React.SetStateAction<string | File | null>>; // Updated to handle both string and File
+  preferredVoice: string | File | null
 }
 
-const PreferredVoice: React.FC<PreferredVoiceProps> = ({ setPreferredVoice }) => {
+const PreferredVoice: React.FC<PreferredVoiceProps> = ({ setPreferredVoice , preferredVoice}) => {
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption | null>(null);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [playingAudioSrc, setPlayingAudioSrc] = useState<string | null>(null); // Track the currently playing audio source
@@ -47,12 +54,16 @@ const PreferredVoice: React.FC<PreferredVoiceProps> = ({ setPreferredVoice }) =>
     if (typeof document !== "undefined") {
       setMenuPortalTarget(document.body);
     }
-  }, []);
+    if(typeof preferredVoice === 'object') {
+      setSelectedVoice(null);
+    }
+  }, [preferredVoice]);
 
   const handleVoiceSelect = (option: VoiceOption | null) => {
     setSelectedVoice(option);
-    setPreferredVoice(option ? option.value : null);
-  };
+    setPreferredVoice(option ? option.value : null); // Set the string value for predefined voices
+  }
+
 
   const playAudio = (audioSrc: string) => {
     if (currentAudio && playingAudioSrc === audioSrc) {
@@ -114,6 +125,7 @@ const PreferredVoice: React.FC<PreferredVoiceProps> = ({ setPreferredVoice }) =>
           className="custom-select outline-none text-[#828282]"
           classNamePrefix="react-select"
           placeholder="Select Voice"
+          value={selectedVoice}
           onChange={handleVoiceSelect}
           menuPortalTarget={menuPortalTarget}
           styles={{
