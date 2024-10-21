@@ -1,7 +1,7 @@
 'use server'
 
 import { signIn, signOut } from "@/auth"
-import { s3Client } from "@/config/s3"
+import { createS3Client } from "@/config/s3"
 // import { s3Client } from "@/config/s3"
 import { loginService, signupService } from "@/services/user-service"
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3"
@@ -52,17 +52,36 @@ export const getTokenCustom = async () => {
     return cookiesOfNextAuth?.value!
 }
 
-// Get file from S3
+// Get an image url from S3 but presigned
 export const getImageUrl = async (dbImageKey: string) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `${dbImageKey}`,
-    };
+        Key: dbImageKey,
+    }
+    try {
+        const command = new GetObjectCommand(params)
+        const url = await getSignedUrl(await createS3Client(), command
+            // , { expiresIn: 3600 }
+        )
+        return url;
+    } catch (error) {
+        throw error
+    }
+}
 
-    const command = new GetObjectCommand(params)
-    
-    const url = await getSignedUrl(s3Client, command
-        // , { expiresIn: 3600 }
-    ); // URL valid for 1 hour
-    return url;
+// Generate a signed URL to upload a file to S3 presigned
+export const generateSignedUrlToUploadOn = async (fileName: string, fileType: string, userId: string) => {
+    const uploadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `projects/${userId}/${fileName}`,
+        ContentType: fileType,
+    }
+    try {
+        const command = new PutObjectCommand(uploadParams)
+        const signedUrl = await getSignedUrl(await createS3Client(), command)
+        return signedUrl
+    } catch (error) {
+        console.error("Error generating signed URL:", error);
+        throw error
+    }
 }

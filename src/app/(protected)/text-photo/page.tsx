@@ -6,8 +6,7 @@ import TextSelection from '@/components/TextSelection';
 import { toast } from 'sonner';
 import { convertTextToVideo } from '@/services/user-service';
 import { useSession } from 'next-auth/react';
-import { getImageUrl } from '@/actions';
-import { generateSignedUrl } from '@/utils';
+import {  getImageUrl } from '@/actions';
 
 const Page = () => {
     const { data: session } = useSession()
@@ -23,65 +22,67 @@ const Page = () => {
         event.preventDefault()
         
         startTransition(async () => {
-            try {
-                const userId = session?.user?.id;
-                if (!userId) {
-                    throw new Error("User ID is not available");
-                }
+            const getSampleImageUrl = await getImageUrl('sample.png');
+            console.log('getSampleImageUrl: ', getSampleImageUrl);
+            // try {
+            //     const userId = session?.user?.id;
+            //     if (!userId) {
+            //         throw new Error("User ID is not available");
+            //     }
     
-                let projectAvatarUrl: string | undefined;
-                let preferredVoiceUrl: string | undefined;
+            //     let projectAvatarUrl: string | undefined;
+            //     let preferredVoiceUrl: string | undefined;
     
-                // Handle file uploads first
-                if (myOwnImage instanceof File) {
-                    // await uploadFile(myOwnImage, userId);
-                    const signedUrl = await generateSignedUrl(myOwnImage, userId)
-                    console.log('signedUrl: ', signedUrl);
-                    const uploadResponse = await fetch(signedUrl, {
-                        method: 'PUT',
-                        body: myOwnImage,
-                        headers: {
-                            'Content-Type': myOwnImage.type,
-                        },
-                        cache: 'no-store'
-                    })
+            //     // Handle file uploads first
+            //     if (myOwnImage instanceof File) {
+            //         // await uploadFile(myOwnImage, userId);
+            //         // const signedUrl = await generateSignedUrlToUploadOn(myOwnImage.name, myOwnImage.type, userId)
+            //         // console.log('signedUrl: ', signedUrl);
+            //         // const uploadResponse = await fetch(signedUrl, {
+            //         //     method: 'PUT',
+            //         //     body: myOwnImage,
+            //         //     headers: {
+            //         //         'Content-Type': myOwnImage.type,
+            //         //     },
+            //         //     cache: 'no-store'
+            //         // })
         
-                    if (uploadResponse.ok) {
-                        console.log("File uploaded successfully.");
-                    } else {
-                       toast.error('Something went wrong. Please try again')
-                    }
-                    // projectAvatarUrl = await getImageUrl(userId, myOwnImage.name);
-                    // console.log('projectAvatarUrl: ', projectAvatarUrl);
-                }
+            //         // if (uploadResponse.ok) {
+            //         //     console.log("File uploaded successfully.");
+            //         // } else {
+            //         //    toast.error('Something went wrong. Please try again')
+            //         // }
+            //         // projectAvatarUrl = await getImageUrl(userId, myOwnImage.name);
+            //         // console.log('projectAvatarUrl: ', projectAvatarUrl);
+            //     }
     
-                // if (preferredVoice instanceof File) {
-                //     await uploadFile(preferredVoice, userId);
-                //     preferredVoiceUrl = await getImageUrl(userId, preferredVoice.name);
-                // }
+            //     // if (preferredVoice instanceof File) {
+            //     //     await uploadFile(preferredVoice, userId);
+            //     //     preferredVoiceUrl = await getImageUrl(userId, preferredVoice.name);
+            //     // }
     
-                // // Prepare the data object with serializable values
-                // const data = {
-                //     projectAvatar: avatarId || projectAvatarUrl,
-                //     text,
-                //     textLanguage,
-                //     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
-                //     subtitles,
-                //     ...(subtitles && { subtitlesLanguage })
-                // };
+            //     // // Prepare the data object with serializable values
+            //     // const data = {
+            //     //     projectAvatar: avatarId || projectAvatarUrl,
+            //     //     text,
+            //     //     textLanguage,
+            //     //     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
+            //     //     subtitles,
+            //     //     ...(subtitles && { subtitlesLanguage })
+            //     // };
     
-                // // Remove any undefined values
-                // Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key]);
+            //     // // Remove any undefined values
+            //     // Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key]);
     
-                // console.log('data: ', data);
+            //     // console.log('data: ', data);
     
-                // const response = await convertTextToVideo(`/user/${userId}/text-to-video`, data);
-                // console.log('response: ', response);
+            //     // const response = await convertTextToVideo(`/user/${userId}/text-to-video`, data);
+            //     // console.log('response: ', response);
     
-            } catch (error) {
-                console.error('error: ', error);
-                toast.error('Something went wrong. Please try again')
-            }
+            // } catch (error) {
+            //     console.error('error: ', error);
+            //     toast.error('Something went wrong. Please try again')
+            // }
         })
     }
 

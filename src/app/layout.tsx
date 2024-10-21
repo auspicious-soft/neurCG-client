@@ -14,7 +14,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
   const pathname = usePathname();
   const hideSideBar = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword'];
   const hideHeader = ['/signup', , '/login', '/forgotpassword', '/otp', '/newpassword'];
@@ -23,10 +22,14 @@ export default function RootLayout({
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-      <html lang="en">
-        <SessionProvider>
+    <html lang="en">
+      <head>
+        <title>NeurCG</title>
+        <link rel="icon" href="/public/vercel.svg" />
+      </head>
+      <SessionProvider>
         <body className="{inter.className}">
-          <Toaster richColors/>
+          <Toaster richColors />
           <div>
             {!hideHeader.includes(pathname) &&
               <Header
@@ -43,11 +46,11 @@ export default function RootLayout({
               {!hideSideBar.includes(pathname) && <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
             </div>
             <main className="flex-grow md:overflow-y-auto overflo-custom bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] ">
-                {children}
+              {children}
             </main>
           </div>
         </body>
-          </SessionProvider>
-      </html>
+      </SessionProvider>
+    </html>
   );
 }
