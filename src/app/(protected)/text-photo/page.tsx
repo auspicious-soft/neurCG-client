@@ -6,7 +6,7 @@ import TextSelection from '@/components/TextSelection';
 import { toast } from 'sonner';
 import { convertTextToVideo } from '@/services/user-service';
 import { useSession } from 'next-auth/react';
-import {  getImageUrl } from '@/actions';
+import { generateSignedUrlToUploadOn, getImageUrl } from '@/actions';
 
 const Page = () => {
     const { data: session } = useSession()
@@ -20,69 +20,61 @@ const Page = () => {
     const [isPending, startTransition] = useTransition()
     const handleAnimateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        
+
         startTransition(async () => {
-            const getSampleImageUrl = await getImageUrl('sample.png');
-            console.log('getSampleImageUrl: ', getSampleImageUrl);
-            // try {
-            //     const userId = session?.user?.id;
-            //     if (!userId) {
-            //         throw new Error("User ID is not available");
-            //     }
-    
-            //     let projectAvatarUrl: string | undefined;
-            //     let preferredVoiceUrl: string | undefined;
-    
-            //     // Handle file uploads first
-            //     if (myOwnImage instanceof File) {
-            //         // await uploadFile(myOwnImage, userId);
-            //         // const signedUrl = await generateSignedUrlToUploadOn(myOwnImage.name, myOwnImage.type, userId)
-            //         // console.log('signedUrl: ', signedUrl);
-            //         // const uploadResponse = await fetch(signedUrl, {
-            //         //     method: 'PUT',
-            //         //     body: myOwnImage,
-            //         //     headers: {
-            //         //         'Content-Type': myOwnImage.type,
-            //         //     },
-            //         //     cache: 'no-store'
-            //         // })
-        
-            //         // if (uploadResponse.ok) {
-            //         //     console.log("File uploaded successfully.");
-            //         // } else {
-            //         //    toast.error('Something went wrong. Please try again')
-            //         // }
-            //         // projectAvatarUrl = await getImageUrl(userId, myOwnImage.name);
-            //         // console.log('projectAvatarUrl: ', projectAvatarUrl);
-            //     }
-    
-            //     // if (preferredVoice instanceof File) {
-            //     //     await uploadFile(preferredVoice, userId);
-            //     //     preferredVoiceUrl = await getImageUrl(userId, preferredVoice.name);
-            //     // }
-    
-            //     // // Prepare the data object with serializable values
-            //     // const data = {
-            //     //     projectAvatar: avatarId || projectAvatarUrl,
-            //     //     text,
-            //     //     textLanguage,
-            //     //     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
-            //     //     subtitles,
-            //     //     ...(subtitles && { subtitlesLanguage })
-            //     // };
-    
-            //     // // Remove any undefined values
-            //     // Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key]);
-    
-            //     // console.log('data: ', data);
-    
-            //     // const response = await convertTextToVideo(`/user/${userId}/text-to-video`, data);
-            //     // console.log('response: ', response);
-    
-            // } catch (error) {
-            //     console.error('error: ', error);
-            //     toast.error('Something went wrong. Please try again')
-            // }
+            try {
+                const email = session?.user?.email;
+                if (!email) throw new Error("User ID is not available")
+
+                let projectAvatarUrl: string | undefined;
+                let preferredVoiceUrl: string | undefined;
+
+                // Handle file uploads first
+                if (myOwnImage instanceof File) {
+                    // await uploadFile(myOwnImage, userId);
+                    const signedUrl = await generateSignedUrlToUploadOn(myOwnImage.name, myOwnImage.type, email)
+                    const uploadResponse = await fetch(signedUrl, {
+                        method: 'PUT',
+                        body: myOwnImage,
+                        headers: {
+                            'Content-Type': myOwnImage.type,
+                        },
+                        cache: 'no-store'
+                    })
+
+                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
+                    const imageKey = `projects/${email}/my-media/${myOwnImage.name}`;
+                    projectAvatarUrl = await getImageUrl(imageKey)
+
+                }
+
+                // if (preferredVoice instanceof File) {
+                //     await uploadFile(preferredVoice, userId);
+                //     preferredVoiceUrl = await getImageUrl(userId, preferredVoice.name);
+                // }
+
+                // // Prepare the data object with serializable values
+                // const data = {
+                //     projectAvatar: avatarId || projectAvatarUrl,
+                //     text,
+                //     textLanguage,
+                //     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
+                //     subtitles,
+                //     ...(subtitles && { subtitlesLanguage })
+                // };
+
+                // // Remove any undefined values
+                // Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key]);
+
+                // console.log('data: ', data);
+
+                // const response = await convertTextToVideo(`/user/${userId}/text-to-video`, data);
+                // console.log('response: ', response);
+
+            } catch (error) {
+                console.error('error: ', error);
+                toast.error('Something went wrong. Please try again')
+            }
         })
     }
 

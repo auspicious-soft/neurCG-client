@@ -53,10 +53,10 @@ export const getTokenCustom = async () => {
 }
 
 // Get an image url from S3 but presigned
-export const getImageUrl = async (dbImageKey: string) => {
+export const getImageUrl = async (imageKey: string) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: dbImageKey,
+        Key: imageKey,
     }
     try {
         const command = new GetObjectCommand(params)
@@ -70,10 +70,10 @@ export const getImageUrl = async (dbImageKey: string) => {
 }
 
 // Generate a signed URL to upload a file to S3 presigned
-export const generateSignedUrlToUploadOn = async (fileName: string, fileType: string, userId: string) => {
+export const generateSignedUrlToUploadOn = async (fileName: string, fileType: string, userEmail: string) => {
     const uploadParams = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `projects/${userId}/${fileName}`,
+        Key: `projects/${userEmail}/my-media/${fileName}`,
         ContentType: fileType,
     }
     try {
