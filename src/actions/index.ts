@@ -74,7 +74,7 @@ export const generateSignedUrlToUploadOn = async (fileName: string, fileType: st
     const uploadParams = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `projects/${userEmail}/my-media/${fileName}`,
-        ContentType: fileType,
+        ContentType: fileType
     }
     try {
         const command = new PutObjectCommand(uploadParams)

@@ -43,9 +43,8 @@ const Page = () => {
                     })
 
                     if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                    const imageKey = `projects/${email}/my-media/${myOwnImage.name}`;
+                    const imageKey = `projects/${email}/my-media/${myOwnImage.name}`
                     projectAvatarUrl = await getImageUrl(imageKey)
-
                 }
 
                 // if (preferredVoice instanceof File) {
