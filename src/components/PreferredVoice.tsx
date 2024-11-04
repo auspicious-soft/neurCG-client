@@ -129,7 +129,16 @@ const PreferredVoice: React.FC<PreferredVoiceProps> = ({ setPreferredVoice , pre
           onChange={handleVoiceSelect}
           menuPortalTarget={menuPortalTarget}
           styles={{
-            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+            menuPortal: (base) => ({ ...base, zIndex: 9999, borderRadius: 10,
+              border: "1px solid silver", }),
+            option: (provided, state) => ({
+              ...provided,
+              backgroundColor: state.isSelected ? "#1967d2" : "white",
+              paddingLeft: 6,
+              paddingRight: 6,
+              paddingTop:3,
+              paddingBottom:3,
+            }),
           }}
         />
       </label>

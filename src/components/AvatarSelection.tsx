@@ -20,10 +20,12 @@ export interface AvatarSelectionProps {
 
 const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwnImage, myOwnImage, avatarId }) => {
   const { data, isLoading } = useSWR(`/user/avatars`, getAvatars, { revalidateOnFocus: false });
-  const avatars = useMemo(() => data?.data?.data || [], [data]);
-  const [selectedAvatar, setSelectedAvatar] = useState<any>();
+  const avatars = useMemo(() => data?.data?.data || [], [data])
+  const [selectedAvatar, setSelectedAvatar] = useState<any>()
+
   useEffect(() => {
     avatars[0] && setSelectedAvatar(avatars[0]?.avatarUrl)
+    setAvatarId(avatars[0]?.avatarUrl)
   }, [avatars])
 
   const [clickAvatar, setClickAvatar] = useState<string | null>(null);
@@ -173,7 +175,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
             </div>
           </div>
           <h3 className="md:w-[15%] lg:w-[10%] mx-[20px] 2xl:mx-[45px] flex justify-center items-center text-[#6B6B6B] text-sm italic">
-            —— Or ——
+          —— Or ——
           </h3>
           <div className="md:w-[40%] ">
             <h3 className="text-[#6B6B6B] text-sm mb-2">Create Your Own</h3>

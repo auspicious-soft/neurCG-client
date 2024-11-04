@@ -16,7 +16,8 @@ const Page = () => {
     const [textLanguage, setTextLanguage] = useState<string>('');
     const [preferredVoice, setPreferredVoice] = useState<string | File | null>(null)
     const [subtitles, setSubtitles] = useState(false);
-    const [subtitlesLanguage, setSubtitlesLanguage] = useState<string>('');
+    const [subtitlesLanguage, setSubtitlesLanguage] = useState<string | null | undefined>();
+
     const [isPending, startTransition] = useTransition()
     const handleAnimateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
@@ -85,6 +86,7 @@ const Page = () => {
             }
         })
     }
+    
 
     return (
         <form>
@@ -106,8 +108,8 @@ const Page = () => {
                 subtitles={subtitles}
             />
             <div className='flex justify-end mt-10'>
-                <button type='submit' disabled={!text || !textLanguage || !preferredVoice}
-                    className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] ${!text || !textLanguage || !preferredVoice ? 'cursor-not-allowed' : ''} ${!text || !textLanguage || !preferredVoice ? 'opacity-50' : ''}`}
+                <button type='submit' disabled={!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage  === undefined))}
+                    className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] ${!text || !textLanguage || !preferredVoice|| (subtitles && (subtitlesLanguage  === undefined)) ? 'cursor-not-allowed' : ''} ${!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage  === undefined)) ? 'opacity-50' : ''}`}
                     onClick={handleAnimateClick}
                 >
                     Animate

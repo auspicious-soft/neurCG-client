@@ -61,8 +61,8 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
         contentRef.current.style.opacity = "0";
       }
     }
-    setIsPredefinedSelected(typeof preferredVoice === "string" )
-    if(isPredefinedSelected) {
+    setIsPredefinedSelected(typeof preferredVoice === "string")
+    if (isPredefinedSelected) {
       setCustomVoice(null);
       setCustomVoiceFileName(null);
     }
@@ -146,13 +146,21 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
             <label htmlFor="" className="grid gap-2 mb-5">
               Text Language
               <select required name="" id="" onChange={(e) => setTextLanguage(e.target.value)}>
-                <option value="">Language Select</option>
-                <option value="language1">Language 1</option>
-                <option value="language2">Language 2</option>
-              </select>   
+                <option value=""  >Language Select</option>
+                <option value="English"  >English</option>
+                <option value="Spanish"  >Spanish</option>
+                <option value="French"  >French</option>
+                <option value="German"  >German</option>
+                <option value="Italian"  >Italian</option>
+                <option value="Japanese"  >Japanese</option>
+                <option value="Korean"  >Korean</option>
+                <option value="Portuguese"  >Portuguese</option>
+                <option value="Russian"  >Russian</option>
+                <option value="Chinese"  >Chinese</option>
+              </select>
             </label>
             <div className="mb-5">
-              <PreferredVoice setPreferredVoice={setPreferredVoice}  preferredVoice = {preferredVoice} />
+              <PreferredVoice setPreferredVoice={setPreferredVoice} preferredVoice={preferredVoice} />
             </div>
             <label htmlFor="" className="grid gap-2">
               <p className="flex justify-between items-center font-inter">
