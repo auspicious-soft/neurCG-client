@@ -7,21 +7,17 @@ import { useSession } from 'next-auth/react';
 import { getAxiosInstance } from '@/utils/axios';
 import { toast } from 'sonner';
 import useSWR from 'swr';
-import { getUserInfo } from '@/services/user-service';
+import { buyPlan, getUserInfo } from '@/services/user-service';
 
 
 const PricingPlans: React.FC = () => {
   const session = useSession()
   const { data, isLoading, mutate } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
   const currentPlan = data?.data.data?.planType
-  
+
   const handlePlanSelect = async (planType: string) => {
     try {
-      const axiosInstance = await getAxiosInstance()
-      const response = await axiosInstance.post(`/user/${session.data?.user?.id}/buy-plan`, {
-        planType
-      })
-
+      const response = await buyPlan(`/user/${session.data?.user?.id}/buy-plan`, { planType })
       const data = await response.data;
       if (data.id) {
         // Redirect to Stripe Checkout

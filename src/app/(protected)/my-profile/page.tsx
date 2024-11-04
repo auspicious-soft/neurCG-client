@@ -6,7 +6,7 @@ import { EditImgIcon } from "@/utils/svgIcons";
 import CreditScore from "@/components/CreditScore";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
-import { getUserInfo, updateUserInfo } from "@/services/user-service";
+import { cancelSubscription, getUserInfo, updateUserInfo } from "@/services/user-service";
 import { toast } from "sonner";
 import { getDbImageUrl } from "@/utils";
 
@@ -22,23 +22,6 @@ type FormData = {
   profilePic: File | null;
 };
 
-const CreditScores = [
-  {
-    id: 1,
-    text: "Animation Credit Left",
-    value: 148,
-  },
-  {
-    id: 2,
-    text: "Audio Upload Credit Left",
-    value: 48,
-  },
-  {
-    id: 3,
-    text: "Avatar Creation Credit Left",
-    value: 18,
-  },
-];
 
 const Page = () => {
   const { data: session, update } = useSession();
@@ -48,6 +31,18 @@ const Page = () => {
     { revalidateOnFocus: false }
   );
   const user = data?.data?.data;
+  const CreditScores = [
+    {
+      id: 1,
+      text: "Credit Left",
+      value: user?.creditsLeft,
+    },
+    {
+      id: 2,
+      text: "Video Creation Time Left",
+      value: (user?.creditsLeft * 10) / 60,
+    },
+  ];
 
   const [formData, setFormData] = useState<any>({
     firstName: "",
@@ -87,7 +82,7 @@ const Page = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setFormData((prevData) => ({
+      setFormData((prevData: any) => ({
         ...prevData,
         profilePic: file,
       }));
@@ -114,7 +109,7 @@ const Page = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData:any) => ({
+    setFormData((prevData: any) => ({
       ...prevData,
       [name]: value,
     }));
@@ -151,6 +146,15 @@ const Page = () => {
     }
   };
 
+  const handleCancelSubscription = async () => {
+    const response = await cancelSubscription(`/user/${session?.user?.id}/cancel-subscription`, { subscriptionId: user?.planOrSubscriptionId })
+    if (response.data.success) {
+      toast.success('Subscription cancelled successfully')
+      mutate()
+    } else {
+      toast.error('Something went wrong');
+    }
+  }
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -273,13 +277,45 @@ const Page = () => {
               />
             </div>
             <div className="w-full">
-              <button type="submit" className="button md:!h-[50px] w-[169px]">
+              <button type="submit" className="button md:!h-[50px] w-[169px] hover:bg-orange-700 transition duration-200">
                 Update
               </button>
             </div>
           </div>
         </div>
       </form>
+
+
+      <div className="bg-white rounded-[8px] p-5 md:p-[30px] mt-8 shadow-md">
+        <h2 className="text-xl font-semibold mb-4">Plans & Subscription</h2>
+        <div className="text-lg font-medium ">
+          <p className="text-[#6B6B6B] text-[14px]">Selected Plan</p>
+          <div className="text-orange-600 text-xl font-semibold">{
+            user?.planType !== 'free' ?
+              <p> {user?.planType === 'pro' && 'Professional Plan'}
+                {user?.planType === 'enterprise' && 'Enterprise Plan'}
+                {user?.planType === 'intro' && 'Intro Plan'}
+                {user?.planType === 'expired' && 'Expired Plan'}
+              </p>
+              : 'Free'}</div>
+        </div>
+        <div className="mt-4 flex flex-col items-end gap-y-2 text-[#3A2C23]">
+          <div className="flex items-center">
+            <span className="mr-2 text-gray-700 text-[14px]">Credits Left:</span>
+            <span className="bg-orange-100 text-[#3A2C23] text-[14px] px-2 py-1 rounded-full">{CreditScores[0].value}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="mr-2 text-gray-700 text-[14px]">Video Creation Time Left:</span>
+            <span className="bg-orange-100 text-[#3A2C23] text-[14px] px-2 py-1 rounded-full">{CreditScores[1].value} minutes</span>
+          </div>
+        </div>
+        {(user?.planType === 'intro' || user?.planType === 'pro') && <button
+          onClick={handleCancelSubscription}
+          className="mt-6 text-[14px] bg-orange-600 text-white p-3 rounded-md hover:bg-orange-700 transition duration-200"
+        >
+          Cancel Subscription
+        </button>}
+      </div>
     </div>
   );
 };
