@@ -49,7 +49,7 @@ const Page = () => {
   );
   const user = data?.data?.data;
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<any>({
     firstName: "",
     lastName: "",
     email: "",
@@ -114,7 +114,7 @@ const Page = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
+    setFormData((prevData:any) => ({
       ...prevData,
       [name]: value,
     }));

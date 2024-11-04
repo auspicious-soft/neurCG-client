@@ -12,7 +12,7 @@ import instructionimg from "@/assets/images/instruction.png";
 
 const avatars = [avatar1, avatar2, avatar3, avatar4, avatar3];
 
-interface AvatarSelectionProps {
+export interface AvatarSelectionProps {
   setAvatarId: (id: string | null) => void;
   setMyOwnImage: React.Dispatch<React.SetStateAction<File | null>>;
   myOwnImage: File | null;
