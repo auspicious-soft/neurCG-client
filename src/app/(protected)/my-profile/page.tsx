@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { cancelSubscription, getUserInfo, updateUserInfo } from "@/services/user-service";
 import { toast } from "sonner";
 import { getDbImageUrl } from "@/utils";
+import Modal from "react-modal";
 
 type FormData = {
   firstName: string;
@@ -20,8 +21,21 @@ type FormData = {
   city: string;
   homeAddress: string;
   profilePic: File | null;
-};
+}
 
+const customStyles = {
+  content: {
+    width: '400px',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    borderRadius: '8px',
+    padding: '20px',
+  },
+};
 
 const Page = () => {
   const { data: session, update } = useSession();
@@ -44,7 +58,7 @@ const Page = () => {
     },
   ];
 
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -57,6 +71,7 @@ const Page = () => {
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   useEffect(() => {
     if (user) {
@@ -120,41 +135,45 @@ const Page = () => {
     try {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (key !== 'email' && key !== 'profilePic') {
+        if (key !== "email" && key !== "profilePic") {
           formDataToSend.append(key, (formData as any)[key]);
         }
       });
 
       if (formData.profilePic) {
-        formDataToSend.append('profilePic', formData.profilePic)
+        formDataToSend.append("profilePic", formData.profilePic);
       }
 
-      const response = await updateUserInfo(`/user/${session?.user?.id}`, formDataToSend)
-      mutate()
+      const response = await updateUserInfo(`/user/${session?.user?.id}`, formDataToSend);
+      mutate();
       if (formData.profilePic) {
         await update({
           ...session,
           user: {
             ...session?.user,
-            image: (response.data?.data?.profilePic)
-          }
-        })
+            image: response.data?.data?.profilePic,
+          },
+        });
       }
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
     } catch (error) {
-      toast.error('Something went wrong');
+      toast.error("Something went wrong");
     }
   };
 
-  const handleCancelSubscription = async () => {
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const confirmCancelSubscription = async () => {
     const response = await cancelSubscription(`/user/${session?.user?.id}/cancel-subscription`, { subscriptionId: user?.planOrSubscriptionId })
     if (response.data.success) {
-      toast.success('Subscription cancelled successfully')
-      mutate()
+      toast.success("Subscription cancelled successfully");
+      mutate();
+      closeModal();
     } else {
-      toast.error('Something went wrong');
+      toast.error("Something went wrong");
     }
-  }
+  };
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -288,16 +307,20 @@ const Page = () => {
 
       <div className="bg-white rounded-[8px] p-5 md:p-[30px] mt-8 shadow-md">
         <h2 className="text-xl font-semibold mb-4">Plans & Subscription</h2>
-        <div className="text-lg font-medium ">
+        <div className="text-lg font-medium">
           <p className="text-[#6B6B6B] text-[14px]">Selected Plan</p>
-          <div className="text-orange-600 text-xl font-semibold">{
-            user?.planType !== 'free' ?
-              <p> {user?.planType === 'pro' && 'Professional Plan'}
-                {user?.planType === 'enterprise' && 'Enterprise Plan'}
-                {user?.planType === 'intro' && 'Intro Plan'}
-                {user?.planType === 'expired' && 'Expired Plan'}
+          <div className="text-orange-600 text-xl font-semibold">
+            {user?.planType !== "free" ? (
+              <p>
+                {user?.planType === "pro" && "Professional Plan"}
+                {user?.planType === "enterprise" && "Enterprise Plan"}
+                {user?.planType === "intro" && "Intro Plan"}
+                {user?.planType === "expired" && "Expired Plan"}
               </p>
-              : 'Free'}</div>
+            ) : (
+              "Free"
+            )}
+          </div>
         </div>
         <div className="mt-4 flex flex-col items-end gap-y-2 text-[#3A2C23]">
           <div className="flex items-center">
@@ -309,13 +332,30 @@ const Page = () => {
             <span className="bg-orange-100 text-[#3A2C23] text-[14px] px-2 py-1 rounded-full">{CreditScores[1].value} minutes</span>
           </div>
         </div>
-        {(user?.planType === 'intro' || user?.planType === 'pro') && <button
-          onClick={handleCancelSubscription}
-          className="mt-6 text-[14px] bg-orange-600 text-white p-3 rounded-md hover:bg-orange-700 transition duration-200"
-        >
-          Cancel Subscription
-        </button>}
+        {(user?.planType === "intro" || user?.planType === "pro") && (
+          <button
+            onClick={openModal}
+            className="mt-6 text-[14px] bg-orange-600 text-white p-3 rounded-md hover:bg-orange-700 transition duration-200"
+          >
+            Cancel Subscription
+          </button>
+        )}
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Confirm Cancel Subscription"
+          ariaHideApp={false} // Add this line to disable aria app element error
+      >
+        <h2>Are you sure you want to cancel your subscription?</h2>
+        <div className="flex justify-end mt-4">
+          <button onClick={closeModal} className="mr-4 px-4 rounded">No</button>
+          <button onClick={confirmCancelSubscription} className="px-4 py-2  bg-red-600 text-white rounded">Yes</button>
+        </div>
+      </Modal>
     </div>
   );
 };
