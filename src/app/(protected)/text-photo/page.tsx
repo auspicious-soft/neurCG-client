@@ -29,11 +29,10 @@ const Page = () => {
                 let projectAvatarUrl: string | undefined;
                 let preferredVoiceUrl: string | undefined;
 
-                // Handle file uploads first
+                // Handle file uploads first if myOwnImage exists
                 if (myOwnImage instanceof File) {
-                    // await uploadFile(myOwnImage, userId);
-                    const signedUrl = await generateSignedUrlToUploadOn(myOwnImage.name, myOwnImage.type, email)
-                    const uploadResponse = await fetch(signedUrl, {
+                    const uploadUrl = await generateSignedUrlToUploadOn(myOwnImage.name, myOwnImage.type, email)
+                    const uploadResponse = await fetch(uploadUrl, {
                         method: 'PUT',
                         body: myOwnImage,
                         headers: {
@@ -44,28 +43,38 @@ const Page = () => {
 
                     if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
                     const imageKey = `projects/${email}/my-media/${myOwnImage.name}`
-                    projectAvatarUrl = await getImageUrl(imageKey)
+                    projectAvatarUrl = imageKey
                 }
 
-                // if (preferredVoice instanceof File) {
-                //     await uploadFile(preferredVoice, userId);
-                //     preferredVoiceUrl = await getImageUrl(userId, preferredVoice.name);
-                // }
+                if (preferredVoice instanceof File) {
+                    const uploadUrl = await generateSignedUrlToUploadOn(preferredVoice.name, preferredVoice.type, email)
+                    const uploadResponse = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        body: preferredVoice,
+                        headers: {
+                            'Content-Type': preferredVoice.type,
+                        },
+                        cache: 'no-store'
+                    })
+                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
+                    const imageKey = `projects/${email}/my-media/${preferredVoice.name}`
+                    preferredVoiceUrl = imageKey
+                }
+                
+                // Prepare the data object with serializable values
+                const data = {
+                    projectAvatar: avatarId || projectAvatarUrl,
+                    text,
+                    textLanguage,
+                    preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
+                    subtitles,
+                    ...(subtitles && { subtitlesLanguage })
+                };
 
-                // // Prepare the data object with serializable values
-                // const data = {
-                //     projectAvatar: avatarId || projectAvatarUrl,
-                //     text,
-                //     textLanguage,
-                //     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
-                //     subtitles,
-                //     ...(subtitles && { subtitlesLanguage })
-                // };
+                // Remove any undefined values
+                Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
 
-                // // Remove any undefined values
-                // Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key]);
-
-                // console.log('data: ', data);
+                console.log('data: ', data);
 
                 // const response = await convertTextToVideo(`/user/${userId}/text-to-video`, data);
                 // console.log('response: ', response);

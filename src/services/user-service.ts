@@ -20,6 +20,11 @@ export const updateUserInfo = async (id: string, formData: any) => {
     return axiosInstance.put(id, formData);          
 }
 
+export const getAvatars = async (route: string) => {
+    const axiosInstance = await getAxiosInstance();
+    return axiosInstance.get(route)
+}
+
 export const convertTextToVideo = async(id:string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload)

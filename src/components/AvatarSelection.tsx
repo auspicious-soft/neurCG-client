@@ -1,16 +1,15 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect, use, useMemo } from "react";
 import Image, { StaticImageData } from "next/image";
 import Cropper from "react-easy-crop";
-import avatar1 from "@/assets/images/video1.png";
-import avatar2 from "@/assets/images/video2.png";
-import avatar3 from "@/assets/images/video3.png";
-import avatar4 from "@/assets/images/video4.png";
 import { getCroppedImg } from "@/utils/getCroppedImg"; // Implement this function
 import { CameraIcon } from "@/utils/svgIcons";
 import Modal from "react-modal";
 import instructionimg from "@/assets/images/instruction.png";
+import useSWR from "swr";
+import { getAvatars } from "@/services/user-service";
+import { getImageUrlOfS3 } from "@/utils";
+import ReactLoading from 'react-loading';
 
-const avatars = [avatar1, avatar2, avatar3, avatar4, avatar3];
 
 export interface AvatarSelectionProps {
   setAvatarId: (id: string | null) => void;
@@ -20,14 +19,19 @@ export interface AvatarSelectionProps {
 }
 
 const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwnImage, myOwnImage, avatarId }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState<StaticImageData | null>(avatars[0]);
-  const [customAvatar, setCustomAvatar] = useState<string | null>(null);
+  const { data, isLoading } = useSWR(`/user/avatars`, getAvatars, { revalidateOnFocus: false });
+  const avatars = useMemo(() => data?.data?.data || [], [data]);
+  const [selectedAvatar, setSelectedAvatar] = useState<any>();
+  useEffect(() => {
+    avatars[0] && setSelectedAvatar(avatars[0]?.avatarUrl)
+  }, [avatars])
+
   const [clickAvatar, setClickAvatar] = useState<string | null>(null);
   const [openInstruction, setOpenInstruction] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
+  const [uploadedFilename, setUploadedFilename] = useState<string>("");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
@@ -35,17 +39,17 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleAvatarClick = (avatar: StaticImageData) => {
+  const handleAvatarClick = (avatar: any) => {
     setSelectedAvatar(avatar);
-    setCustomAvatar(null); // Clear custom avatar when a predefined one is selected
-    setAvatarId(avatar.src); // Set avatar ID
-    setMyOwnImage(null); // Clear custom image
+    setAvatarId(avatar)
+    setMyOwnImage(null)
     setClickAvatar(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setUploadedFilename(file.name); // Save the original filename
       const reader = new FileReader();
       reader.onloadend = () => {
         setClickAvatar(reader.result as string);
@@ -103,7 +107,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
       setCroppedAreaPixels(croppedAreaPixels);
     },
     []
-  );
+  )
 
   const handleCropSave = async () => {
     if (clickAvatar && croppedAreaPixels) {
@@ -111,10 +115,10 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
       setClickAvatar(croppedImage);
       setIsCropping(false);
 
-      // Convert the cropped image data URL to a File object
+      // Convert the cropped image data URL to a File object using the uploaded filename
       const response = await fetch(croppedImage);
       const blob = await response.blob();
-      const file = new File([blob], "custom-avatar.png", { type: "image/png" });
+      const file = new File([blob], uploadedFilename || "custom-avatar.png", { type: "image/png" });
 
       setMyOwnImage(file); // Set custom image as File
       setAvatarId(null); // Clear avatar ID
@@ -131,7 +135,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
-  };
+  }
 
   useEffect(() => {
     if (contentRef.current) {
@@ -143,7 +147,8 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         contentRef.current.style.opacity = "0";
       }
     }
-  }, [isOpen]);
+  }, [isOpen])
+
 
   return (
     <div className="bg-white rounded-lg p-[15px] md:p-[30px] shadow-[0_0_40px_0_rgba(235,130,60,0.06)]">
@@ -155,17 +160,13 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
           <div className="lg:w-1/2 md:w-[45%] image-section ">
             <h3 className="text-[#6B6B6B] text-sm mb-2">Choose a pre-made</h3>
             <div className="flex lg:flex-row flex-col gap-[21px]">
-              <div className="border border-[#E87223] rounded-[5px] w-[169px]">
-                {customAvatar ? (
-                  <Image src={customAvatar} alt="Custom Avatar" width={128} height={128} className="h-full w-full object-cover rounded-[5px]" />
-                ) : (
-                  <Image src={selectedAvatar || ""} alt="Selected Avatar" width={128} height={128} className="selected h-full w-full object-cover rounded-[5px]" />
-                )}
+              <div className={`${isLoading ? '' : 'border'} border-[#E87223] rounded-[5px] w-[169px]`}>
+                {isLoading ? <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} /> : avatars[0] && <Image unoptimized src={getImageUrlOfS3(selectedAvatar)} alt="Selected Avatar" width={200} height={200} className="selected h-full w-full object-contain rounded-[5px]" />}
               </div>
               <div className="grid grid-cols-4 gap-[10px]">
-                {avatars.map((avatar, index) => (
-                  <div key={index} className={`thumbnail cursor-pointer rounded-[5px]  ${selectedAvatar === avatar && "active"}`} onClick={() => handleAvatarClick(avatar)}>
-                    <Image src={avatar} alt={`Avatar ${index + 1}`} width={74} height={68} className="border border-[#FFE2CE] w-[74px] h-[68px] object-cover rounded-[5px]" />
+                {isLoading ? <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} /> : avatars.map((avatar: any, index: number) => (
+                  <div key={index} className={`cursor-pointer rounded-[5px]  ${selectedAvatar === avatar.avatarUrl && "active"}`} onClick={() => handleAvatarClick(avatar.avatarUrl)}>
+                    <Image unoptimized src={getImageUrlOfS3(avatar.avatarUrl)} alt={`Avatar ${index + 1}`} width={74} height={68} className="border border-[#FFE2CE] w-[74px] h-[68px] object-cover rounded-[5px]" />
                   </div>
                 ))}
               </div>
@@ -182,7 +183,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
               ) : (
                 <div className="w-[169px] h-[158px] relative rounded-[5px] border border-[#E87223] bg-[#FFF1E8]">
                   <input required={myOwnImage === null} type="image" src="" alt="" className="absolute top-0 left-0 h-full w-full opacity-0 camera-image" style={{ width: 169, height: 158 }} />
-                  <div className="absolute inset-0 grid place-items-center">
+                  <div className="absolute inset-0 grid place-items-center" onClick={handleInstructionModal}>
                     <CameraIcon />
                   </div>
                 </div>
