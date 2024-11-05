@@ -14,14 +14,14 @@ import VideoResponse from "@/components/VideoResponse";
 
 const customStyles = {
     content: {
-        width: '450px',
+        // width: '450px',
         top: '50%',
         left: '50%',
         right: 'auto',
         bottom: 'auto',
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
-        borderRadius: '8px',
+        borderRadius: '10px',
         padding: '20px',
     },
 }
@@ -158,7 +158,7 @@ const Page = () => {
                     </Modal>
             </div>
         </form>
-    );
+    )
 }
 
 export default Page;

@@ -4,7 +4,7 @@ const ProcessingLoader = ({ progress }: any) => {
     return (
         <div className="flex p-7 justify-center flex-col items-center ">
             <p className="text-[28px] font-semibold text-[#3A2C23]">Its Worth The Wait!!</p>
-            <p className="text-[14px] mt-4 text-center text-[#6B6B6B]">We are processing your video and might take a minute or two. Please hold on to see the magic.</p>
+            <p className="text-[14px] mt-4 max-w-[14rem] text-center text-[#6B6B6B]">We are processing your video and might take a minute or two. Please hold on to see the magic.</p>
             
             <div className="w-full mt-10">
                 <div className="flex justify-between mb-2">
