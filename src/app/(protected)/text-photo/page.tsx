@@ -104,11 +104,8 @@ const Page = () => {
         const availableSeconds = availableMinutes * 60;
 
         if (estimatedSeconds > availableSeconds) {
-            toast.error(
-                `You need ${Math.ceil(estimatedSeconds / 60)} minutes of credit. Current balance: ${availableMinutes.toFixed(1)} minutes. Please purchase more credits or reduce text length.`,
-                { duration: 6000 }
-            );
-            return;
+            toast.error(`You need ${Math.ceil(estimatedSeconds / 60)} minutes of credit. Current balance: ${availableMinutes.toFixed(1)} minutes. Please purchase more credits or reduce text length.`, { duration: 6000 })
+            return
         }
         openModal()
         setProgress(0)
