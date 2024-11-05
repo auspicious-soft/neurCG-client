@@ -28,7 +28,7 @@ export default function RootLayout({
         <link rel="icon" href="/public/vercel.svg" />
       </head>
       <SessionProvider>
-        <body className="{inter.className}">
+        <body>
           <Toaster richColors />
           <div>
             {!hideHeader.includes(pathname) &&
@@ -39,16 +39,17 @@ export default function RootLayout({
                 isOpen={isSidebarOpen}
               />
             }
-          </div>
-          <div className="flex h-screen flex-col lg:flex-row lg:overflow-hidden">
+        
+          <div className="flex h-[calc(100vh-104px)] md:h-[calc(100vh-110px)] flex-col lg:flex-row lg:overflow-hidden">
             <div className="flex-none ">  {/*md:h-[100vh]  */}
               {/* <SideNav /> */}
               {!hideSideBar.includes(pathname) && <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
             </div>
-            <main className="flex-grow bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] ">
+            <main className="flex-grow bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] overflo-custom overflow-y-auto">
             {/* md:overflow-y-auto overflo-custom */}
               {children}
             </main>
+            </div>
           </div>
         </body>
       </SessionProvider>
