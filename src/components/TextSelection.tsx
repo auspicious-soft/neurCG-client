@@ -36,9 +36,10 @@ interface TextSelectionProps {
   setTextLanguage: (language: string) => void;
   setPreferredVoice: React.Dispatch<React.SetStateAction<string | File | null>>; // Updated to handle both string and File
   preferredVoice: string | File | null
+  text: string
 }
 
-const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage, setPreferredVoice, preferredVoice }) => {
+const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage, setPreferredVoice, preferredVoice, text }) => {
   const session = useSession();
   const [isOpen, setIsOpen] = useState(true);
   const [customVoice, setCustomVoice] = useState<string | null>(null);
@@ -137,6 +138,7 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
                 id=""
                 rows={5}
                 required
+                value={text}
                 className="text-area md:h-[240px]"
                 onChange={(e) => setText(e.target.value)}
               ></textarea>

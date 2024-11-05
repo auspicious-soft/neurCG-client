@@ -45,7 +45,8 @@ export default function RootLayout({
               {/* <SideNav /> */}
               {!hideSideBar.includes(pathname) && <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
             </div>
-            <main className="flex-grow md:overflow-y-auto overflo-custom bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] ">
+            <main className="flex-grow bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] ">
+            {/* md:overflow-y-auto overflo-custom */}
               {children}
             </main>
           </div>

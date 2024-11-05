@@ -128,6 +128,7 @@ const Page = () => {
             />
             <TextSelection
                 setText={setText}
+                text={text}
                 setTextLanguage={setTextLanguage}
                 setPreferredVoice={setPreferredVoice}
                 preferredVoice={preferredVoice}
@@ -144,18 +145,18 @@ const Page = () => {
                 >
                     {!isPending ? 'Animate' : <ReactLoading type={'bars'} color={'white'} height={'40px'} width={'40px'} />}
                 </button>
-                    <Modal
-                        isOpen={isModalOpen}
-                        onRequestClose={()=> setIsModalOpen(false)}
-                        style={customStyles}
-                        contentLabel="Confirm Cancel Subscription"
-                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
-                        // shouldCloseOnOverlayClick = {false}
-                        // shouldCloseOnEsc={false}
-                        ariaHideApp={false} // Add this line to disable aria app element error
-                    >
-                        {(isPending && progress <= 100) ? <ProcessingLoader progress={progress} /> : <VideoResponse modalClose={() => setIsModalOpen(false)} />}
-                    </Modal>
+                <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={() => setIsModalOpen(false)}
+                    style={customStyles}
+                    contentLabel="Confirm Cancel Subscription"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
+                    // shouldCloseOnOverlayClick = {false}
+                    // shouldCloseOnEsc={false}
+                    ariaHideApp={false} // Add this line to disable aria app element error
+                >
+                    {(isPending && progress <= 100) ? <ProcessingLoader progress={progress} /> : <VideoResponse modalClose={() => setIsModalOpen(false)} />}
+                </Modal>
             </div>
         </form>
     )
