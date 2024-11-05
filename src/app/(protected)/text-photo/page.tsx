@@ -94,8 +94,8 @@ const Page = () => {
                         cache: 'no-store'
                     })
                     if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                    const imageKey = `projects/${email}/my-media/${preferredVoice.name}`
-                    preferredVoiceUrl = imageKey
+                    const audioKey = `projects/${email}/my-media/${preferredVoice.name}`
+                    preferredVoiceUrl = audioKey
                 }
                 const data = {
                     projectAvatar: avatarId || projectAvatarUrl,
