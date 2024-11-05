@@ -5,12 +5,13 @@ import AvatarSelection from '@/components/AvatarSelection';
 import Subtitles from '@/components/Subtitles';
 import TextSelection from '@/components/TextSelection';
 import { toast } from 'sonner';
-import { convertTextToVideo } from '@/services/user-service';
+import { convertTextToVideo, getUserInfo } from '@/services/user-service';
 import { useSession } from 'next-auth/react';
 import { generateSignedUrlToUploadOn, getImageUrl } from '@/actions';
 import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
+import useSWR from "swr";
 
 const customStyles = {
     content: {
@@ -23,7 +24,28 @@ const customStyles = {
         transform: 'translate(-50%, -50%)',
         borderRadius: '10px',
         padding: '20px',
-    },
+    }
+}
+
+const WORDS_PER_MINUTE = 150
+const SECONDS_PER_CREDIT = 10
+const CHARS_PER_WORD = 5
+
+type VideoCredits = {
+    availableMinutes: number;
+    maxCharacters: number;
+}
+
+const calculateVideoCredits = (credits: number): VideoCredits => {
+    const totalSeconds = credits * SECONDS_PER_CREDIT;
+    const availableMinutes = totalSeconds / 60;
+    const maxCharacters = Math.floor((WORDS_PER_MINUTE * availableMinutes) * CHARS_PER_WORD);
+    return { availableMinutes, maxCharacters };
+}
+
+const estimateVideoLengthOfText = (text: string): number => {
+    const words = text.trim().split(/\s+/).length;
+    return Math.ceil(words / WORDS_PER_MINUTE * 60); // Returns seconds
 }
 
 const Page = () => {
@@ -38,6 +60,24 @@ const Page = () => {
     const [subtitlesLanguage, setSubtitlesLanguage] = useState<string | null | undefined>();
     const [progress, setProgress] = useState(0)
     const [isPending, startTransition] = useTransition()
+
+    const { data: userData, isLoading, mutate } = useSWR(`/user/${session?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
+    const userCreditsLeft = userData?.data?.data?.creditsLeft || 0
+    const { availableMinutes, maxCharacters } = calculateVideoCredits(userCreditsLeft);
+
+    useEffect(() => {
+        if (text && !isLoading) {
+            const estimatedSeconds = estimateVideoLengthOfText(text);
+            const availableSeconds = availableMinutes * 60;
+
+            if (estimatedSeconds > availableSeconds) {
+                toast.warning(
+                    `Text is too long! You have credits for ${availableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`,
+                    { duration: 3000 }
+                );
+            }
+        }
+    }, [text, availableMinutes, isLoading])
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -56,6 +96,20 @@ const Page = () => {
 
     const handleAnimateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
+        if (isLoading) {
+            toast.error("Please wait while we load your credit information");
+            return
+        }
+        const estimatedSeconds = estimateVideoLengthOfText(text);
+        const availableSeconds = availableMinutes * 60;
+
+        if (estimatedSeconds > availableSeconds) {
+            toast.error(
+                `You need ${Math.ceil(estimatedSeconds / 60)} minutes of credit. Current balance: ${availableMinutes.toFixed(1)} minutes. Please purchase more credits or reduce text length.`,
+                { duration: 6000 }
+            );
+            return;
+        }
         openModal()
         setProgress(0)
         startTransition(async () => {
@@ -107,7 +161,8 @@ const Page = () => {
                 };
                 // Remove any undefined values
                 Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
-                const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data);
+                const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data)
+                await mutate()
                 setProgress(100)
 
             } catch (error) {
@@ -118,6 +173,15 @@ const Page = () => {
     }
     const openModal = () => setIsModalOpen(true)
 
+    if (isLoading) {
+        return <div className="flex justify-center items-center min-h-[200px]">
+            <ReactLoading type="spin" color="#E87223" height={40} width={40} />
+        </div>
+    }
+
+    const isTextTooLong = estimateVideoLengthOfText(text) > (availableMinutes * 60);
+    const remainingSeconds = (availableMinutes * 60) - estimateVideoLengthOfText(text);
+    const estimatedLength = estimateVideoLengthOfText(text)
     return (
         <form>
             <AvatarSelection
@@ -138,9 +202,35 @@ const Page = () => {
                 setSubtitlesLanguage={setSubtitlesLanguage}
                 subtitles={subtitles}
             />
+
+            <div className="mt-4 space-y-2 text-sm">
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700">Available credits video length:</span>
+                    <span className="font-medium text-gray-900">{availableMinutes.toFixed(1)} minutes</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700">Estimated video length:</span>
+                    <span className={`font-medium ${isTextTooLong ? 'text-red-600' : 'text-gray-900'}`}>
+                        {(estimatedLength / 60).toFixed(1)} minutes
+                    </span>
+                </div>
+                {isTextTooLong && (
+                    <div className="p-3 bg-red-50 rounded-lg">
+                        <p className="text-red-600">
+                            Exceeds available credits by {(Math.abs(remainingSeconds) / 60).toFixed(1)} minutes.
+                            Please purchase more credits or reduce text length.
+                        </p>
+                    </div>
+                )}
+            </div>
+
             <div className='flex justify-end mt-10'>
-                <button type='submit' disabled={!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined))}
-                    className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] ${!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) ? 'cursor-not-allowed' : ''} ${!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) ? 'opacity-50' : ''}`}
+                <button 
+                    type='submit' 
+                    disabled={!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) || isTextTooLong}
+                    className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] 
+                        ${(!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) || isTextTooLong) ? 
+                        'cursor-not-allowed opacity-50' : ''}`}
                     onClick={handleAnimateClick}
                 >
                     {!isPending ? 'Animate' : <ReactLoading type={'bars'} color={'white'} height={'40px'} width={'40px'} />}
@@ -151,11 +241,12 @@ const Page = () => {
                     style={customStyles}
                     contentLabel="Confirm Cancel Subscription"
                     overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
-                    // shouldCloseOnOverlayClick = {false}
-                    // shouldCloseOnEsc={false}
-                    ariaHideApp={false} // Add this line to disable aria app element error
+                    ariaHideApp={false}
                 >
-                    {(isPending && progress <= 100) ? <ProcessingLoader progress={progress} /> : <VideoResponse modalClose={() => setIsModalOpen(false)} />}
+                    {(isPending && progress <= 100) ? 
+                        <ProcessingLoader progress={progress} /> : 
+                        <VideoResponse modalClose={() => setIsModalOpen(false)} />
+                    }
                 </Modal>
             </div>
         </form>
