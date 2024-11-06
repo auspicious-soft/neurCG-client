@@ -107,6 +107,10 @@ const Page = () => {
             toast.error(`You need ${Math.ceil(estimatedSeconds / 60)} minutes of credit. Current balance: ${availableMinutes.toFixed(1)} minutes. Please purchase more credits or reduce text length.`, { duration: 6000 })
             return
         }
+        if (text.length < 5) {
+            toast.warning("Please enter at least 5 characters of text", { duration: 6000 })
+            return
+        }
         openModal()
         setProgress(0)
         startTransition(async () => {
@@ -222,12 +226,12 @@ const Page = () => {
             </div>
 
             <div className='flex justify-end mt-10'>
-                <button 
-                    type='submit' 
+                <button
+                    type='submit'
                     disabled={!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) || isTextTooLong}
                     className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] 
-                        ${(!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) || isTextTooLong) ? 
-                        'cursor-not-allowed opacity-50' : ''}`}
+                        ${(!text || !textLanguage || !preferredVoice || (subtitles && (subtitlesLanguage === undefined)) || isTextTooLong) ?
+                            'cursor-not-allowed opacity-50' : ''}`}
                     onClick={handleAnimateClick}
                 >
                     {!isPending ? 'Animate' : <ReactLoading type={'bars'} color={'white'} height={'40px'} width={'40px'} />}
@@ -240,8 +244,8 @@ const Page = () => {
                     overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
                     ariaHideApp={false}
                 >
-                    {(isPending && progress <= 100) ? 
-                        <ProcessingLoader progress={progress} /> : 
+                    {(isPending && progress <= 100) ?
+                        <ProcessingLoader progress={progress} /> :
                         <VideoResponse modalClose={() => setIsModalOpen(false)} />
                     }
                 </Modal>
