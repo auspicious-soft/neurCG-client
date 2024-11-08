@@ -10,7 +10,7 @@ const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 interface VideoCardProps {
   videoSrc: string; // Static video source
   title: string;
-  thumbnail?: string | StaticImageData; // Optional thumbnail
+  thumbnail?: string; // Optional thumbnail
 }
 
 const VideoCards: React.FC<VideoCardProps> = ({ videoSrc, title, thumbnail }) => {
@@ -27,6 +27,7 @@ const VideoCards: React.FC<VideoCardProps> = ({ videoSrc, title, thumbnail }) =>
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = videoSrc;
+    link.target = '_blank';
     link.download = title || "video.mp4";
     document.body.appendChild(link);
     link.click();
@@ -42,13 +43,13 @@ const VideoCards: React.FC<VideoCardProps> = ({ videoSrc, title, thumbnail }) =>
         <div className="player-wrapper relative">
           {thumbnail ? (
             <Image
-              src={typeof thumbnail === "string" ? thumbnail : thumbnail.src}
+              src={thumbnail}
               alt={title}
               className="w-full h-auto rounded-lg"
               width={500} // Adjust this size as needed
               height={300} // Adjust this size as needed
               layout="responsive"
-            /> 
+            />
           ) : (
             <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
               <p>Click to Play Video</p>
@@ -62,34 +63,37 @@ const VideoCards: React.FC<VideoCardProps> = ({ videoSrc, title, thumbnail }) =>
       </div>
 
       <Modal
-       bodyOpenClassName="overflow-hidden"
+        bodyOpenClassName="overflow-hidden"
         isOpen={isOpen}
         onRequestClose={closeModal}
         contentLabel="Open Camera"
-        className="modal w-full md:max-w-[70%] h-[70vh] md:h-[90vh] p-2 md:p-10 pt-[50px]  rounded-[20px] overflo-custom overflow-y-auto relative bg-white "
-        overlayClassName="z-[10] px-2 md:p-0 w-full h-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-        >
-          <div className=" ">
-            <button
-              className="absolute z-10 top-4 right-5"
-              onClick={closeModal}
-            > <CrossIcon />
-            </button>
+        className="modal w-full md:max-w-[45%] h-auto p-2 md:p-10 pt-[50px]  rounded-[20px] overflo-custom overflow-y-auto relative bg-white "
+        overlayClassName="z-[10] px-2 md:p-0 w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <div className="">
+          <button
+            className="absolute z-10 top-4 right-5"
+            onClick={closeModal}
+          > <CrossIcon />
+          </button>
+          <div className="h-[500px]">
+
             <ReactPlayer
               url={videoSrc}
               width="100%"
               height="100%"
               controls={true}
             />
-           <div className="flex items-center justify-end gap-5 mt-5">
+          </div>
+          <div className="flex items-center justify-end gap-5 mt-5">
             <button><ShareIcon /> </button>
-           <button
+            <button
               className="w-[168px] text-center text-sm bg-[#E87223] text-white py-[15px] px-6 rounded-[5px] "
               onClick={handleDownload}
             > Download </button>
-           </div>
           </div>
-    </Modal>
+        </div>
+      </Modal>
     </>
   );
 };

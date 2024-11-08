@@ -59,12 +59,12 @@ const VideoResponse = ({
             // Cleanup
             window.URL.revokeObjectURL(url);
             document.body.removeChild(link);
-            toast.dismiss(toastId)
             toast.success('Download completed!');
         } catch (error) {
             console.error('Download error:', error);
             toast.error('Failed to download video');
         } finally {
+            toast.dismiss(toastId)
             setDownloading(false);
         }
     };

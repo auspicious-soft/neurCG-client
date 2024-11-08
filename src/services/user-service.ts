@@ -25,6 +25,11 @@ export const getAvatars = async (route: string) => {
     return axiosInstance.get(route)
 }
 
+export const getUserProjects = async(route:string) => {
+    const axiosInstance = await getAxiosInstance(); 
+    return axiosInstance.get(route)
+}
+
 export const convertTextToVideo = async(id:string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload)
