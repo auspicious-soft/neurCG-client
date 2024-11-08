@@ -12,6 +12,7 @@ import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
+import { vi } from "date-fns/locale";
 
 const customStyles = {
     content: {
@@ -64,7 +65,7 @@ const Page = () => {
     const { data: userData, isLoading, mutate } = useSWR(`/user/${session?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
     const userCreditsLeft = userData?.data?.data?.creditsLeft || 0
     const { availableMinutes, maxCharacters } = calculateVideoCredits(userCreditsLeft);
-
+    const [videoSrc, setVideoSrc] = useState<string | null>(null);
     useEffect(() => {
         if (text && !isLoading) {
             const estimatedSeconds = estimateVideoLengthOfText(text);
@@ -159,16 +160,24 @@ const Page = () => {
                     preferredVoice: typeof preferredVoice === 'string' ? preferredVoice : preferredVoiceUrl,
                     subtitles,
                     ...(subtitles && { subtitlesLanguage })
-                };
+                }
                 // Remove any undefined values
                 Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
                 const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data)
+                const video = await response?.data?.data?.videoUrl
+                if (!video) {
+                    toast.error('Something went wrong. Please try again')
+                    setProgress(0)
+                    setIsModalOpen(false)
+                }
+                setVideoSrc(video)
                 await mutate()
                 setProgress(100)
 
             } catch (error) {
                 toast.error('Something went wrong. Please try again')
-                setProgress(0);
+                setProgress(0)
+                setIsModalOpen(false)
             }
         })
     }
@@ -246,7 +255,7 @@ const Page = () => {
                 >
                     {(isPending && progress <= 100) ?
                         <ProcessingLoader progress={progress} /> :
-                        <VideoResponse modalClose={() => setIsModalOpen(false)} />
+                        <VideoResponse modalClose={() => setIsModalOpen(false)} videoSrc = {videoSrc} />
                     }
                 </Modal>
             </div>

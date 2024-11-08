@@ -12,6 +12,7 @@ const PricingPlans: React.FC = () => {
   const { data, isLoading } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false });
   const currentPlan = data?.data.data?.planType;
   const interval = data?.data.data?.planInterval;
+  const creditsLeft = data?.data.data?.creditsLeft;
   const [billingPeriod, setBillingPeriod] = useState<'month' | 'year'>(interval === 'month' ? 'month' : 'year');
 
   const handlePlanSelect = async (planType: string) => {
@@ -90,7 +91,7 @@ const PricingPlans: React.FC = () => {
               <li>Workspace Users (1)</li>
               <li>Create your avatar with just a picture (Unlimited)</li>
             </ul>
-            <button disabled={currentPlan === 'intro' && interval === billingPeriod} onClick={() => handlePlanSelect('intro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] bg-white text-[#E56F20] rounded-[10px] font-semibold font-inter">
+            <button disabled={creditsLeft !== 0 && currentPlan === 'intro' && interval === billingPeriod} onClick={() => handlePlanSelect('intro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] bg-white text-[#E56F20] rounded-[10px] font-semibold font-inter">
               {currentPlan === 'intro' ? interval === billingPeriod ? 'Current Plan' : 'Select Plan' : 'Select Plan'}
             </button>
           </div>
@@ -122,7 +123,7 @@ const PricingPlans: React.FC = () => {
                 </ul>
               </div>
               <div>
-                <button disabled={currentPlan === 'pro' && interval === billingPeriod} onClick={() => handlePlanSelect('pro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
+                <button disabled={creditsLeft !== 0  && currentPlan === 'pro' && interval === billingPeriod} onClick={() => handlePlanSelect('pro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
                   {currentPlan === 'pro' ? interval === billingPeriod ? 'Current Plan' : 'Current Plan (Yearly)' : 'Select Plan'}
                 </button>
               </div>
