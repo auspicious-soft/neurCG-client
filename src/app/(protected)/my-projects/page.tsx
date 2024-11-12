@@ -34,7 +34,7 @@ const Page = async () => {
         </div>
       </section>
       <section className="last-months mt-[30px] md:mt-[40px]">
-        <h2 className="section-title mb-[10px] md:mb-5">Last Month</h2>
+       {LastMonthData.length > 0 && <h2 className="section-title mb-[10px] md:mb-5">Last Month</h2>}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           {LastMonthData?.map((data:any) => (
             <VideoCards

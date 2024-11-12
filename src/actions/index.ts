@@ -48,7 +48,7 @@ export const logoutAction = async () => {
 }
 
 export const getTokenCustom = async () => {
-    const cookiesOfNextAuth = cookies().get("authjs.session-token")
+    const cookiesOfNextAuth = cookies().get(process.env.JWT_SALT as string)
     return cookiesOfNextAuth?.value!
 }
 

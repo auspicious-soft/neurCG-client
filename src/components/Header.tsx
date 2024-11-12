@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import Logo from "@/assets/images/logo.png";
 import { useState } from "react";
 import { NotificationIcon } from "@/utils/svgIcons";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MenuIcon, ToggleClose } from "@/utils/svgIcons";
 import useSWR from "swr";
 import { getUserInfo, getUserNotifications } from "@/services/user-service";
@@ -34,6 +34,7 @@ const Header: React.FC<HeaderProps> = ({
   const [showData, setShowData] = useState(false);
   const pathname = usePathname();
   const session = useSession()
+  const router = useRouter()
   const { data, isLoading, mutate } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
   const { data: userNotification } = useSWR(`/user/${session.data?.user?.id}/notifications`, getUserNotifications)
   if (data?.data.success === false) return toast.error('Something went wrong');
@@ -57,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({
     setShowData(!showData);
   };
   const handleLinkClick = (path: string) => {
-    // setActiveLink(path);
+    router.push(path);
     setShowData(false);
   };
 
@@ -98,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
 
             {showNotifications && (
               <div className="absolute top-[25px] right-0 mt-2 w-[200px] md:w-64 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                <ul className="py-1 text-sm text-gray-700 overflow-y-scroll">
+                <ul className="py-1 text-sm text-gray-700 overflow-y-auto h-[200px]">
                   {userNotification?.data?.data?.length > 0 ? (
                     userNotification!.data.data.map((notification: any, index: number) => {
                       const createdAt = new Date(notification.createdAt);
@@ -128,17 +129,17 @@ const Header: React.FC<HeaderProps> = ({
               alt="User Profile"
               width={34}
               height={34}
-              className="rounded-full"
+              className="rounded-xl w-[34px] h-[34px] "
             />
 
           </div>
           {showData && (
-            <div className=" text-right absolute z-[2] top-[40px] right-0 w-[150px] h-[100px] bg-white p-5 rounded-lg shadow-[0_4px_4px_0_rgba(0,0,0,0.08)] ">
-              <Link href="/my-profile" onClick={() => handleLinkClick("/my-profile")}>
-                <span className="text-[#3A2C23] text-base ">My Profile</span>
-              </Link>
+            <div className="flex flex-col gap-3 border absolute z-[2] top-[40px] right-0 w-[150px] bg-white p-3 rounded-md shadow-lg">
+              <div onClick={() => handleLinkClick("/my-profile")}>
+                <span className="text-[#3A2C23] text-base font-bold cursor-pointer">My Profile</span>
+              </div>
               <div>
-                <button onClick={() => signOut({ redirectTo: '/login' })}>Log Out</button>
+                <button onClick={() => signOut({ redirectTo: '/login' })} className="cursor-pointer text-sm bg-[#E87223] text-white py-2 px-2 rounded-[5px] ">Log Out</button>
               </div>
             </div>
           )}
