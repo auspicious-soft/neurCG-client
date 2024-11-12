@@ -84,7 +84,7 @@ const Home = async () => {
             <VideoCards
               key={data.id}
               title={data.title}
-              thumbnail={data.thumbnail}
+              // thumbnail={data.thumbnail}
               videoSrc={data.videoSrc}
             />
           ))}

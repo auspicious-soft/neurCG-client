@@ -4,7 +4,7 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.png";
 import LoginCard from "@/components/LoginCard";
 import loginImg from "@/assets/images/loginimg.png";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { signupAction } from "@/actions";
@@ -13,8 +13,9 @@ import { useSession } from "next-auth/react";
 export default function Signup() {
   const { data: session } = useSession();
   const router = useRouter();
-  const searchParams = useSearchParams()
-  const referralCode = searchParams.get('referralCode') ?? '';
+  const pathName = usePathname();
+  const referralCode = pathName.split("/")[2];
+  console.log('referralCode: ', referralCode);
   useEffect(() => {
     if (session) {
       router.push("/");
