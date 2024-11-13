@@ -55,7 +55,7 @@ const PricingPlans: React.FC = () => {
                 <h2 className="md:text-[40px] text-[30px]  font-[600] leading-[normal] text-[#262626]">€0</h2>
                 <p className="text-sm text-[#81A7BA] mb-5">User/{billingPeriod === 'month' ? 'Month' : 'Year'}</p>
                 <ul className="text-left orange-check list-design">
-                  <li>3 Credits</li>
+                  <li>{billingPeriod === 'month' ? '24 Credits' : `${24 * 12} Credits`}</li>
                   <li>Avatar with just a picture (Unlimited)</li>
                   <li>Workspace users (1)</li>
                   <li>Recording your audio</li>
@@ -81,7 +81,7 @@ const PricingPlans: React.FC = () => {
             </h2>
             <h3 className="text-[15px] text-[#D3E7F0] mb-5 ">User/{billingPeriod === 'month' ? 'Month' : 'Year'}</h3>
             <ul className="white-checks half-list text-left list-design ">
-              <li>100 Credits</li>
+              <li>{billingPeriod === 'month' ? '90 Credits' : `${90 * 12} Credits`}</li>
               <li>80 Voices</li>
               <li>+30 Languages</li>
               <li>Text to voice</li>
@@ -110,7 +110,7 @@ const PricingPlans: React.FC = () => {
                 </h2>
                 <p className="text-sm text-[#81A7BA] mb-5">User/{billingPeriod === 'month' ? 'Month' : 'Year'}</p>
                 <ul className="text-left half-list orange-check list-design">
-                  <li>300 Credits</li>
+                  <li>{billingPeriod === 'month' ? '180 Credits' : `${180 * 12} Credits`}</li>
                   <li>Text to Voice</li>
                   <li>Video Translation</li>
                   <li>Subtitles</li>
