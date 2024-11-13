@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from 'date-fns';
 import { signOut } from "next-auth/react";
 import { getDbImageUrl } from "@/utils";
+import ReactLoading from 'react-loading'
 
 
 interface HeaderProps {
@@ -81,9 +82,9 @@ const Header: React.FC<HeaderProps> = ({
         <h1 className="hidden lg:block section-title">{currentPageName}</h1>
 
         <div className="flex items-center space-x-[15px] md:space-x-[30px] relative">
-          <h3 className="hidden lg:block bg-[#FFEEE2] font-[500] text-xs text-[#3A2C23] border border-[#FFE2CE] px-6 py-[9px] rounded-full">
+          <h3 className=" hidden lg:flex items-center bg-[#FFEEE2] font-[500] text-xs text-[#3A2C23] border border-[#FFE2CE] px-6 py-[9px] rounded-full">
             Credits left
-            <span className="text-[#E87223] ml-[10px]">{dataOfUser?.creditsLeft}</span>
+            <span className="text-[#E87223] ml-[10px]">{!isLoading ? dataOfUser?.creditsLeft : <ReactLoading type="spin" color="#E87223" height={10} width={10} />}</span>
           </h3>
           <div className="relative flex">
             <button
@@ -124,13 +125,13 @@ const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
-            <Image
+            {!isLoading && <Image
               src={getDbImageUrl(dataOfUser?.profilePic || '')}
               alt="User Profile"
               width={34}
               height={34}
               className="rounded-xl w-[34px] h-[34px] "
-            />
+            />}
 
           </div>
           {showData && (

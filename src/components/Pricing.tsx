@@ -39,7 +39,7 @@ const PricingPlans: React.FC = () => {
           <select
             value={billingPeriod}
             onChange={(e) => setBillingPeriod(e.target.value as 'month' | 'year')}
-            className='w-full max-w-[150px] bg-[#fff]  font-semibold text-[#262626] py-2 px-5 text-lg rounded-[10px] cursor-pointer'
+            className='w-full max-w-[150px] bg-[#fff]  font-semibold text-[#262626] py-2 px-5 text-lg rounded-[10px] cursor-pointer border border-[#E56F20]'
           >
             <option value="month" className='!cursor-pointer'>Month</option>
             <option value="year" className='!cursor-pointer'>Year</option>
