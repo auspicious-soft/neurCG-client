@@ -55,7 +55,7 @@ const PricingPlans: React.FC = () => {
                 <h2 className="md:text-[40px] text-[30px]  font-[600] leading-[normal] text-[#262626]">€0</h2>
                 <p className="text-sm text-[#81A7BA] mb-5">User/{billingPeriod === 'month' ? 'Month' : 'Year'}</p>
                 <ul className="text-left orange-check list-design">
-                  <li>{billingPeriod === 'month' ? '24 Credits' : `${24 * 12} Credits`}</li>
+                  <li>24 Credits</li>
                   <li>Avatar with just a picture (Unlimited)</li>
                   <li>Workspace users (1)</li>
                   <li>Recording your audio</li>
