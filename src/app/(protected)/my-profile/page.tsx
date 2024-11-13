@@ -329,7 +329,7 @@ const Page = () => {
           </div>
           <div className="flex items-center">
             <span className="mr-2 text-gray-700 text-[14px]">Video Creation Time Left:</span>
-            <span className="bg-orange-100 text-[#3A2C23] text-[14px] px-2 py-1 rounded-full">{CreditScores[1].value} minutes</span>
+            <span className="bg-orange-100 text-[#3A2C23] text-[14px] px-2 py-1 rounded-full">{CreditScores[1].value.toFixed(2)} minutes</span>
           </div>
         </div>
         {(user?.planType === "intro" || user?.planType === "pro") && (
