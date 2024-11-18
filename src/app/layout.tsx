@@ -49,7 +49,7 @@ export default function RootLayout({
                 )}
               </div>
               <main
-                className={`flex-grow ${isAuthPage ? 'p-0 h-[100vh] auth-page-styles' : 'bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] overflow-y-auto'}`}
+                className={`flex-grow ${isAuthPage ? 'p-0 h-[100vh] auth-page-styles' : 'bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] overflo-custom overflow-y-auto'}`}
               >
                 {children}
               </main>
