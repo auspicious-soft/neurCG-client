@@ -4,7 +4,7 @@ import "./globals.css";
 import { useState } from "react";
 import SideBar from "@/components/SideBar";
 import Header from "@/components/Header";
-import dp from "@/assets/images/profilepic.png"
+import dp from "@/assets/images/profilepic.png";
 import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 import { SessionProvider } from "next-auth/react";
@@ -16,10 +16,12 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const hideSideBar = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword'];
-  const hideHeader = ['/signup', , '/login', '/forgotpassword', '/otp', '/newpassword'];
+  const hideHeader = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword'];
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const isAuthPage = hideSideBar.includes(pathname) || hideHeader.includes(pathname);
 
   return (
     <html lang="en">
@@ -31,24 +33,26 @@ export default function RootLayout({
         <body>
           <Toaster richColors />
           <div>
-            {!hideHeader.includes(pathname) &&
+            {!hideHeader.includes(pathname) && (
               <Header
                 userImage={dp}
                 notificationsCount={3}
                 toggleSidebar={toggleSidebar}
                 isOpen={isSidebarOpen}
               />
-            }
-        
-          <div className="flex h-[calc(100vh-104px)] md:h-[calc(100vh-110px)] flex-col lg:flex-row lg:overflow-hidden">
-            <div className="flex-none ">  {/*md:h-[100vh]  */}
-              {/* <SideNav /> */}
-              {!hideSideBar.includes(pathname) && <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
-            </div>
-            <main className="flex-grow bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] overflo-custom overflow-y-auto">
-            {/* md:overflow-y-auto overflo-custom */}
-              {children}
-            </main>
+            )}
+
+            <div className={`flex ${!isAuthPage ? ' h-[calc(100vh-104px)] md:h-[calc(100vh-110px)]' : 'h-full !overflow-visible'} flex-col lg:flex-row lg:overflow-hidden`}>
+              <div className="flex-none">
+                {!hideSideBar.includes(pathname) && (
+                  <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                )}
+              </div>
+              <main
+                className={`flex-grow ${isAuthPage ? 'p-0 h-[100vh] auth-page-styles' : 'bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] overflo-custom overflow-y-auto'}`}
+              >
+                {children}
+              </main>
             </div>
           </div>
         </body>
