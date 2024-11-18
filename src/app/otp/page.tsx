@@ -9,7 +9,7 @@ export default function Home() {
     <div className=" ">
       <div className="grid md:grid-cols-2 gap-y-10 items-center">
         {/* min-h-[100vh]  max-w-[418px] pl-[113px] pr-4 */}
-        <div className=" bg-[#F5F7FA] flex flex-col justify-center lg:pl-[113px] md:pr-4 h-full">
+        <div className=" bg-[#F5F7FA] flex flex-col justify-center mobile-space lg:pl-[113px] md:pr-4 h-full">
           <div className="md:max-w-[418px] 2xl:mx-auto">
             <Image src={logo} height={100} width={200}  alt="" />
             <h1 className="main-title mt-[30px] md:mt-[94px] mb-[5px] md:mb-3 ">Enter OTP</h1>

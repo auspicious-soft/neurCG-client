@@ -19,6 +19,7 @@ textarea:focus-visible {
   background: url(../assets/images/wave-bg.png) no-repeat;
   background-size: cover;
   background-position: left;
+  height: 100%;
 }
 .blurr-bg {
   border-radius: 20px;
@@ -265,6 +266,9 @@ button.disabled-button svg path {
     align-items: center;
     padding: 10px 20px;
   } */
+  .mobile-space {
+    padding: 20px;
+}
 }
 @media screen and (max-width: 767px)  {
 
@@ -298,6 +302,7 @@ a.button {
   justify-content: center;
   align-items: center;
 }
+
 }
 
 ul.orange-check li {
