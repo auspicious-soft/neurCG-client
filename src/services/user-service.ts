@@ -35,6 +35,10 @@ export const convertTextToVideo = async(id:string, payload: any) => {
     return axiosInstance.post(id, payload)
 }
 
+export const convertAudioToVideo = async(id:string, payload: any) => {
+    const axiosInstance = await getAxiosInstance()
+    return axiosInstance.post(id, payload)
+}
 
 export const buyPlan = async (route: string, payload: any) => {
     const axiosInstance = await getAxiosInstance();

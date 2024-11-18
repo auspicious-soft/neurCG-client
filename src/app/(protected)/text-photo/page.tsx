@@ -12,8 +12,6 @@ import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
-import { vi } from "date-fns/locale";
-
 const customStyles = {
     content: {
         // width: '450px',
@@ -28,9 +26,9 @@ const customStyles = {
     }
 }
 
-const WORDS_PER_MINUTE = 150
-const SECONDS_PER_CREDIT = 10
-const CHARS_PER_WORD = 5
+export const WORDS_PER_MINUTE = 150
+export const SECONDS_PER_CREDIT = 10
+export const CHARS_PER_WORD = 5
 
 type VideoCredits = {
     availableMinutes: number;
@@ -72,10 +70,7 @@ const Page = () => {
             const availableSeconds = availableMinutes * 60;
 
             if (estimatedSeconds > availableSeconds) {
-                toast.warning(
-                    `Text is too long! You have credits for ${availableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`,
-                    { duration: 3000 }
-                );
+                toast.warning(`Text is too long! You have credits for ${availableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 });
             }
         }
     }, [text, availableMinutes, isLoading])
