@@ -3,13 +3,13 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import previmg2 from "@/assets/images/previmg.png";
 import { EditImgIcon } from "@/utils/svgIcons";
-import CreditScore from "@/components/CreditScore";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { cancelSubscription, getUserInfo, updateUserInfo } from "@/services/user-service";
 import { toast } from "sonner";
-import { getDbImageUrl } from "@/utils";
+import { getImageUrlOfS3 } from "@/utils";
 import Modal from "react-modal";
+import { generateSignedUrlToUploadOn } from "@/actions";
 
 type FormData = {
   firstName: string;
@@ -39,11 +39,7 @@ const customStyles = {
 
 const Page = () => {
   const { data: session, update } = useSession();
-  const { data, isLoading, mutate } = useSWR(
-    `/user/${session?.user?.id}`,
-    getUserInfo,
-    { revalidateOnFocus: false }
-  );
+  const { data, isLoading, mutate } = useSWR(`/user/${session?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
   const user = data?.data?.data;
   const CreditScores = [
     {
@@ -72,7 +68,7 @@ const Page = () => {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (user) {
       setFormData({
@@ -84,11 +80,11 @@ const Page = () => {
         state: user.state || "",
         city: user.city || "",
         homeAddress: user.homeAddress || "",
-        profilePic: null,
+        profilePic: user.profilePic || "",
       });
 
       if (user.profilePic) {
-        const imageUrl = getDbImageUrl(user.profilePic);
+        const imageUrl = getImageUrlOfS3(user.profilePic);
         setImagePreview(imageUrl);
       }
     }
@@ -112,17 +108,13 @@ const Page = () => {
   };
 
   const triggerFileInputClick = () => {
-    const fileInput = document.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData: any) => ({
       ...prevData,
@@ -132,20 +124,34 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true)
     try {
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (key !== "email" && key !== "profilePic") {
-          formDataToSend.append(key, (formData as any)[key]);
+      delete (formData as any).email
+      const formDataToSend = formData
+      const imageKey = `projects/${session?.user?.email}/my-media/${typeof (formData as any)?.profilePic === 'string' ? (formData as any).profilePic : formData?.profilePic?.name}`
+
+      if (formData.profilePic && typeof formData.profilePic !== 'string') {
+        const signedUrl = await generateSignedUrlToUploadOn(formData.profilePic.name, formData.profilePic.type, session?.user?.email as string)
+        const uploadResponse = await fetch(signedUrl, {
+          method: 'PUT',
+          body: formData.profilePic,
+          headers: {
+            'Content-Type': formData.profilePic.type,
+          },
+          cache: 'no-store'
+        })
+        if (!uploadResponse.ok) {
+          toast.error('Something went wrong. Please try again')
+          return
         }
-      });
-
-      if (formData.profilePic) {
-        formDataToSend.append("profilePic", formData.profilePic);
+        const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
+        (formDataToSend as any).profilePic = imageKey
       }
-
+      if ((formData as any).profilePic == '' || typeof (formData as any).profilePic !== 'string' || (formData as any).profilePic === undefined || imageKey === user?.profilePic) {
+        delete (formDataToSend as any).profilePic
+      }
       const response = await updateUserInfo(`/user/${session?.user?.id}`, formDataToSend);
-      mutate();
+      mutate()
       if (formData.profilePic) {
         await update({
           ...session,
@@ -155,6 +161,7 @@ const Page = () => {
           },
         });
       }
+      setIsSubmitting(false)
       toast.success("Profile updated successfully");
     } catch (error) {
       toast.error("Something went wrong");
@@ -189,6 +196,7 @@ const Page = () => {
               {imagePreview ? (
                 <div className="relative h-full">
                   <Image
+                    unoptimized
                     src={imagePreview}
                     alt="Preview"
                     width={177}
@@ -296,8 +304,8 @@ const Page = () => {
               />
             </div>
             <div className="w-full">
-              <button type="submit" className="button md:!h-[50px] w-[169px] hover:bg-orange-700 transition duration-200">
-                Update
+              <button type="submit" className="button md:!h-[50px] w-[169px] hover:bg-orange-700 transition duration-200" disabled={isSubmitting}>
+                {isSubmitting ? "Updating..." : "Update"}
               </button>
             </div>
           </div>
@@ -344,11 +352,11 @@ const Page = () => {
 
       {/* Confirmation Modal */}
       <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          style={customStyles}
-          contentLabel="Confirm Cancel Subscription"
-          ariaHideApp={false} // Add this line to disable aria app element error
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel="Confirm Cancel Subscription"
+        ariaHideApp={false} // Add this line to disable aria app element error
       >
         <h2>Are you sure you want to cancel your subscription?</h2>
         <div className="flex justify-end mt-4">
