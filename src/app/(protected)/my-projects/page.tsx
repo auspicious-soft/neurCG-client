@@ -1,13 +1,7 @@
 import React from "react";
-import thumbimg1 from "@/assets/images/video1.png";
-import thumbimg2 from "@/assets/images/video2.png";
-import thumbimg3 from "@/assets/images/video3.png";
-import thumbimg4 from "@/assets/images/video4.png";
 import VideoCards from "@/components/VideoCards";
-import useSWR from "swr";
 import { getUserProjects } from "@/services/user-service";
 import { auth } from "@/auth";
-import { getImageUrl } from "@/actions";
 import { getImageUrlOfS3 } from "@/utils";
 
 
