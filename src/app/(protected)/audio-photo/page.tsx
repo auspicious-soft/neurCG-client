@@ -116,8 +116,9 @@ const Page = () => {
                 }
                 const data = {
                     projectAvatar: avatarId || projectAvatarUrl,
-                    preferredVoice: preferredVoiceUrl,
+                    audio: preferredVoiceUrl,
                     subtitles,
+                    audioLength: Math.floor(duration),
                     ...(subtitles && { subtitlesLanguage })
                 }
                 // Remove any undefined values

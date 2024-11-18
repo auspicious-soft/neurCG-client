@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
   const session = useSession()
   const router = useRouter()
   const { data, isLoading, mutate } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
-  const { data: userNotification } = useSWR(`/user/${session.data?.user?.id}/notifications`, getUserNotifications)
+  const { data: userNotification } = useSWR(`/user/${session.data?.user?.id}/notifications`, getUserNotifications, { revalidateOnFocus: false })
   if (data?.data.success === false) return toast.error('Something went wrong');
   if (userNotification?.data.success === false) return toast.error('Something went fetching user notifications')
   const dataOfUser = data?.data.data;
