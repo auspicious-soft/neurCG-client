@@ -6,7 +6,7 @@ import LoginCard from "@/components/LoginCard";
 import loginImg from "@/assets/images/loginimg.png";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
 import { toast } from "sonner";
 import { loginAction } from "@/actions";
 import { useSession } from "next-auth/react";
@@ -14,10 +14,10 @@ import { useSession } from "next-auth/react";
 export default function Login() {
   const { data: session } = useSession()
   const router = useRouter()
-
+  const [isPending, startTransition] = useTransition()
   useEffect(() => {
     if (session) {
-      router.push('/')  
+      router.push('/')
     }
   }, [session, router])
 
@@ -26,16 +26,19 @@ export default function Login() {
     const formData = new FormData(event.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-
-    if (!email || !password) return toast.error('All fields are required');
-    const resss = await loginAction({ email, password })
-    if (resss?.success) {
-      toast.success('Logged in successfully')
-      window.location.href = '/'  
-    }
-    else {
-      toast.error(Array.isArray(resss?.message) ? resss?.message[0].message : resss?.message)
-    }
+    startTransition(async () => {
+      if (!email || !password) {
+        toast.error('All fields are required');
+        return;
+      }
+      const resss = await loginAction({ email, password });
+      if (resss?.success) {
+        toast.success('Logged in successfully');
+        window.location.href = '/';
+      } else {
+        toast.error(Array.isArray(resss?.message) ? resss?.message[0].message : resss?.message);
+      }
+    });
   };
   return (
     <div className="">
@@ -72,10 +75,11 @@ export default function Login() {
               </p>
               <div>
                 <button
+                  disabled={isPending}
                   type="submit"
                   className="button inline-block text-center md:leading-7 w-full bg-[#e87223] rounded-[5px] text-white text-base p-[15px]"
                 >
-                  Login
+                  {!isPending ? 'Login' : 'Logging in...'}
                 </button>
               </div>
             </form>
