@@ -14,7 +14,8 @@ import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
-import { SECONDS_PER_CREDIT } from '../text-photo/page';
+import { SECONDS_PER_CREDIT } from '@/constants';
+
 
 const customStyles = {
     content: {

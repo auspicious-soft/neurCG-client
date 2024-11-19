@@ -11,8 +11,8 @@ import ReactLoading from 'react-loading'
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import { convertAudioToVideo, getUserInfo } from '@/services/user-service';
-import { SECONDS_PER_CREDIT } from '../text-photo/page';
 import { generateSignedUrlToUploadOn } from '@/actions';
+import { SECONDS_PER_CREDIT } from '@/constants';
 
 const Page = () => {
     const [progress, setProgress] = useState(0)

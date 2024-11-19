@@ -12,6 +12,7 @@ import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
+import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constants";
 const customStyles = {
     content: {
         // width: '450px',
@@ -26,9 +27,7 @@ const customStyles = {
     }
 }
 
-export const WORDS_PER_MINUTE = 150
-export const SECONDS_PER_CREDIT = 10
-export const CHARS_PER_WORD = 5
+
 
 type VideoCredits = {
     availableMinutes: number;
