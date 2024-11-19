@@ -40,9 +40,9 @@ const VideoData = [
 
 const Home = async () => {
   const session = await auth()
-  const response = await getUserProjects(`/user/${session?.user?.id}/projects`)
-  const data = await response.data
-  const ClientVideos = data?.data?.recentProjects
+  const response = getUserProjects(`/user/${session?.user?.id}/projects`)
+  const data = await response
+  const ClientVideos = data?.data?.data?.recentProjects
   if (!session) {
     redirect("/login")
   }
@@ -66,7 +66,7 @@ const Home = async () => {
       <section className='mt-[30px] md:mt-[50px]'>
         <h2 className="section-title mb-[10px] md:mb-5">Recent</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-          {ClientVideos.map((data: any) => (
+          {ClientVideos?.map((data: any) => (
             <VideoCards
               key={data._id}
               title={data.projectName}
