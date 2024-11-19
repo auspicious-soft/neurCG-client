@@ -11,27 +11,28 @@ interface VoiceOption {
   audioSrc: string;
 }
 
+
 const voiceOptions: VoiceOption[] = [
   {
-    value: "male-david-gotham",
+    value: `audios/male.wav`,
     label: "David Gotham",
     gender: "male",
     audioSrc: "/assets/audio/male.wav",
   },
   {
-    value: "male-jacob-hardy",
+    value: `audios/male2.wav`,
     label: "Jacob Hardy",
     gender: "male",
     audioSrc: "/assets/audio/male2.wav",
   },
   {
-    value: "female-sanya-jean",
+    value: `audios/female.wav`,
     label: "Sanya Jean",
     gender: "female",
     audioSrc: "/assets/audio/female.wav", 
   },
   {
-    value: "female-marya-jean",
+    value: `audios/female2.wav`,
     label: "Marya Jean",
     gender: "female",
     audioSrc: "/assets/audio/female2.wav",
