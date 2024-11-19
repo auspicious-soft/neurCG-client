@@ -1,3 +1,4 @@
+'use client'
 import Tabs from '@/components/Tabs';
 import React, { useEffect } from 'react';
 import thumbimg1 from "@/assets/images/video1.png"
@@ -11,6 +12,8 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getUserProjects } from '@/services/user-service';
 import { getImageUrlOfS3 } from '@/utils';
+import { useSession } from 'next-auth/react';
+import useSWR from 'swr';
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const VideoData = [
@@ -38,11 +41,10 @@ const VideoData = [
 ]
 
 
-const Home = async () => {
-  const session = await auth()
-  const response = getUserProjects(`/user/${session?.user?.id}/projects`)
-  const data = await response
-  const ClientVideos = data?.data?.data?.recentProjects
+const Home = () => {
+  const session = useSession()
+  const { data: projectData } = useSWR(`/user/${session?.data?.user?.id}/projects`, getUserProjects)
+  const ClientVideos = projectData?.data?.data?.recentProjects
   if (!session) {
     redirect("/login")
   }
