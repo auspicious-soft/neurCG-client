@@ -4,7 +4,7 @@ import { VideoCameraIcon } from "@heroicons/react/24/solid"; // Assuming you hav
 import { CrossIcon, UploadIcon } from "@/utils/svgIcons";
 
 const AddVideo = (props: any) => {
-  const { originalText, translatedText, setOriginalText, setTranslatedText } = props
+  const { setVideoUploaded, setOriginalText, setTranslatedText } = props
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [previewVideo, setPreviewVideo] = useState<string | null>(null);
@@ -27,13 +27,15 @@ const AddVideo = (props: any) => {
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      setVideoUploaded(e.target.files[0])
       const videoUrl = URL.createObjectURL(e.target.files[0]);
       setPreviewVideo(videoUrl);
     }
-  };
+  }
 
   const handleRemoveVideo = () => {
-    setPreviewVideo(null);
+    setPreviewVideo(null)
+    setVideoUploaded(null)
   };
 
   return (
@@ -62,7 +64,7 @@ const AddVideo = (props: any) => {
                 onChange={handleVideoChange}
               />
               {previewVideo ? (
-                <div className="relative h-full">
+                <div className="relative h-full z-[2]">
                   <video
                     src={previewVideo}
                     className="rounded-[5px] object-cover h-full w-full"
@@ -111,7 +113,7 @@ const AddVideo = (props: any) => {
             <label htmlFor="" className="grid gap-2">
               Translational Language
               <select required name="" id="" onChange={(e) => setTranslatedText(e.target.value)}>
-                <option value=""  > Translational Language</option>
+                <option value=""> Translational Language</option>
                 <option value="English"  >English</option>
                 <option value="Spanish"  >Spanish</option>
                 <option value="French"  >French</option>

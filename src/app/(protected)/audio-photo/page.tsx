@@ -43,7 +43,7 @@ const Page = () => {
                 setDuration(duration)
                 URL.revokeObjectURL(url);
             })
-            if (duration > availableSeconds) toast.warning(`Text is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
+            if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
         }
     }, [preferredVoice, isLoading, totalAvailableMinutes, duration])
 
