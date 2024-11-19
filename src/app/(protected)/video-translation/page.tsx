@@ -29,7 +29,8 @@ const customStyles = {
     }
 }
 const Page = () => {
-
+    const [originalText, setOriginalText] = useState<string>('');
+    const [translatedText, setTranslatedText] = useState<string>('');
     const [subtitles, setSubtitles] = useState(false);
     const [subtitlesLanguage, setSubtitlesLanguage] = useState<string | null | undefined>();
     const [preferredVoice, setPreferredVoice] = useState<string | null | undefined>();
@@ -137,8 +138,16 @@ const Page = () => {
 
     return (
         <div>
-            <AddVideo />
-            <AddVoice />
+            <AddVideo
+                originalText={originalText}
+                translatedText={translatedText}
+                setOriginalText={setOriginalText}
+                setTranslatedText={setTranslatedText}
+            />
+            <AddVoice 
+                preferredVoice={preferredVoice}
+                setPreferredVoice={setPreferredVoice}
+             />
             <Subtitles
                 setSubtitlesLanguage={setSubtitlesLanguage}
                 subtitles={subtitles}
@@ -147,9 +156,9 @@ const Page = () => {
             <div className='flex justify-end mt-10'>
                 <button
                     type='submit'
-                    disabled={!preferredVoice || (subtitles && (subtitlesLanguage === undefined))}
+                    disabled={!preferredVoice || !originalText || !translatedText || (subtitles && (subtitlesLanguage === undefined))} 
                     className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] 
-                        ${(!preferredVoice || (subtitles && (subtitlesLanguage === undefined))) ?
+                        ${(!preferredVoice || !originalText || !translatedText || (subtitles && (subtitlesLanguage === undefined))) ?
                             'cursor-not-allowed opacity-50' : ''}`}
                     onClick={handleAnimateClick}
                 >

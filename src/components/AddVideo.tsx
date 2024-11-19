@@ -3,12 +3,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { VideoCameraIcon } from "@heroicons/react/24/solid"; // Assuming you have this icon or any other
 import { CrossIcon, UploadIcon } from "@/utils/svgIcons";
 
-const AddVideo = () => {
+const AddVideo = (props: any) => {
+  const { originalText, translatedText, setOriginalText, setTranslatedText } = props
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [previewVideo, setPreviewVideo] = useState<string | null>(null);
 
-  const toggleOpen = () => { 
+  const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
@@ -37,7 +38,7 @@ const AddVideo = () => {
 
   return (
     <div className="md:mt-5 bg-white rounded-lg p-[15px] md:p-[30px]  shadow-[0_0_40px_0_rgba(235,130,60,0.06)]">
-      <h2  
+      <h2
         className={`section-title dropdown-title ${isOpen ? 'active' : ''}`}
         onClick={toggleOpen}>
         Video
@@ -56,7 +57,7 @@ const AddVideo = () => {
             <div className="custom border-dashed border-[#E87223] border relative h-[146px] rounded-[5px]">
               <input
                 className="absolute z-[1] top-0 left-0 h-full w-full opacity-0 cursor-pointer"
-                type="file"   
+                type="file"
                 accept="video/*"
                 onChange={handleVideoChange}
               />
@@ -92,19 +93,35 @@ const AddVideo = () => {
           </div>
           <div>
             <label htmlFor="" className="grid gap-2 mb-5">
-            Original Language
-              <select name="textLanguage" id="textLanguage">
-                <option value="">Language Select</option>
-                <option value="lang1">Language 1</option>
-                <option value="lang2">Language 2</option>
+              Original Language
+              <select required name="" id="" onChange={(e) => setOriginalText(e.target.value)}>
+                <option value=""  >Original Language</option>
+                <option value="English"  >English</option>
+                <option value="Spanish"  >Spanish</option>
+                <option value="French"  >French</option>
+                <option value="German"  >German</option>
+                <option value="Italian"  >Italian</option>
+                <option value="Japanese"  >Japanese</option>
+                <option value="Korean"  >Korean</option>
+                <option value="Portuguese"  >Portuguese</option>
+                <option value="Russian"  >Russian</option>
+                <option value="Chinese"  >Chinese</option>
               </select>
             </label>
             <label htmlFor="" className="grid gap-2">
-            Translational Language
-              <select name="subtitleLanguage" id="subtitleLanguage">
-                <option value="">Select Voice</option>
-                <option value="lang1">Language 1</option>
-                <option value="lang2">Language 2</option>
+              Translational Language
+              <select required name="" id="" onChange={(e) => setTranslatedText(e.target.value)}>
+                <option value=""  > Translational Language</option>
+                <option value="English"  >English</option>
+                <option value="Spanish"  >Spanish</option>
+                <option value="French"  >French</option>
+                <option value="German"  >German</option>
+                <option value="Italian"  >Italian</option>
+                <option value="Japanese"  >Japanese</option>
+                <option value="Korean"  >Korean</option>
+                <option value="Portuguese"  >Portuguese</option>
+                <option value="Russian"  >Russian</option>
+                <option value="Chinese"  >Chinese</option>
               </select>
             </label>
           </div>
