@@ -228,6 +228,28 @@ const Page = () => {
                 subtitles={subtitles}
                 setSubtitles={setSubtitles}
             />
+
+            <div className="mt-4 space-y-2 text-sm">
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700">Available credits video length:</span>
+                    <span className="font-medium text-gray-900">{(totalSeconds / 60).toFixed(1)} minutes</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700">Estimated video length:</span>
+                    <span className={`font-medium ${(videoDuration > totalSeconds) ? 'text-red-600' : 'text-gray-900'}`}>
+                        {(videoDuration / 60).toFixed(2)} minutes
+                    </span>
+                </div>
+                {(videoDuration > totalSeconds) && (
+                    <div className="p-3 bg-red-50 rounded-lg">
+                        <p className="text-red-600">
+                            Exceeds available credits by {(Math.abs(totalSeconds - videoDuration) / 60).toFixed(1)} minutes.
+                            Please purchase more credits or audio length.
+                        </p>
+                    </div>
+                )}
+            </div>
+
             <div className='flex justify-end mt-10'>
                 <button
                     type='submit'

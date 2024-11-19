@@ -9,6 +9,8 @@ import VideoCards from '@/components/VideoCards';
 import dynamic from "next/dynamic";
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
+import { getUserProjects } from '@/services/user-service';
+import { getImageUrlOfS3 } from '@/utils';
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const VideoData = [
@@ -34,33 +36,17 @@ const VideoData = [
     thumbnail: thumbimg4
   },
 ]
-const ClientVideos = [
-  {
-    id: 1,
-    title: "Lorem Ipsum Dummy Title",
-    thumbnail: thumbimg1,
-    videoSrc: "/assets/videos/file.mp4"
-  },
-  {
-    id: 2,
-    title: "Lorem Ipsum Dummy Title",
-    thumbnail: thumbimg2,
-    videoSrc: "/assets/videos/video1.mp4"
-  },
-  {
-    id: 3,
-    title: "Lorem Ipsum Dummy Title",
-    thumbnail: thumbimg3,
-    videoSrc: "/assets/videos/video1.mp4"
-  },
-]
+
 
 const Home = async () => {
   const session = await auth()
+  const response = await getUserProjects(`/user/${session?.user?.id}/projects`)
+  const data = await response.data
+  const ClientVideos = data?.data?.recentProjects
   if (!session) {
     redirect("/login")
   }
- 
+
   return (
     <div>
       <Tabs />
@@ -69,10 +55,10 @@ const Home = async () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           {VideoData.map((data) => (
             <NeurcgCard
-            key={data.id}
-            title={data.title}
-            thumbnail={data.thumbnail}
-            url={data.url}
+              key={data.id}
+              title={data.title}
+              thumbnail={data.thumbnail}
+              url={data.url}
             />
           ))}
         </div>
@@ -80,12 +66,12 @@ const Home = async () => {
       <section className='mt-[30px] md:mt-[50px]'>
         <h2 className="section-title mb-[10px] md:mb-5">Recent</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-          {ClientVideos.map((data) => (
+          {ClientVideos.map((data: any) => (
             <VideoCards
-              key={data.id}
-              title={data.title}
-              // thumbnail={data.thumbnail}
-              videoSrc={data.videoSrc}
+              key={data._id}
+              title={data.projectName}
+              thumbnail={getImageUrlOfS3(data.projectAvatar as string)}
+              videoSrc={data.projectVideoLink}
             />
           ))}
         </div>
