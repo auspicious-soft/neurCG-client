@@ -152,8 +152,8 @@ const AddAudio = (props: any) => {
             lastModified: Date.now()
           });
           // Store the file
-          console.log('audioFile:', audioFile);
           setAudioBlob(audioFile);
+          console.log('audioFile:', audioFile);
           setAudioURL(URL.createObjectURL(audioFile));
           setRecordedVoice(audioFile);
           setShowPreview(true);
