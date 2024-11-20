@@ -17,6 +17,7 @@ import { SECONDS_PER_CREDIT } from '@/constants';
 const Page = () => {
     const [progress, setProgress] = useState(0)
     const [duration, setDuration] = useState(0)
+    const [recordedVoice, setRecordedVoice] =useState<string | File | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [subtitles, setSubtitles] = useState(false);
     const [subtitlesLanguage, setSubtitlesLanguage] = useState<string | null | undefined>();
@@ -156,6 +157,8 @@ const Page = () => {
                 avatarId={avatarId}
             />
             <AddAudio
+                recordedVoice=  {recordedVoice}
+                setRecordedVoice=  {setRecordedVoice}
                 preferredVoice={preferredVoice}
                 setPreferredVoice={setPreferredVoice}
             />
