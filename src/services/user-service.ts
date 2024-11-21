@@ -3,6 +3,9 @@ import { axiosInstance } from "@/utils/axios"
 
 export const loginService = async (payload: any) => await axiosInstance.post(`/user/login`, payload)
 export const signupService = async (payload: any) => await axiosInstance.post(`/user/signup`, payload)
+export const forgotPasswordEmailSentService = async (payload: any) => await axiosInstance.patch(`/user/forgot-password`, payload)
+export const sendOtpService = async (payload: any) => await axiosInstance.post(`/user/verify-otp`, payload)
+export const updatePasswordServiceAfterOtpVerified = async (payload: any) => await axiosInstance.patch(`/user/new-password-otp-verified`, payload)
 
 
 export const getUserNotifications = async (id: string) => {
