@@ -129,8 +129,6 @@ const AddAudio = (props: any) => {
           // Collect data chunks as they become available
           newRecorder.ondataavailable = (e) => {
             if (e.data.size > 0) {
-              console.log("Chunk MIME Type:", e.data.type);
-              console.log("Chunk Size:", e.data.size);
               chunks.push(e.data);
             }
           };
