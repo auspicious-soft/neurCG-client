@@ -25,7 +25,6 @@ const CheckoutForm = ({ userId, planType, clientSecret }: CheckoutFormProps) => 
                 return_url: "http://localhost:3001/plans", // Change this to your return URL
             },
         });
-        console.log('result: ', result);
 
         if (result.error) {
             console.error(result.error.message); // Show error to your customer

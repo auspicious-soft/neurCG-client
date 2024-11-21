@@ -44,7 +44,6 @@ const AddAudio = (props: any) => {
   const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPreferredVoice(e.target.files[0])
-      console.log('e.target.files[0]:', e.target.files[0]);
       const audioUrl = URL.createObjectURL(e.target.files[0])
       setLeftAudioUrl(audioUrl)
     }
@@ -153,7 +152,6 @@ const AddAudio = (props: any) => {
           });
           // Store the file
           setAudioBlob(audioFile);
-          console.log('audioFile:', audioFile);
           setAudioURL(URL.createObjectURL(audioFile));
           setRecordedVoice(audioFile);
           setShowPreview(true);

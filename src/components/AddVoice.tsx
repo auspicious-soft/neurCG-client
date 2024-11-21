@@ -76,11 +76,9 @@ const AddVoice = (props: any) => {
   const handleCustomVoiceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log('file: ', file);
       const fileUrl = URL.createObjectURL(file);
       // setCustomVoice(fileUrl);
       setPreferredVoice(file); // Set the file object
-      console.log('file.name: ', file.name);
       setCustomVoiceFileName(file.name); // Set the file name
       playAudio(fileUrl);
     }
