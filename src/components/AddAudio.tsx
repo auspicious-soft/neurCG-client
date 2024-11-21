@@ -8,11 +8,11 @@ import {
   UploadIcon,
 } from "@/utils/svgIcons";
 import { AudioVisualizer } from "react-audio-visualize";
+
 const AddAudio = (props: any) => {
   const [blob, setBlob] = useState<Blob | null>();
   const visualizerRef = useRef<HTMLCanvasElement>(null);
-  const { preferredVoice, setPreferredVoice, recordedVoice, setRecordedVoice } =
-    props;
+  const { preferredVoice, setPreferredVoice, recordedVoice, setRecordedVoice } = props;
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -25,11 +25,7 @@ const AddAudio = (props: any) => {
   const [isPaused, setIsPaused] = useState(false); // Pause state
   const [showPreview, setShowPreview] = useState(false);
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
-  const animationIdRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null); // Tracks start time for accurate duration
 
@@ -72,7 +68,7 @@ const AddAudio = (props: any) => {
     "audio/wav",
     "audio/mp4"
   ];
-  
+
   const handleStartRecording = () => {
     if (!isRecording) {
       navigator.mediaDevices
@@ -80,84 +76,84 @@ const AddAudio = (props: any) => {
         .then((stream) => {
           // Check supported MIME types
           let mimeType = supportedMimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || "audio/webm";
-  
+
           if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
             mimeType = "audio/webm;codecs=opus";
           }
-  
+
           // Initialize recorder with chunks array
           const chunks: BlobPart[] = [];
           const newRecorder = new MediaRecorder(stream, {
             mimeType: mimeType,
           });
-  
+
           const audioContext = new (window.AudioContext ||
             (window as any).webkitAudioContext)();
           const analyser = audioContext.createAnalyser();
           const source = audioContext.createMediaStreamSource(stream);
           source.connect(analyser);
-  
+
           analyser.fftSize = 2048;
           const bufferLength = analyser.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
-  
+
           setRecorder(newRecorder);
           audioContextRef.current = audioContext;
-  
+
           // Start recording
           newRecorder.start();
           setIsRecording(true);
           setIsPaused(false);
           startTimeRef.current = Date.now();
-  
+
           // Improved blob creation for visualization
           timerRef.current = setInterval(() => {
             const elapsed = (Date.now() - (startTimeRef.current || 0)) / 1000;
             setRecordingTime(Math.round(elapsed));
-  
+
             // Create blob only if chunks are not empty
             if (chunks.length > 0) {
               const updatedBlob = new Blob(chunks, { type: mimeType });
-              
+
               // Verify blob before setting
               if (updatedBlob.size > 0) {
                 setBlob(updatedBlob);
               }
             }
           }, 1000);
-  
+
           // Collect data chunks as they become available
           newRecorder.ondataavailable = (e) => {
             if (e.data.size > 0) {
               chunks.push(e.data);
             }
           };
-  
+
           // Handle recording stop
           newRecorder.onstop = () => {
             // Create the final Blob from all chunks
             const audioBlob = new Blob(chunks, { type: mimeType });
-  
+
             // Create a File object
             const audioFile = new File([audioBlob], "audio (1).webm", {
               type: mimeType,
               lastModified: Date.now(),
             });
-  
+
             // Store the file
             setAudioBlob(audioFile);
             setAudioURL(URL.createObjectURL(audioFile));
             setRecordedVoice(audioFile);
             setPreferredVoice(null);
             setShowPreview(true);
-  
+
             // Cleanup
             stream.getTracks().forEach((track) => track.stop());
             if (timerRef.current) {
               clearInterval(timerRef.current as NodeJS.Timeout);
             }
             setIsRecording(false);
-            
+
             // Keep a final blob for potential visualization
             if (audioBlob.size > 0) {
               setBlob(audioBlob);
@@ -315,7 +311,7 @@ const AddAudio = (props: any) => {
                           barWidth={1}
                           gap={0}
                           barColor={"#E87223"}
-                          
+
                         />
                       )}
                     </div>
