@@ -45,7 +45,7 @@ const Home = () => {
   const session = useSession()
   const { data: projectData } = useSWR(`/user/${session?.data?.user?.id}/projects`, getUserProjects)
   const ClientVideos = projectData?.data?.data?.recentProjects
-  if (!session) {
+  if (!session?.data) {
     redirect("/login")
   }
 
