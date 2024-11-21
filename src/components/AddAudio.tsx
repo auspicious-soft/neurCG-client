@@ -3,8 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { CrossIcon, DeleteIcon, PauseIcon, PlayIcon, UploadIcon } from "@/utils/svgIcons";
 
 const AddAudio = (props: any) => {
-  const { preferredVoice, setPreferredVoice } = props;
-  
+  const { preferredVoice, setPreferredVoice, recordedVoice, setRecordedVoice } = props;
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -45,6 +44,7 @@ const AddAudio = (props: any) => {
   const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPreferredVoice(e.target.files[0])
+      console.log('e.target.files[0]:', e.target.files[0]);
       const audioUrl = URL.createObjectURL(e.target.files[0])
       setLeftAudioUrl(audioUrl)
     }
@@ -57,9 +57,20 @@ const AddAudio = (props: any) => {
 
   const handleStartRecording = () => {
     if (!isRecording) {
-      navigator.mediaDevices.getUserMedia({ audio: true  })
+      navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
-        const newRecorder = new MediaRecorder(stream);
+        // Check supported MIME types
+        let mimeType = 'audio/webm';
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          mimeType = 'audio/webm;codecs=opus';
+        }
+
+        // Initialize recorder with chunks array
+        const chunks: BlobPart[] = [];
+        const newRecorder = new MediaRecorder(stream, {
+          mimeType: mimeType
+        });
+
         const audioContext = new (window.AudioContext ||
           (window as any).webkitAudioContext)();
         const analyser = audioContext.createAnalyser();
@@ -75,12 +86,12 @@ const AddAudio = (props: any) => {
         audioContextRef.current = audioContext;
         analyserRef.current = analyser;
 
+        // Start recording
         newRecorder.start();
         setIsRecording(true);
-        setIsPaused(false); // Make sure recording is not paused at start
+        setIsPaused(false);
         startTimeRef.current = Date.now();
 
-        // Timer starts and updates every second
         timerRef.current = setInterval(() => {
           const elapsed = (Date.now() - (startTimeRef.current || 0)) / 1000;
           setRecordingTime(Math.round(elapsed));
@@ -124,29 +135,46 @@ const AddAudio = (props: any) => {
         };
         drawWaveform();
 
+        // Collect data chunks as they become available
         newRecorder.ondataavailable = (e) => {
-          setAudioBlob(e.data);
-          setAudioURL(URL.createObjectURL(e.data));
-          setPreferredVoice(e.data)
+          if (e.data.size > 0) {
+            chunks.push(e.data);
+          }
         };
 
+        // Handle recording stop
         newRecorder.onstop = () => {
+          // Create the final Blob from all chunks
+          const audioBlob = new Blob(chunks, { type: mimeType });
+          // Create a File object
+          const audioFile = new File([audioBlob], 'audio (1).webm', {
+            type: mimeType,
+            lastModified: Date.now()
+          });
+          // Store the file
+          setAudioBlob(audioFile);
+          console.log('audioFile:', audioFile);
+          setAudioURL(URL.createObjectURL(audioFile));
+          setRecordedVoice(audioFile);
+          setShowPreview(true);
+          // Cleanup
+          stream.getTracks().forEach(track => track.stop());
           cancelAnimationFrame(animationIdRef.current || 0);
           if (timerRef.current) {
             clearInterval(timerRef.current as NodeJS.Timeout);
-          } // Stop the timer
+          }
           setIsRecording(false);
-          setShowPreview(true);
         };
       }).catch((error) => {
-        console.error('Error accessing media devices:', error); // Check the error details here
-        // Handle the error gracefully, e.g., display a message to the user
+        console.error('Error accessing media devices:', error);
         if (error.name === 'NotFoundError') {
           alert('Media device not found');
         }
       });
     } else {
-      recorder?.stop();
+      if (recorder) {
+        recorder.stop();
+      }
     }
   };
 
