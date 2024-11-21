@@ -115,6 +115,21 @@ const Page = () => {
                     const audioKey = `projects/${email}/my-media/${preferredVoice.name}`
                     preferredVoiceUrl = audioKey
                 }
+
+                if(recordedVoice instanceof File) {
+                    const uploadUrl = await generateSignedUrlToUploadOn(recordedVoice.name, recordedVoice.type, email)
+                    const uploadResponse = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        body: recordedVoice,
+                        headers: {
+                            'Content-Type': recordedVoice.type,
+                        },
+                        cache: 'no-store'
+                    })
+                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
+                    const audioKey = `projects/${email}/my-media/${recordedVoice.name}`
+                    preferredVoiceUrl = audioKey
+                }
                 const data = {
                     projectAvatar: avatarId || projectAvatarUrl,
                     audio: preferredVoiceUrl,
@@ -191,8 +206,8 @@ const Page = () => {
             <div className='flex justify-end mt-10'>
                 <button
                     type='submit'
-                    disabled={!preferredVoice || (subtitles && (subtitlesLanguage === undefined))}
-                    className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] ${!preferredVoice || (subtitles && (subtitlesLanguage === undefined)) ?
+                    disabled={(!recordedVoice && !preferredVoice) || (subtitles && (subtitlesLanguage === undefined))}
+                    className={`text-sm bg-[#E87223] text-white px-[28px] py-[11px] rounded-[5px] ${(!recordedVoice && !preferredVoice) || (subtitles && (subtitlesLanguage === undefined)) ?
                         'cursor-not-allowed opacity-50' : ''}`}
                     onClick={handleAnimateClick}
                 >

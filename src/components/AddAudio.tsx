@@ -44,6 +44,9 @@ const AddAudio = (props: any) => {
   const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPreferredVoice(e.target.files[0])
+      setRecordedVoice(null);
+      setIsRecording(false)
+      setAudioURL(null)
       const audioUrl = URL.createObjectURL(e.target.files[0])
       setLeftAudioUrl(audioUrl)
     }
@@ -154,6 +157,7 @@ const AddAudio = (props: any) => {
           setAudioBlob(audioFile);
           setAudioURL(URL.createObjectURL(audioFile));
           setRecordedVoice(audioFile);
+          setPreferredVoice(null)
           setShowPreview(true);
           // Cleanup
           stream.getTracks().forEach(track => track.stop());
@@ -316,11 +320,9 @@ const AddAudio = (props: any) => {
                         </button>
                         <button
                           disabled
-                          //onClick={handledeleteRecording}
                           className="disabled-button cursor-not-allowed "
                         >
-                          {" "}
-                          <DeleteIcon />
+                          <DeleteIcon  />
                         </button>
                       </div>
                     )}
@@ -354,7 +356,11 @@ const AddAudio = (props: any) => {
                         <PlayIcon />
                       </button>
                     )}
-                    <button className="" onClick={handleRecordingReset}>
+                    <button className=""  onClick={()=> {
+                      setRecordedVoice(null)
+                      setIsRecording(false)
+                      setAudioURL(null)
+                      }}>
                       {" "}
                       <DeleteIcon />
                     </button>
