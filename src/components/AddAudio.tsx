@@ -65,88 +65,107 @@ const AddAudio = (props: any) => {
     setPreferredVoice(null);
     setLeftAudioUrl(null);
   };
-
+  const supportedMimeTypes = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/ogg",
+    "audio/wav",
+    "audio/mp4"
+  ];
+  
   const handleStartRecording = () => {
     if (!isRecording) {
       navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then((stream) => {
           // Check supported MIME types
-          let mimeType = "audio/webm";
+          let mimeType = supportedMimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || "audio/webm";
+  
           if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
             mimeType = "audio/webm;codecs=opus";
           }
-
+  
           // Initialize recorder with chunks array
           const chunks: BlobPart[] = [];
           const newRecorder = new MediaRecorder(stream, {
             mimeType: mimeType,
           });
-
+  
           const audioContext = new (window.AudioContext ||
             (window as any).webkitAudioContext)();
           const analyser = audioContext.createAnalyser();
           const source = audioContext.createMediaStreamSource(stream);
           source.connect(analyser);
-
+  
           analyser.fftSize = 2048;
           const bufferLength = analyser.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
-
+  
           setRecorder(newRecorder);
           audioContextRef.current = audioContext;
-
+  
           // Start recording
           newRecorder.start();
           setIsRecording(true);
           setIsPaused(false);
           startTimeRef.current = Date.now();
-
-          // Create a temporary blob for visualization during recording
-          const tempBlob = new Blob(chunks, { type: mimeType });
-          setBlob(tempBlob);
-
+  
+          // Improved blob creation for visualization
           timerRef.current = setInterval(() => {
             const elapsed = (Date.now() - (startTimeRef.current || 0)) / 1000;
             setRecordingTime(Math.round(elapsed));
-
-            // Update blob for real-time visualization
-            const updatedBlob = new Blob(chunks, { type: mimeType });
-            setBlob(updatedBlob);
+  
+            // Create blob only if chunks are not empty
+            if (chunks.length > 0) {
+              const updatedBlob = new Blob(chunks, { type: mimeType });
+              
+              // Verify blob before setting
+              if (updatedBlob.size > 0) {
+                setBlob(updatedBlob);
+              }
+            }
           }, 1000);
-
+  
           // Collect data chunks as they become available
           newRecorder.ondataavailable = (e) => {
             if (e.data.size > 0) {
+              console.log("Chunk MIME Type:", e.data.type);
+              console.log("Chunk Size:", e.data.size);
               chunks.push(e.data);
             }
           };
-
+  
           // Handle recording stop
           newRecorder.onstop = () => {
             // Create the final Blob from all chunks
             const audioBlob = new Blob(chunks, { type: mimeType });
-
+  
             // Create a File object
             const audioFile = new File([audioBlob], "audio (1).webm", {
               type: mimeType,
               lastModified: Date.now(),
             });
-
+  
             // Store the file
             setAudioBlob(audioFile);
             setAudioURL(URL.createObjectURL(audioFile));
             setRecordedVoice(audioFile);
             setPreferredVoice(null);
             setShowPreview(true);
-
+  
             // Cleanup
             stream.getTracks().forEach((track) => track.stop());
             if (timerRef.current) {
               clearInterval(timerRef.current as NodeJS.Timeout);
             }
             setIsRecording(false);
-            setBlob(null);
+            
+            // Keep a final blob for potential visualization
+            if (audioBlob.size > 0) {
+              setBlob(audioBlob);
+            } else {
+              setBlob(null);
+            }
           };
         })
         .catch((error) => {
@@ -297,7 +316,8 @@ const AddAudio = (props: any) => {
                           height={75}
                           barWidth={1}
                           gap={0}
-                          barColor={"#f76565"}
+                          barColor={"#E87223"}
+                          
                         />
                       )}
                     </div>
