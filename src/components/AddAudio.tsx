@@ -364,8 +364,8 @@ const AddAudio = (props: any) => {
                   <div>
                     <button className="md:!h-[32px] !text-xs button !text-[#E87223] !bg-white border-[#E87223] border rounded-lg mr-3">
                       Preview
-                    </button>
-                    <button className="lg:!h-[32px] md:min-w-[145px] !text-xs button">Done</button>
+                     </button>
+                    {/* <button className="lg:!h-[32px] md:min-w-[145px] !text-xs button">Done</button> */}
                   </div>
                 </div>
               </div>
