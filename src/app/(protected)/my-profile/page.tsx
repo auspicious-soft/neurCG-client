@@ -146,7 +146,9 @@ const Page = () => {
         }
         const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
         // Delete the old image from the S3 bucket
-        await deleteImageFromS3(user?.profilePic);
+        if (user?.profilePic) {
+          await deleteImageFromS3(user?.profilePic);
+        }
         (formDataToSend as any).profilePic = imageKey
       }
       if ((formData as any).profilePic == '' || typeof (formData as any).profilePic !== 'string' || (formData as any).profilePic === undefined || imageKey === user?.profilePic) {
