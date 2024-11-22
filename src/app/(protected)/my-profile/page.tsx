@@ -9,7 +9,7 @@ import { cancelSubscription, getUserInfo, updateUserInfo } from "@/services/user
 import { toast } from "sonner";
 import { getImageUrlOfS3 } from "@/utils";
 import Modal from "react-modal";
-import { generateSignedUrlToUploadOn } from "@/actions";
+import { deleteImageFromS3, generateSignedUrlToUploadOn } from "@/actions";
 
 type FormData = {
   firstName: string;
@@ -145,6 +145,8 @@ const Page = () => {
           return
         }
         const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
+        // Delete the old image from the S3 bucket
+        await deleteImageFromS3(user?.profilePic);
         (formDataToSend as any).profilePic = imageKey
       }
       if ((formData as any).profilePic == '' || typeof (formData as any).profilePic !== 'string' || (formData as any).profilePic === undefined || imageKey === user?.profilePic) {

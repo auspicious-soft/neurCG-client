@@ -4,7 +4,7 @@ import { signIn, signOut } from "@/auth"
 import { createS3Client } from "@/config/s3"
 // import { s3Client } from "@/config/s3"
 import { loginService, signupService } from "@/services/user-service"
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3"
+import { GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { cookies } from "next/headers"
 
@@ -82,6 +82,22 @@ export const generateSignedUrlToUploadOn = async (fileName: string, fileType: st
         return signedUrl
     } catch (error) {
         console.error("Error generating signed URL:", error);
+        throw error
+    }
+}
+
+export const deleteImageFromS3 = async (imageKey: string) => {
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: imageKey
+    }
+
+    try {
+        const command = new DeleteObjectCommand(params)
+        await (await createS3Client()).send(command)
+        console.log(`Successfully deleted ${imageKey} from S3`)
+    } catch (error) {
+        console.error("Error deleting image from S3:", error)
         throw error
     }
 }
