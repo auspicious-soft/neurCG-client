@@ -62,8 +62,8 @@ const PricingPlans: React.FC = () => {
                 </ul>
               </div>
               <div>
-                <button disabled={true} onClick={() => handlePlanSelect('free')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
-                  {currentPlan === 'free' ? 'Current Plan' : 'Trial expired'}
+                <button disabled= {currentPlan === 'free'} onClick={() => handlePlanSelect('free')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
+                  {currentPlan === 'free' ? 'Current Plan' : 'Select Plan'}
                 </button>
               </div>
             </div>
