@@ -259,8 +259,26 @@ select, .custom-select .css-13cymwt-control {
 button.disabled-button svg path {
   fill: #B7B7B7;
 }
+.privacy-policy h1 {
+  color: #E87223;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: normal;
+  margin-bottom: 20px;
+}
+.privacy-policy p, .privacy-policy li {
+  color: #686C78;
+  font-size: 16px;
+  margin: 5px 0;
+}
 
-
+.privacy-policy h2 {
+  color: #E87223;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  margin: 15px 0 5px;                                                                                
+}
 @media screen and (max-width: 1025px) {
   /* .side-bar {
     align-items: center;
