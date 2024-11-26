@@ -70,7 +70,7 @@ export default function Login() {
                 />
               </div>
               {/* {error && <p className="text-red-500 mb-2">{error}</p>} */}
-              <p className="text-right mb-[19px]">
+             <p className=" text-right mb-[19px]">
                 <Link href="/forgotpassword" className="login-desc">Forgot Password?</Link>
               </p>
               <div>
@@ -81,6 +81,10 @@ export default function Login() {
                 >
                   {!isPending ? 'Login' : 'Logging in...'}
                 </button>
+
+                <p className="login-desc mt-[19px]"> Don&apos;t have an account?
+                <Link href="/signup" className="text-[#e87223]"> Sign Up </Link>
+              </p>
               </div>
             </form>
             <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 NeurCG.</p>

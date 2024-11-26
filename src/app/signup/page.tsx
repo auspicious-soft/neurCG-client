@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import Modal from "react-modal";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
 import { CrossIcon } from "@/utils/svgIcons";
+import Link from "next/link";
 export default function Signup() {
   const [opemModal, setOpenModal] = useState(false);
 
@@ -152,6 +153,9 @@ export default function Signup() {
                   >
                     Sign Up
                   </button>
+                  <p className="login-desc mt-[19px]">Already have an account?
+                <Link href="/login" className="text-[#e87223]"> Login </Link>
+              </p>
                 </div>
               </form>
               <p className="login-desc mt-[20px] md:mt-[153px]">
