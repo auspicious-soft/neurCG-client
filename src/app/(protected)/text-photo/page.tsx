@@ -157,14 +157,22 @@ const Page = () => {
                 }
                 // Remove any undefined values
                 Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
-                const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data)
-                const video = await response?.data?.data?.videoUrl
+                const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data, {
+                    responseType: 'arraybuffer', // Axios configuration for binary response
+                });
+                const video = await response?.data?.data?.videoUrl?.data
+                console.log(response?.data?.data?.videoUrl?.data)
+                // Create a Blob from the binary data
+                const videoBlob = new Blob([new Uint8Array(video)], { type: 'video/mp4' });
+                // Generate a URL for the Blob
+                const videoUrl = URL.createObjectURL(videoBlob);
+//                 console.log(video)
                 if (!video) {
                     toast.error('Something went wrong. Please try again')
                     setProgress(0)
                     setIsModalOpen(false)
                 }
-                setVideoSrc(video)
+                setVideoSrc(videoUrl)
                 await mutate()
                 setProgress(100)
 
