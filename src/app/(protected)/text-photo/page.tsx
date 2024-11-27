@@ -161,12 +161,11 @@ const Page = () => {
                     responseType: 'arraybuffer', // Axios configuration for binary response
                 });
                 const video = await response?.data?.data?.videoUrl?.data
-                console.log(response?.data?.data?.videoUrl?.data)
                 // Create a Blob from the binary data
                 const videoBlob = new Blob([new Uint8Array(video)], { type: 'video/mp4' });
                 // Generate a URL for the Blob
                 const videoUrl = URL.createObjectURL(videoBlob);
-//                 console.log(video)
+
                 if (!video) {
                     toast.error('Something went wrong. Please try again')
                     setProgress(0)
