@@ -20,7 +20,7 @@ export const getUserInfo = async (id: string) => {
 
 export const updateUserInfo = async (id: string, formData: any) => {
     const axiosInstance = await getAxiosInstance();
-    return axiosInstance.put(id, formData);          
+    return axiosInstance.put(id, formData);
 }
 
 export const getAvatars = async (route: string) => {
@@ -28,22 +28,27 @@ export const getAvatars = async (route: string) => {
     return axiosInstance.get(route)
 }
 
-export const getUserProjects = async(route:string) => {
-    const axiosInstance = await getAxiosInstance(); 
+export const getUserProjects = async (route: string) => {
+    const axiosInstance = await getAxiosInstance();
     return axiosInstance.get(route)
 }
 
-export const convertTextToVideo = async(id:string, payload: any) => {
+export const deleteProject = async (route: string) => {
+    const axiosInstance = await getAxiosInstance();
+    return axiosInstance.delete(route)
+}
+
+export const convertTextToVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload)
 }
 
-export const convertAudioToVideo = async(id:string, payload: any) => {
+export const convertAudioToVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload)
 }
 
-export const translateVideo = async(id:string, payload: any) => {
+export const translateVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload)
 }
