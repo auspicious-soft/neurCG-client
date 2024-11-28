@@ -56,7 +56,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
         const res = await deleteProject(`/user/projects/${id}`)
         if (res.status === 200) {
           console.log("Video Deleted Successfully")
-          router.refresh()
+          window.location.reload()
           setIsDeleteOpen(false)
           toast.success("Video Deleted Successfully");
         }
