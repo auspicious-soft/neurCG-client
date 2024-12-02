@@ -41,21 +41,21 @@ export const deleteProject = async (route: string) => {
 export const convertTextToVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload, {
-        timeout: 60000
+        timeout: 600000
     })
 }
 
 export const convertAudioToVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload, {
-        timeout: 60000
+        timeout: 600000
     })
 }
 
 export const translateVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload, {
-        timeout: 60000
+        timeout: 600000
     })
 }
 
