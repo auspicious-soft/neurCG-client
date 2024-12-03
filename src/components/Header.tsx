@@ -14,9 +14,9 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from 'date-fns';
 import { signOut } from "next-auth/react";
-import { getDbImageUrl, getImageUrlOfS3 } from "@/utils";
+import { getImageUrlOfS3 } from "@/utils";
 import ReactLoading from 'react-loading'
-
+import previmg2 from "@/assets/images/previmg.png";
 
 interface HeaderProps {
   notificationsCount: number;
@@ -44,6 +44,7 @@ const Header: React.FC<HeaderProps> = ({
   const pageNames: { [key: string]: string } = {
     "/home-page": "Home",
     "/my-projects": "My Projects",
+    "/my-uploads": "My Uploads",
     "/text-photo": "Text & Photo To Video",
     "/audio-photo": "Audio & Photo To Video",
     "/video-translation": "Video Generation And Translation",
@@ -126,7 +127,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
             {!isLoading && <Image
-              src={getImageUrlOfS3(dataOfUser?.profilePic || '')}
+              src={dataOfUser?.profilePic ? getImageUrlOfS3(dataOfUser?.profilePic) :  previmg2}
               alt="User Profile"
               width={34}
               height={34}

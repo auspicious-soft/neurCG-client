@@ -18,6 +18,11 @@ export const getUserInfo = async (id: string) => {
     return axiosInstance.get(id);
 }
 
+export const getUserInfoByEmail = async (route: string) => {
+    const axiosInstance = await getAxiosInstance();
+    return axiosInstance.get(route);
+}
+
 export const updateUserInfo = async (id: string, formData: any) => {
     const axiosInstance = await getAxiosInstance();
     return axiosInstance.put(id, formData);

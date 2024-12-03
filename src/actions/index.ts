@@ -2,11 +2,14 @@
 
 import { signIn, signOut } from "@/auth"
 import { createS3Client } from "@/config/s3"
-// import { s3Client } from "@/config/s3"
 import { loginService, signupService } from "@/services/user-service"
 import { GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { cookies } from "next/headers"
+
+export const handleGoogleLogin = async () => {
+    await signIn('google')
+}
 
 export const loginAction = async (payload: any) => {
     try {

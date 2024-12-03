@@ -19,7 +19,7 @@ const SideBar = ({ isOpen, toggleSidebar }: SideBarProps) => {
   const session = useSession()
   const { data, isLoading, mutate } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
   const dataOfUser = data?.data.data
-  const isActive = (path: string) => pathname === path ? 'active' : '';
+  const isActive = (path: string) => pathname === path ? 'active' : ''
 
   const handleLinkClick = (path: string) => {
     if (isOpen) {
@@ -57,6 +57,12 @@ const SideBar = ({ isOpen, toggleSidebar }: SideBarProps) => {
               <Link href="/my-projects" onClick={() => handleLinkClick("/my-projects")}>
                 <ProjectsIcon />
                 <span>My Projects</span>
+              </Link>
+            </li>
+            <li className={isActive('/my-uploads')}>
+              <Link href="/my-uploads" onClick={() => handleLinkClick("/my-uploads")}>
+                <ProjectsIcon />
+                <span>My Uploads</span>
               </Link>
             </li>
             <p className="text-[#818999] text-[10px] font-medium mt-5 mb-[2px] pl-5">SERVICES</p>

@@ -13,6 +13,7 @@ import Modal from "react-modal";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
 import { CrossIcon } from "@/utils/svgIcons";
 import Link from "next/link";
+import GoogleButton from "@/components/GoogleButton";
 export default function Signup() {
   const [opemModal, setOpenModal] = useState(false);
 
@@ -56,7 +57,7 @@ export default function Signup() {
         firstName,
         lastName,
         ...(referralCode && { referralCode }),
-      }) 
+      })
       if (resss?.success) {
         toast.success("Signed up successfully");
         router.push("/login");
@@ -153,9 +154,11 @@ export default function Signup() {
                   >
                     Sign Up
                   </button>
+                  <p className="text-gray-500 text-center m-2">Or</p>
+                  <GoogleButton />
                   <p className="login-desc mt-[19px]">Already have an account?
-                <Link href="/login" className="text-[#e87223]"> Login </Link>
-              </p>
+                    <Link href="/login" className="text-[#e87223]"> Login </Link>
+                  </p>
                 </div>
               </form>
               <p className="login-desc mt-[20px] md:mt-[153px]">
