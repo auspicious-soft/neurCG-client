@@ -154,11 +154,8 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
                 <option value="French"  >French</option>
                 <option value="German"  >German</option>
                 <option value="Italian"  >Italian</option>
-                <option value="Japanese"  >Japanese</option>
-                <option value="Korean"  >Korean</option>
                 <option value="Portuguese"  >Portuguese</option>
-                <option value="Russian"  >Russian</option>
-                <option value="Chinese"  >Chinese</option>
+                <option value="Polish"  >Polish</option>
               </select>
             </label>
             <div className="mb-5">
