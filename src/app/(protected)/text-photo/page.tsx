@@ -155,6 +155,7 @@ const Page = () => {
                     subtitles,
                     ...(subtitles && { subtitlesLanguage })
                 }
+                console.log('data: ', data);
                 // Remove any undefined values
                 Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
                 const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data)
