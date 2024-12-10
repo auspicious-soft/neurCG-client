@@ -84,7 +84,7 @@ const Page = () => {
       });
 
       if (user.profilePic) {
-        const imageUrl = getImageUrlOfS3(user.profilePic);
+        const imageUrl = user.profilePic.includes('lh3.googleusercontent.com') ? user.profilePic : getImageUrlOfS3(user.profilePic);
         setImagePreview(imageUrl);
       }
     }
@@ -146,7 +146,7 @@ const Page = () => {
         }
         const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
         // Delete the old image from the S3 bucket
-        if (user?.profilePic) {
+        if (!user?.profilePic?.includes('lh3.googleusercontent.com')) {
           await deleteImageFromS3(user?.profilePic);
         }
         (formDataToSend as any).profilePic = imageKey

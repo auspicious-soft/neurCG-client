@@ -1,7 +1,7 @@
 import NextAuth, { AuthError, CredentialsSignin } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
-import { getUserInfoByEmail } from "./services/user-service"
+import { getUserInfoByEmail, signupService } from "./services/user-service"
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -35,13 +35,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: async ({ account, user }) => {
       if (account?.provider === 'google') {
         try {
-          const { email, name, image, id } = user
-          console.log('user: ', user);
-          const userAlreadyExists = await getUserInfoByEmail(`/user/email/${email}`)
-          console.log('userAlreadyExists: ', userAlreadyExists);
-          // if (!userAlreadyExists) {
-          //   await googlePostUser(name as string, email as string, image as string, id as string)
-          // }
+          const { email, name, image } = user
+          const userResponse = await getUserInfoByEmail(`/user/email/${email}`)
+          if (userResponse.data.success === false) {
+            const newUser = await signupService({
+              email,
+              firstName: name?.split(' ')[0],
+              lastName: name?.split(' ')[1],
+              profilePic: image
+            })
+            const dbUserId = newUser?.data?.data?._id || '';
+            const dbUserReferralCode = newUser?.data?.data?.myReferralCode || '';
+            const dbProfilePic = newUser?.data?.data?.profilePic || '';
+            user.id = dbUserId;
+            (user as any).myReferralCode = dbUserReferralCode;
+            (user as any).profilePic = dbProfilePic;
+          }
+          else {
+            user.id = userResponse.data.data._id as string;
+            (user as any).myReferralCode = userResponse.data.data.myReferralCode as string;
+            (user as any).profilePic = userResponse.data.data.profilePic;
+          }
+          return true
         } catch (error) {
           throw new AuthError({ cause: 'Error creating user' })
         }
@@ -50,17 +65,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     jwt({ token, user, account, session, profile }) {
       if (user) {
-        token.id = user.id
-        token.myReferralCode = (user as any).myReferralCode
-        token.picture = (user as any).profilePic
+        token.id = user.id;
+        token.myReferralCode = (user as any).myReferralCode;
+        token.picture = (user as any).profilePic;
       }
       return token
     },
     session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string
-        (session as any).user.myReferralCode = token.myReferralCode
-        session.user.image = token.picture
+        session.user.id = token.id as string;
+        (session as any).user.myReferralCode = token.myReferralCode;
+        session.user.image = token.picture;
       }
       return session
     },

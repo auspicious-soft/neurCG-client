@@ -127,7 +127,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
             {!isLoading && <Image
-              src={dataOfUser?.profilePic ? getImageUrlOfS3(dataOfUser?.profilePic) :  previmg2}
+              src={dataOfUser?.profilePic ? dataOfUser?.profilePic?.includes('lh3.googleusercontent.com') ? dataOfUser?.profilePic: getImageUrlOfS3(dataOfUser?.profilePic) :  previmg2}
               alt="User Profile"
               width={34}
               height={34}
