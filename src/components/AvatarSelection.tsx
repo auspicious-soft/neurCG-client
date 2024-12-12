@@ -219,7 +219,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         </div>
       </div>
 
-      <ReactResponsiveModal open={open} onClose={onCloseModal} center focusTrapped showCloseIcon  = {false}> 
+      <ReactResponsiveModal open={open} onClose={onCloseModal} center focusTrapped showCloseIcon={false}>
         <div className="grid md:grid-cols-2 gap-[34px] items-center ">
           <div>
             <Image src={instructionimg} alt="" className="rounded-[5px] w-full" />
@@ -253,7 +253,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         </div>
       </ReactResponsiveModal>
 
-      <Modal isOpen={isCropping} onRequestClose={() => setIsCropping(false)} contentLabel="Open Camera" className="modal p-5 md:p-10 bg-white w-[90%] max-w-[900px] max-h-[90vh] rounded-xl overflow-auto overflo-custom " overlayClassName="z-[10] w-full h-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center  ">
+      <ReactResponsiveModal open={isCropping} onClose={() => setIsCropping(false)} center>
         <div className="relative w-full h-64">
           <Cropper image={clickAvatar!} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
         </div>
@@ -263,9 +263,9 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         <button className="ml-3 mt-2 bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setIsCropping(false)}>
           Cancel
         </button>
-      </Modal>
+      </ReactResponsiveModal>
 
-      <Modal isOpen={isCameraOpen} onRequestClose={() => setIsCameraOpen(false)} contentLabel="Open Camera" className="modal p-5 md:p-10 bg-white w-[90%] max-w-[900px] max-h-[90vh] rounded-xl overflow-auto overflo-custom " overlayClassName="w-full h-full z-[10] fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <ReactResponsiveModal open={isCameraOpen} onClose={() => setIsCameraOpen(false)} center >
         <video ref={videoRef} className="w-full h-64 bg-black" autoPlay />
         <canvas ref={canvasRef} className="hidden" width={640} height={480}></canvas>
         <button className="mt-4 bg-[#E87223] text-white px-4 py-2 rounded" onClick={handleTakePicture}>
@@ -279,7 +279,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         }}>
           Cancel
         </button>
-      </Modal>
+      </ReactResponsiveModal>
     </div>
   );
 };
