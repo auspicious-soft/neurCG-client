@@ -107,6 +107,9 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         const offsetX = (canvasWidth - drawWidth) / 2;
         const offsetY = (canvasHeight - drawHeight) / 2;
 
+        context.translate(canvasWidth, 0);
+        context.scale(-1, 1);
+
         context.drawImage(
           videoRef.current,
           offsetX,
@@ -114,6 +117,9 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
           drawWidth,
           drawHeight
         );
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+
         const imageUrl = canvasRef.current.toDataURL("image/png");
         setClickAvatar(imageUrl);
         setIsCameraOpen(false);
