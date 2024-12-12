@@ -253,7 +253,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         </div>
       </ReactResponsiveModal>
 
-      <ReactResponsiveModal open={isCropping} onClose={() => setIsCropping(false)} center>
+      <ReactResponsiveModal open={isCropping} onClose={() => setIsCropping(false)} center focusTrapped>
         <div className="relative w-full h-64">
           <Cropper image={clickAvatar!} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
         </div>
@@ -265,7 +265,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         </button>
       </ReactResponsiveModal>
 
-      <ReactResponsiveModal open={isCameraOpen} onClose={() => setIsCameraOpen(false)} center >
+      <ReactResponsiveModal open={isCameraOpen} onClose={() => setIsCameraOpen(false)} center  focusTrapped>
       <video ref={videoRef} className="w-full h-64 bg-black transform -scale-x-100" autoPlay />
       <canvas ref={canvasRef} className="hidden transform -scale-x-100" width={640} height={480}></canvas>
         <button className="mt-4 bg-[#E87223] text-white px-4 py-2 rounded" onClick={handleTakePicture}>
