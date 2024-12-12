@@ -266,8 +266,8 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
       </ReactResponsiveModal>
 
       <ReactResponsiveModal open={isCameraOpen} onClose={() => setIsCameraOpen(false)} center >
-        <video ref={videoRef} className="w-full h-64 bg-black" autoPlay />
-        <canvas ref={canvasRef} className="hidden" width={640} height={480}></canvas>
+      <video ref={videoRef} className="w-full h-64 bg-black transform -scale-x-100" autoPlay />
+      <canvas ref={canvasRef} className="hidden transform -scale-x-100" width={640} height={480}></canvas>
         <button className="mt-4 bg-[#E87223] text-white px-4 py-2 rounded" onClick={handleTakePicture}>
           Take Picture
         </button>
