@@ -1,3 +1,4 @@
+import 'react-responsive-modal/styles.css';
 import React, { useState, useRef, useCallback, useEffect, use, useMemo } from "react";
 import Image, { StaticImageData } from "next/image";
 import Cropper from "react-easy-crop";
@@ -9,7 +10,7 @@ import useSWR from "swr";
 import { getAvatars } from "@/services/user-service";
 import { getImageUrlOfS3 } from "@/utils";
 import ReactLoading from 'react-loading';
-
+import { Modal as ReactResponsiveModal } from 'react-responsive-modal';
 
 export interface AvatarSelectionProps {
   setAvatarId: (id: string | null) => void;
@@ -22,14 +23,16 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
   const { data, isLoading } = useSWR(`/user/avatars`, getAvatars, { revalidateOnFocus: false });
   const avatars = useMemo(() => data?.data?.data || [], [data])
   const [selectedAvatar, setSelectedAvatar] = useState<any>()
+  const [open, setOpen] = useState(false);
 
+  const onOpenModal = () => setOpen(true);
+  const onCloseModal = () => setOpen(false);
   useEffect(() => {
     avatars[0] && setSelectedAvatar(avatars[0]?.avatarUrl)
     setAvatarId(avatars[0]?.avatarUrl)
   }, [avatars])
 
   const [clickAvatar, setClickAvatar] = useState<string | null>(null);
-  const [openInstruction, setOpenInstruction] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -62,7 +65,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
   };
 
   const handleCameraClick = () => {
-    setOpenInstruction(false);
+    onCloseModal();
     setIsCameraOpen(true);
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -88,22 +91,22 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         const videoHeight = videoRef.current.videoHeight;
         const canvasWidth = canvasRef.current.width;
         const canvasHeight = canvasRef.current.height;
-  
+
         // Calculate the aspect ratio
         const aspectRatio = videoWidth / videoHeight;
-  
+
         // Calculate the new dimensions to maintain the aspect ratio
         let drawWidth = canvasWidth;
         let drawHeight = canvasWidth / aspectRatio;
-  
+
         if (drawHeight > canvasHeight) {
           drawHeight = canvasHeight;
           drawWidth = canvasHeight * aspectRatio;
         }
-  
+
         const offsetX = (canvasWidth - drawWidth) / 2;
         const offsetY = (canvasHeight - drawHeight) / 2;
-  
+
         context.drawImage(
           videoRef.current,
           offsetX,
@@ -147,14 +150,6 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
     }
   };
 
-  const handleInstructionModal = () => {
-    setOpenInstruction(true);
-  };
-
-  const closeInstructionModal = () => {
-    setOpenInstruction(false);
-  };
-
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   }
@@ -195,7 +190,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
             </div>
           </div>
           <h3 className="md:w-[15%] lg:w-[10%] mx-[20px] 2xl:mx-[45px] flex justify-center items-center text-[#6B6B6B] text-sm italic">
-          —— Or ——
+            —— Or ——
           </h3>
           <div className="md:w-[40%] ">
             <h3 className="text-[#6B6B6B] text-sm mb-2">Create Your Own</h3>
@@ -205,13 +200,13 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
               ) : (
                 <div className="w-[169px] h-[158px] relative rounded-[5px] border border-[#E87223] bg-[#FFF1E8]">
                   <input required={myOwnImage === null} type="image" src="" alt="" className="absolute top-0 left-0 h-full w-full opacity-0 camera-image" style={{ width: 169, height: 158 }} />
-                  <div className="absolute inset-0 grid place-items-center" onClick={handleInstructionModal}>
+                  <div className="absolute inset-0 grid place-items-center" onClick={onOpenModal}>
                     <CameraIcon />
                   </div>
                 </div>
               )}
               <div className="flex flex-col">
-                <button className="xl:min-w-[145px] text-xs text-[#E87223] bg-white px-4 py-[7px] mb-[10px] rounded-[3px] border border-[#E87223]" onClick={handleInstructionModal}>
+                <button className="xl:min-w-[145px] text-xs text-[#E87223] bg-white px-4 py-[7px] mb-[10px] rounded-[3px] border border-[#E87223]" onClick={onOpenModal}>
                   Open Camera
                 </button>
                 <label className="xl:min-w-[145px] font-inter h-[32px] !text-xs bg-[#E87223] !text-white px-4 py-[8px] rounded-[3px] cursor-pointer text-center">
@@ -224,7 +219,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         </div>
       </div>
 
-      <Modal isOpen={openInstruction} shouldFocusAfterRender={false} onRequestClose={closeInstructionModal} contentLabel="Open Camera" className="modal p-5 md:p-10 bg-white w-[90%] max-w-[677px] max-h-[90vh] rounded-[20px] overflow-auto overflo-custom " overlayClassName="z-[10] w-full h-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <ReactResponsiveModal open={open} onClose={onCloseModal} center focusTrapped showCloseIcon  = {false}> 
         <div className="grid md:grid-cols-2 gap-[34px] items-center ">
           <div>
             <Image src={instructionimg} alt="" className="rounded-[5px] w-full" />
@@ -256,7 +251,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
             </button>
           </div>
         </div>
-      </Modal>
+      </ReactResponsiveModal>
 
       <Modal isOpen={isCropping} onRequestClose={() => setIsCropping(false)} contentLabel="Open Camera" className="modal p-5 md:p-10 bg-white w-[90%] max-w-[900px] max-h-[90vh] rounded-xl overflow-auto overflo-custom " overlayClassName="z-[10] w-full h-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center  ">
         <div className="relative w-full h-64">
