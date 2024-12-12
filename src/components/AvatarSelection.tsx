@@ -84,12 +84,32 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
     if (canvasRef.current && videoRef.current) {
       const context = canvasRef.current.getContext("2d");
       if (context) {
+        const videoWidth = videoRef.current.videoWidth;
+        const videoHeight = videoRef.current.videoHeight;
+        const canvasWidth = canvasRef.current.width;
+        const canvasHeight = canvasRef.current.height;
+  
+        // Calculate the aspect ratio
+        const aspectRatio = videoWidth / videoHeight;
+  
+        // Calculate the new dimensions to maintain the aspect ratio
+        let drawWidth = canvasWidth;
+        let drawHeight = canvasWidth / aspectRatio;
+  
+        if (drawHeight > canvasHeight) {
+          drawHeight = canvasHeight;
+          drawWidth = canvasHeight * aspectRatio;
+        }
+  
+        const offsetX = (canvasWidth - drawWidth) / 2;
+        const offsetY = (canvasHeight - drawHeight) / 2;
+  
         context.drawImage(
           videoRef.current,
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
+          offsetX,
+          offsetY,
+          drawWidth,
+          drawHeight
         );
         const imageUrl = canvasRef.current.toDataURL("image/png");
         setClickAvatar(imageUrl);
