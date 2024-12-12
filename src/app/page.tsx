@@ -53,7 +53,7 @@ const Home = () => {
     <div>
       <Tabs />
       <section className=''>
-        <h2 className='section-title mb-[10px] md:mb-5'>How to use NeurCG</h2>
+        <h2 className='section-title mb-[10px] md:mb-5'>How to use Maity</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           {VideoData.map((data) => (
             <NeurcgCard

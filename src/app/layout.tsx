@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>NeurCG</title>
+        <title>Maity</title>
         <link rel="icon" href="/public/vercel.svg" />
       </head>
       <SessionProvider>
