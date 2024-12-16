@@ -7,12 +7,12 @@ import TextSelection from '@/components/TextSelection';
 import { toast } from 'sonner';
 import { convertTextToVideo, getUserInfo } from '@/services/user-service';
 import { useSession } from 'next-auth/react';
-import { generateSignedUrlToUploadOn, getImageUrl } from '@/actions';
 import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
 import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constants";
+import { postMediaToFlaskProxy } from "@/utils";
 const customStyles = {
     content: {
         // width: '450px',
@@ -118,33 +118,17 @@ const Page = () => {
 
                 // Handle file uploads first if myOwnImage exists
                 if (myOwnImage instanceof File) {
-                    const uploadUrl = await generateSignedUrlToUploadOn(myOwnImage.name, myOwnImage.type, email)
-                    const uploadResponse = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        body: myOwnImage,
-                        headers: {
-                            'Content-Type': myOwnImage.type,
-                        },
-                        cache: 'no-store'
-                    })
+                    const imageKey = `projects/${email}/my-media/${myOwnImage.name.split('.')[0]}-${new Date().getTime()}.${myOwnImage.name.split('.')[1]}`
+                    const uploadResponse = await postMediaToFlaskProxy(myOwnImage, imageKey)
 
-                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                    const imageKey = `projects/${email}/my-media/${myOwnImage.name}`
+                    if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     projectAvatarUrl = imageKey
                 }
 
                 if (preferredVoice instanceof File) {
-                    const uploadUrl = await generateSignedUrlToUploadOn(preferredVoice.name, preferredVoice.type, email)
-                    const uploadResponse = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        body: preferredVoice,
-                        headers: {
-                            'Content-Type': preferredVoice.type,
-                        },
-                        cache: 'no-store'
-                    })
-                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                    const audioKey = `projects/${email}/my-media/${preferredVoice.name}`
+                    const audioKey = `projects/${email}/my-media/${preferredVoice.name.split('.')[0]}-${new Date().getTime()}.${preferredVoice.name.split('.')[1]}`
+                    const uploadResponse = await postMediaToFlaskProxy(preferredVoice, audioKey)
+                    if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     preferredVoiceUrl = audioKey
                 }
                 const data = {

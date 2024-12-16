@@ -298,7 +298,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
       </ReactResponsiveModal>
 
       <ReactResponsiveModal open={isCropping} onClose={() => setIsCropping(false)} center focusTrapped>
-        <div className="relative w-full h-64">
+        <div className="relative w-full h-64 min-w-[350px]">
           <Cropper image={clickAvatar!} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
         </div>
         <button className="mt-4 bg-[#E87223] text-white px-4 py-2 rounded" onClick={handleCropSave}>
