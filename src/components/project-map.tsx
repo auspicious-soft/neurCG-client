@@ -29,7 +29,7 @@ const ProjectMap = (props: ProjectMapProps) => {
             }
         }
 
-        const fetchProjectcVideoLink = async () => {
+        const fetchProjectVideoLink = async () => {
             if (Array.isArray(props?.data)) {
                 const videoPromises = props.data.map(async (project: any) => {
                     const videoUrl = await getMediaUrlFromFlaskProxy(project?.projectVideoLink);
@@ -44,7 +44,7 @@ const ProjectMap = (props: ProjectMapProps) => {
             }
         }
 
-        fetchProjectcVideoLink()
+        fetchProjectVideoLink()
         fetchProjectImages()
     }, [props, props?.data])
     return (
