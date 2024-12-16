@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import Logo from "@/assets/images/logo.png";
@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from 'date-fns';
 import { signOut } from "next-auth/react";
-import { getImageUrlOfS3 } from "@/utils";
+import { getImage, getImageUrlOfS3 } from "@/utils";
 import ReactLoading from 'react-loading'
 import previmg2 from "@/assets/images/previmg.png";
 
@@ -24,13 +24,8 @@ interface HeaderProps {
   toggleSidebar: () => void;
   isOpen: boolean;
 }
-const Header: React.FC<HeaderProps> = ({
-  notificationsCount,
-  userImage,
-  toggleSidebar,
-  isOpen,
-
-}) => {
+const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOpen }) => {
+  const [userImage, setUserImage] = useState<{ [key: string]: string }>({})
   const [showNotifications, setShowNotifications] = useState(false);
   const [showData, setShowData] = useState(false);
   const pathname = usePathname();
@@ -53,7 +48,13 @@ const Header: React.FC<HeaderProps> = ({
     "/plans": "Plans",
     // Add more paths as needed
   };
-
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      const image = await getImage(dataOfUser);
+      setUserImage(image);
+    }
+    fetchUserImage()
+  }, [dataOfUser]);
   const currentPageName = pageNames[pathname] || "Home";
 
   const handleDataShow = () => {
@@ -127,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
             {!isLoading && <Image
-              src={dataOfUser?.profilePic ? dataOfUser?.profilePic?.includes('lh3.googleusercontent.com') ? dataOfUser?.profilePic: getImageUrlOfS3(dataOfUser?.profilePic) :  previmg2}
+              src={userImage as any}
               alt="User Profile"
               width={34}
               height={34}

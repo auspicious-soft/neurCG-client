@@ -7,7 +7,7 @@ import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { cancelSubscription, getUserInfo, updateUserInfo } from "@/services/user-service";
 import { toast } from "sonner";
-import { getImageUrlOfS3 } from "@/utils";
+import { deleteMediaFromFlaskProxy, getImageUrlOfS3, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
 import Modal from "react-modal";
 import { deleteImageFromS3, generateSignedUrlToUploadOn } from "@/actions";
 
@@ -69,6 +69,7 @@ const Page = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -84,8 +85,11 @@ const Page = () => {
       });
 
       if (user.profilePic) {
-        const imageUrl = user.profilePic.includes('lh3.googleusercontent.com') ? user.profilePic : getImageUrlOfS3(user.profilePic);
-        setImagePreview(imageUrl);
+        const fetchProfilePic = async () => {
+          const imageUrl = user.profilePic.includes('lh3.googleusercontent.com') ? user.profilePic : await getMediaUrlFromFlaskProxy(user.profilePic);
+          setImagePreview(imageUrl);
+        };
+        fetchProfilePic();
       }
     }
   }, [user]);
@@ -131,23 +135,16 @@ const Page = () => {
       const imageKey = `projects/${session?.user?.email}/my-media/${typeof (formData as any)?.profilePic === 'string' ? (formData as any).profilePic : formData?.profilePic?.name}`
 
       if (formData.profilePic && typeof formData.profilePic !== 'string') {
-        const signedUrl = await generateSignedUrlToUploadOn(formData.profilePic.name, formData.profilePic.type, session?.user?.email as string)
-        const uploadResponse = await fetch(signedUrl, {
-          method: 'PUT',
-          body: formData.profilePic,
-          headers: {
-            'Content-Type': formData.profilePic.type,
-          },
-          cache: 'no-store'
-        })
-        if (!uploadResponse.ok) {
-          toast.error('Something went wrong. Please try again')
+        const imageUploadToFlask = await postMediaToFlaskProxy(formData.profilePic, imageKey)
+        if (!imageUploadToFlask.success) {
+          toast.error("Something went wrong");
           return
         }
-        const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
+
+        // const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
         // Delete the old image from the S3 bucket
         if (!user?.profilePic?.includes('lh3.googleusercontent.com')) {
-          await deleteImageFromS3(user?.profilePic);
+          await deleteMediaFromFlaskProxy(user?.profilePic);
         }
         (formDataToSend as any).profilePic = imageKey
       }
