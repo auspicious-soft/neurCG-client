@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import { convertAudioToVideo, getUserInfo } from '@/services/user-service';
 import { SECONDS_PER_CREDIT } from '@/constants';
-import { getFileNameAndExtension, postMediaToFlaskProxy } from '@/utils';
+import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from '@/utils';
 
 const Page = () => {
     const [progress, setProgress] = useState(0)
@@ -120,13 +120,13 @@ const Page = () => {
                 // Remove any undefined values
                 Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
                 const response = await convertAudioToVideo(`/user/${session?.user?.id}/audio-to-video`, data)
-                const video = await response?.data?.data?.videoUrl
+                const video = await getMediaUrlFromFlaskProxy(response?.data?.data?.videoUrl)
                 if (!video) {
                     toast.error('Something went wrong. Please try again')
                     setProgress(0)
                     setIsModalOpen(false)
                 }
-                setVideoSrc(video)
+                setVideoSrc(video as string)
                 await mutate()
                 setProgress(100)
 

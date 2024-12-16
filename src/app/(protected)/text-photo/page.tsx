@@ -12,7 +12,7 @@ import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
 import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constants";
-import { getFileNameAndExtension, postMediaToFlaskProxy } from "@/utils";
+import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
 const customStyles = {
     content: {
         // width: '450px',
@@ -144,13 +144,13 @@ const Page = () => {
                 // Remove any undefined values
                 Object.keys(data).forEach(key => (data as any)[key] === undefined && delete (data as any)[key])
                 const response = await convertTextToVideo(`/user/${session?.user?.id}/text-to-video`, data)
-                const video = await response?.data?.data?.videoUrl
+                const video = await getMediaUrlFromFlaskProxy(response?.data?.data?.videoUrl)
                 if (!video) {
                     toast.error('Something went wrong. Please try again')
                     setProgress(0)
                     setIsModalOpen(false)
                 }
-                setVideoSrc(video)
+                setVideoSrc(video as string)
                 await mutate()
                 setProgress(100)
 
