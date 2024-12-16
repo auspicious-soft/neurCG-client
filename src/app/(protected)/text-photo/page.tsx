@@ -12,7 +12,7 @@ import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
 import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constants";
-import { postMediaToFlaskProxy } from "@/utils";
+import { getFileNameAndExtension, postMediaToFlaskProxy } from "@/utils";
 const customStyles = {
     content: {
         // width: '450px',
@@ -118,7 +118,8 @@ const Page = () => {
 
                 // Handle file uploads first if myOwnImage exists
                 if (myOwnImage instanceof File) {
-                    const imageKey = `projects/${email}/my-media/${myOwnImage.name.split('.')[0]}-${new Date().getTime()}.${myOwnImage.name.split('.')[1]}`
+                    const { fileName, fileExtension } = getFileNameAndExtension(myOwnImage);
+                    const imageKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`;
                     const uploadResponse = await postMediaToFlaskProxy(myOwnImage, imageKey)
 
                     if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
@@ -126,7 +127,8 @@ const Page = () => {
                 }
 
                 if (preferredVoice instanceof File) {
-                    const audioKey = `projects/${email}/my-media/${preferredVoice.name.split('.')[0]}-${new Date().getTime()}.${preferredVoice.name.split('.')[1]}`
+                    const { fileName, fileExtension } = getFileNameAndExtension(preferredVoice);
+                    const audioKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`;
                     const uploadResponse = await postMediaToFlaskProxy(preferredVoice, audioKey)
                     if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     preferredVoiceUrl = audioKey
@@ -233,7 +235,7 @@ const Page = () => {
                 >
                     {(isPending && progress <= 100) ?
                         <ProcessingLoader progress={progress} /> :
-                        <VideoResponse modalClose={() => setIsModalOpen(false)} videoSrc = {videoSrc} />
+                        <VideoResponse modalClose={() => setIsModalOpen(false)} videoSrc={videoSrc} />
                     }
                 </Modal>
             </div>

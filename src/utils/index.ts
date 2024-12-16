@@ -63,3 +63,11 @@ export const getImage = async (data: any) => {
 export const getAvatarsUsedFromFlask = async (avatar: any) => {
     return avatar ? await getMediaUrlFromFlaskProxy(avatar) : profilePic
 }
+
+
+export const getFileNameAndExtension = (file: File) => {
+    const lastDotIndex = file.name.lastIndexOf('.');
+    const fileName = file.name.substring(0, lastDotIndex);
+    const fileExtension = file.name.substring(lastDotIndex + 1);
+    return { fileName, fileExtension };
+}
