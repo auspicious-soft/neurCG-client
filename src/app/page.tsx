@@ -14,6 +14,7 @@ import { getUserProjects } from '@/services/user-service';
 import { getImageUrlOfS3 } from '@/utils';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
+import ProjectMap from '@/components/project-map';
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const VideoData = [
@@ -67,16 +68,7 @@ const Home = () => {
       </section>
       <section className='mt-[30px] md:mt-[50px]'>
         <h2 className="section-title mb-[10px] md:mb-5">Recent</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-          {ClientVideos?.map((data: any) => (
-            <VideoCards
-              key={data._id}
-              title={data.projectName}
-              thumbnail={getImageUrlOfS3(data.projectAvatar as string)}
-              videoSrc={data.projectVideoLink}
-            />
-          ))}
-        </div>
+        <ProjectMap data={ClientVideos} />
       </section>
     </div>
   );

@@ -54,8 +54,12 @@ export const deleteMediaFromFlaskProxy = async (subpath: string) => {
         console.error('Error deleting media from flask:', error);
         return undefined;
     }
-}   
+}
 
-export const getImage = async(data: any) => {
+export const getImage = async (data: any) => {
     return data?.profilePic?.includes('lh3.googleusercontent.com') ? data?.profilePic : data?.profilePic ? await getMediaUrlFromFlaskProxy(data?.profilePic) : profilePic
+}
+
+export const getAvatarsUsedFromFlask = async (avatar: any) => {
+    return avatar ? await getMediaUrlFromFlaskProxy(avatar) : profilePic
 }
