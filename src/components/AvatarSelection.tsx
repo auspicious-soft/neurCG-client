@@ -204,9 +204,9 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
           <div className="lg:w-1/2 md:w-[45%] image-section ">
             <h3 className="text-[#6B6B6B] text-sm mb-2">Choose a pre-made</h3>
             <div className="flex lg:flex-row flex-col gap-[21px]">
-              
+
               <div className={`${isLoading ? '' : 'border'} border-[#E87223] rounded-[5px] w-[169px]`}>
-                {isLoading ? (
+                {isLoading || avatarImages.length < 1 ? (
                   <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} />
                 ) : (
                   <Image
@@ -221,7 +221,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
               </div>
 
               <div className="grid grid-cols-4 gap-[10px]">
-                {isLoading ?
+                {isLoading || avatarImages.length < 1 ?
                   <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} />
                   :
                   avatars.map((avatar: any, index: number) => (
