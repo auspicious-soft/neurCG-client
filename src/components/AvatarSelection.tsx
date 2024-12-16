@@ -8,7 +8,7 @@ import Modal from "react-modal";
 import instructionimg from "@/assets/images/instruction.png";
 import useSWR from "swr";
 import { getAvatars } from "@/services/user-service";
-import { getImageUrlOfS3 } from "@/utils";
+import { getAvatarsUsedFromFlask, getImageUrlOfS3 } from "@/utils";
 import ReactLoading from 'react-loading';
 import { Modal as ReactResponsiveModal } from 'react-responsive-modal';
 
@@ -20,18 +20,12 @@ export interface AvatarSelectionProps {
 }
 
 const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwnImage, myOwnImage, avatarId }) => {
+  const [open, setOpen] = useState(false);
   const { data, isLoading } = useSWR(`/user/avatars`, getAvatars, { revalidateOnFocus: false });
   const avatars = useMemo(() => data?.data?.data || [], [data])
   const [selectedAvatar, setSelectedAvatar] = useState<any>()
-  const [open, setOpen] = useState(false);
-
-  const onOpenModal = () => setOpen(true);
-  const onCloseModal = () => setOpen(false);
-  useEffect(() => {
-    avatars[0] && setSelectedAvatar(avatars[0]?.avatarUrl)
-    setAvatarId(avatars[0]?.avatarUrl)
-  }, [avatars])
-
+  const [avatarImages, setAvatarImages] = useState<any>([]);
+  const [selectedImageFromFlask, setSelectedImageFromFlask] = useState<string>();
   const [clickAvatar, setClickAvatar] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -44,8 +38,17 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleAvatarClick = (avatar: any) => {
+  const onOpenModal = () => setOpen(true);
+  const onCloseModal = () => setOpen(false);
+  useEffect(() => {
+    avatars[0] && setSelectedAvatar(avatars[0]?.avatarUrl)
+    setAvatarId(avatars[0]?.avatarUrl)
+  }, [avatars])
+
+  const handleAvatarClick = async (avatar: any) => {
     setSelectedAvatar(avatar);
+    const image = await getAvatarsUsedFromFlask(avatar)
+    setSelectedImageFromFlask(image as string)
     setAvatarId(avatar)
     setMyOwnImage(null)
     setClickAvatar(null);
@@ -172,6 +175,24 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
     }
   }, [isOpen])
 
+  useEffect(() => {
+    const fetchAvatarsFromFlask = async () => {
+      if (avatars.length > 0) {
+        const imagePromises = avatars?.map(async (avatar: any) => {
+          const imageUrl = await getAvatarsUsedFromFlask(avatar.avatarUrl);
+          return { id: avatar._id, imageUrl }
+        })
+
+        const imageResults = await Promise.all(imagePromises)
+        const imageResultsArrayOfObjects = imageResults.reduce((acc: any, curr: any) => {
+          acc[curr.id] = curr.imageUrl;
+          return acc;
+        }, {})
+        setAvatarImages(imageResultsArrayOfObjects)
+      }
+    }
+    fetchAvatarsFromFlask();
+  }, [avatars, data]);
 
   return (
     <div className="bg-white rounded-lg p-[15px] md:p-[30px] shadow-[0_0_40px_0_rgba(235,130,60,0.06)]">
@@ -183,16 +204,33 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
           <div className="lg:w-1/2 md:w-[45%] image-section ">
             <h3 className="text-[#6B6B6B] text-sm mb-2">Choose a pre-made</h3>
             <div className="flex lg:flex-row flex-col gap-[21px]">
+              
               <div className={`${isLoading ? '' : 'border'} border-[#E87223] rounded-[5px] w-[169px]`}>
-                {isLoading ? <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} /> : avatars[0] && <Image unoptimized src={getImageUrlOfS3(selectedAvatar)} alt="Selected Avatar" width={200} height={200} className="selected h-full w-full object-contain rounded-[5px]" />}
+                {isLoading ? (
+                  <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} />
+                ) : (
+                  <Image
+                    unoptimized
+                    src={selectedImageFromFlask ?? avatarImages[avatars[0]?._id]}
+                    alt="Selected Avatar"
+                    width={200}
+                    height={200}
+                    className="selected h-full w-full object-contain rounded-[5px]"
+                  />
+                )}
               </div>
+
               <div className="grid grid-cols-4 gap-[10px]">
-                {isLoading ? <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} /> : avatars.map((avatar: any, index: number) => (
-                  <div key={index} className={`cursor-pointer rounded-[5px]  ${selectedAvatar === avatar.avatarUrl && "active"}`} onClick={() => handleAvatarClick(avatar.avatarUrl)}>
-                    <Image unoptimized src={getImageUrlOfS3(avatar.avatarUrl)} alt={`Avatar ${index + 1}`} width={74} height={68} className="border border-[#FFE2CE] w-[74px] h-[68px] object-cover rounded-[5px]" />
-                  </div>
-                ))}
+                {isLoading ?
+                  <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} />
+                  :
+                  avatars.map((avatar: any, index: number) => (
+                    <div key={index} className={`cursor-pointer rounded-[5px]  ${selectedAvatar === avatar.avatarUrl && "active"}`} onClick={() => handleAvatarClick(avatar.avatarUrl)}>
+                      <Image unoptimized src={avatarImages[avatar._id]} alt={`Avatar ${index + 1}`} width={74} height={68} className="border border-[#FFE2CE] w-[74px] h-[68px] object-cover rounded-[5px]" />
+                    </div>
+                  ))}
               </div>
+
             </div>
           </div>
           <h3 className="md:w-[15%] lg:w-[10%] mx-[20px] 2xl:mx-[45px] flex justify-center items-center text-[#6B6B6B] text-sm italic">
@@ -271,9 +309,9 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         </button>
       </ReactResponsiveModal>
 
-      <ReactResponsiveModal open={isCameraOpen} onClose={() => setIsCameraOpen(false)} center  focusTrapped>
-      <video ref={videoRef} className="w-full h-64 bg-black transform -scale-x-100" autoPlay />
-      <canvas ref={canvasRef} className="hidden transform -scale-x-100" width={640} height={480}></canvas>
+      <ReactResponsiveModal open={isCameraOpen} onClose={() => setIsCameraOpen(false)} center focusTrapped>
+        <video ref={videoRef} className="w-full h-64 bg-black transform -scale-x-100" autoPlay />
+        <canvas ref={canvasRef} className="hidden transform -scale-x-100" width={640} height={480}></canvas>
         <button className="mt-4 bg-[#E87223] text-white px-4 py-2 rounded" onClick={handleTakePicture}>
           Take Picture
         </button>

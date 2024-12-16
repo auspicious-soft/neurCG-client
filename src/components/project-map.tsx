@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import VideoCards from './VideoCards'
-import { getAvatarsUsedFromFlask, getImageUrlOfS3, getMediaUrlFromFlaskProxy } from '@/utils'
+import { getAvatarsUsedFromFlask, getMediaUrlFromFlaskProxy } from '@/utils'
 
 interface ProjectMapProps {
     data: any
