@@ -215,13 +215,7 @@ const Page = () => {
               ) : (
                 <div className="grid place-items-center h-full w-full">
                   <div>
-                    <Image
-                      src={previmg2}
-                      alt="upload"
-                      width={177}
-                      height={177}
-                      className="rounded-full"
-                    />
+                    Upload Image
                     <p className="absolute bottom-[16px] right-1 pointer-events-none">
                       <EditImgIcon />
                     </p>

@@ -15,6 +15,7 @@ import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
 import { SECONDS_PER_CREDIT } from '@/constants';
+import { getFileNameAndExtension, postMediaToFlaskProxy } from '@/utils';
 
 
 const customStyles = {
@@ -144,35 +145,21 @@ const Page = () => {
                 let preferredVoiceUrl: string | undefined;
 
                 if (projectAvatar instanceof File) {
-                    const uploadUrl = await generateSignedUrlToUploadOn(projectAvatar.name, projectAvatar.type, email)
-                    const uploadResponse = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        body: projectAvatar,
-                        headers: {
-                            'Content-Type': projectAvatar.type,
-                        },
-                        cache: 'no-store'
-                    })
-
-                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                    const imageKey = `projects/${email}/my-media/${projectAvatar.name}`
+                    const { fileName, fileExtension } = getFileNameAndExtension(projectAvatar)
+                    const imageKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`
+                    const uploadResponse = await postMediaToFlaskProxy(projectAvatar, imageKey)
+                    if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     projectAvatarUrl = imageKey
                 }
 
                 if (preferredVoice instanceof File) {
-                    const uploadUrl = await generateSignedUrlToUploadOn(preferredVoice.name, preferredVoice.type, email)
-                    const uploadResponse = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        body: preferredVoice,
-                        headers: {
-                            'Content-Type': preferredVoice.type,
-                        },
-                        cache: 'no-store'
-                    })
-                    if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                    const audioKey = `projects/${email}/my-media/${preferredVoice.name}`
+                    const { fileName, fileExtension } = getFileNameAndExtension(preferredVoice)
+                    const audioKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`
+                    const uploadResponse = await postMediaToFlaskProxy(preferredVoice, audioKey)
+                    if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     preferredVoiceUrl = audioKey
                 }
+                
                 const data = {
                     video: videoKey,
                     projectAvatar: projectAvatarUrl,
