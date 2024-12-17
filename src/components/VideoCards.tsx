@@ -62,7 +62,6 @@ const VideoCards: React.FC<VideoCardProps> = ({
         }
       }
       catch (error) {
-        console.log("Failed to delete video", error)
         toast.error("Failed to delete video");
       }
     })
