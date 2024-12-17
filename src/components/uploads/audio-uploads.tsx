@@ -13,7 +13,7 @@ const AudioUploads = (props: AudioUploadsProps) => {
     useEffect(() => {
         const fetchUploadedAudios = async () => {
             if (Array.isArray(props?.data)) {
-                const audiosPromise = props.data.map(async (project: any) => {
+                const audiosPromise = data?.map(async (project: any) => {
                     const audioUrl = await getMediaUrlFromFlaskProxy(project?.audio);
                     return { projectId: project._id, audioUrl }
                 })
@@ -26,7 +26,7 @@ const AudioUploads = (props: AudioUploadsProps) => {
             }
         }
         fetchUploadedAudios()
-    }, [props, props?.data])
+    }, [props, data])
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-10">
             {
