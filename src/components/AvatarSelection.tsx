@@ -1,16 +1,18 @@
 import 'react-responsive-modal/styles.css';
-import React, { useState, useRef, useCallback, useEffect, use, useMemo } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Cropper from "react-easy-crop";
-import { getCroppedImg } from "@/utils/getCroppedImg"; // Implement this function
+import { getCroppedImg } from "@/utils/getCroppedImg";
 import { CameraIcon } from "@/utils/svgIcons";
 import instructionimg from "@/assets/images/instruction.png";
 import useSWR from "swr";
 import { getAvatars } from "@/services/user-service";
-import { getAvatarsUsedFromFlask, getImageUrlOfS3 } from "@/utils";
+import { containsMyImages, getAvatarsUsedFromFlask } from "@/utils";
 import ReactLoading from 'react-loading';
 import { Modal as ReactResponsiveModal } from 'react-responsive-modal';
-
+import { getUserProjects } from "@/services/user-service";
+import { useSession } from 'next-auth/react';
+import WhiteBg from "@/assets/images/white.avif";
 export interface AvatarSelectionProps {
   setAvatarId: (id: string | null) => void;
   setMyOwnImage: React.Dispatch<React.SetStateAction<File | null>>;
@@ -19,14 +21,50 @@ export interface AvatarSelectionProps {
 }
 
 const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwnImage, myOwnImage, avatarId }) => {
-  const [open, setOpen] = useState(false);
-  const { data, isLoading } = useSWR(`/user/avatars`, getAvatars, { revalidateOnFocus: false });
-  const avatars = useMemo(() => data?.data?.data || [], [data])
-  const [selectedAvatar, setSelectedAvatar] = useState<any>()
-  const [avatarImages, setAvatarImages] = useState<any>([]);
+  const session = useSession()
+  const userId = session?.data?.user?.id
+  const [open, setOpen] = useState(false)
+
+  // Use useSWR for avatars and projects
+  const { data: avatarData, isLoading: isAvatarLoading } = useSWR(`/user/avatars`, getAvatars, { revalidateOnFocus: false });
+  const { data: projectData, isLoading: isProjectLoading } = useSWR(userId ? `/user/${userId}/projects` : null, getUserProjects, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    shouldRetryOnError: false
+  })
+
+  // Memoize the processing of project data to prevent unnecessary re-renders
+  const modifiedData = useMemo(() => {
+    const clientRecentVideos = projectData?.data?.data?.recentProjects || [];
+    const clientOldVideos = projectData?.data?.data?.oldProjects || [];
+    const ClientVideos = [...clientRecentVideos, ...clientOldVideos];
+    return ClientVideos
+      .filter(containsMyImages)
+      .map((data: any) => ({
+        _id: data._id,
+        avatarUrl: data.projectAvatar,
+        name: data.projectName,
+        updatedAt: data.updatedAt,
+        createdAt: data.createdAt,
+        isCustom: true // Add a flag to distinguish custom avatars
+      }));
+  }, [projectData])
+
+  const premadeAvatars = useMemo(() => avatarData?.data?.data || [], [avatarData])
+
+  // Memoize the final avatars list to combine premade and custom avatars
+  const finalPremadeAvatars = useMemo(() => {
+    return [...premadeAvatars, ...modifiedData];
+  }, [modifiedData, premadeAvatars]);
+
+  // State for avatar selection and images
+  const [selectedAvatar, setSelectedAvatar] = useState<any>();
+  const [avatarImages, setAvatarImages] = useState<{ [key: string]: string }>({});
   const [selectedImageFromFlask, setSelectedImageFromFlask] = useState<string>();
   const [clickAvatar, setClickAvatar] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  // Rest of the component remains the same as in the original code...
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [uploadedFilename, setUploadedFilename] = useState<string>("");
@@ -39,11 +77,43 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
 
   const onOpenModal = () => setOpen(true);
   const onCloseModal = () => setOpen(false);
-  useEffect(() => {
-    avatars[0] && setSelectedAvatar(avatars[0]?.avatarUrl)
-    setAvatarId(avatars[0]?.avatarUrl)
-  }, [avatars])
 
+  // Use useEffect to set initial avatar when finalPremadeAvatars changes
+  useEffect(() => {
+    if (finalPremadeAvatars.length > 0) {
+      const firstAvatar = finalPremadeAvatars[0];
+      setSelectedAvatar(firstAvatar?.avatarUrl);
+      setAvatarId(firstAvatar?.avatarUrl);
+    }
+  }, [finalPremadeAvatars, setAvatarId]);
+
+  // Fetch avatar images from Flask
+  useEffect(() => {
+    const fetchAvatarsFromFlask = async () => {
+      if (finalPremadeAvatars.length > 0) {
+        try {
+          const imagePromises = finalPremadeAvatars.map(async (avatar: any) => {
+            const imageUrl = await getAvatarsUsedFromFlask(avatar?.avatarUrl);
+            return { id: avatar?._id, imageUrl };
+          });
+
+          const imageResults = await Promise.all(imagePromises);
+          const imageResultsArrayOfObjects = imageResults.reduce((acc: any, curr: any) => {
+            acc[curr.id] = curr.imageUrl;
+            return acc;
+          }, {});
+
+          setAvatarImages(imageResultsArrayOfObjects);
+        } catch (error) {
+          console.error("Error fetching avatar images:", error);
+        }
+      }
+    };
+
+    fetchAvatarsFromFlask();
+  }, [finalPremadeAvatars]);
+
+  // Rest of the component methods remain the same...
   const handleAvatarClick = async (avatar: any) => {
     setSelectedAvatar(avatar);
     const image = await getAvatarsUsedFromFlask(avatar)
@@ -51,7 +121,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
     setAvatarId(avatar)
     setMyOwnImage(null)
     setClickAvatar(null);
-  };
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -176,10 +246,10 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
 
   useEffect(() => {
     const fetchAvatarsFromFlask = async () => {
-      if (avatars.length > 0) {
-        const imagePromises = avatars?.map(async (avatar: any) => {
-          const imageUrl = await getAvatarsUsedFromFlask(avatar.avatarUrl);
-          return { id: avatar._id, imageUrl }
+      if (finalPremadeAvatars.length > 0) {
+        const imagePromises = finalPremadeAvatars?.map(async (avatar: any) => {
+          const imageUrl = await getAvatarsUsedFromFlask(avatar?.avatarUrl);
+          return { id: avatar?._id, imageUrl }
         })
 
         const imageResults = await Promise.all(imagePromises)
@@ -191,11 +261,11 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
       }
     }
     fetchAvatarsFromFlask();
-  }, [avatars, data]);
+  }, [finalPremadeAvatars]);
 
   return (
     <div className="bg-white rounded-lg p-[15px] md:p-[30px] shadow-[0_0_40px_0_rgba(235,130,60,0.06)]">
-      <h2 className={`section-title dropdown-title ${isOpen ? 'active' : ''}`} onClick={toggleOpen}>
+      <h2 className={`section-title dropdown-title ${isOpen ? 'active' : ''}`} onClick={() => setIsOpen(!isOpen)}>
         Avatar
       </h2>
       <div ref={contentRef} className={`text-selecion overflow-hidden transition-[max-height] duration-500 ease-in-out`} style={{ maxHeight: isOpen ? contentRef.current?.scrollHeight : 0, opacity: isOpen ? 1 : 0 }}>
@@ -203,29 +273,35 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
           <div className="lg:w-1/2 md:w-[45%] image-section ">
             <h3 className="text-[#6B6B6B] text-sm mb-2">Choose a pre-made</h3>
             <div className="flex lg:flex-row flex-col gap-[21px]">
-
-              <div className={`${isLoading ? '' : 'border'} border-[#E87223] rounded-[5px] w-[169px]`}>
-                {isLoading || avatarImages.length < 1 ? (
+              <div className={`${isAvatarLoading ? '' : 'border'} border-[#E87223] rounded-[5px] w-[169px] h-[160px]`}>
+                {isAvatarLoading || isProjectLoading || Object.keys(avatarImages).length < 1 ? (
                   <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} />
                 ) : (
                   <Image
                     unoptimized
-                    src={selectedImageFromFlask ?? avatarImages[avatars[0]?._id]}
+                    src={selectedImageFromFlask ?? avatarImages[finalPremadeAvatars[0]?._id]}
                     alt="Selected Avatar"
                     width={200}
                     height={200}
-                    className="selected h-full w-full object-contain rounded-[5px]"
+                    className="selected h-full w-full object-contain rounded-[5px] "
                   />
                 )}
               </div>
 
               <div className="grid grid-cols-4 gap-[10px]">
-                {isLoading || avatarImages.length < 1 ?
+                {isAvatarLoading || isProjectLoading || Object.keys(avatarImages).length < 1 ?
                   <ReactLoading type={'bars'} color={'#e87223'} height={'40px'} width={'40px'} />
                   :
-                  avatars.map((avatar: any, index: number) => (
-                    <div key={index} className={`cursor-pointer rounded-[5px]  ${selectedAvatar === avatar.avatarUrl && "active"}`} onClick={() => handleAvatarClick(avatar.avatarUrl)}>
-                      <Image unoptimized src={avatarImages[avatar._id]} alt={`Avatar ${index + 1}`} width={74} height={68} className="border border-[#FFE2CE] w-[74px] h-[68px] object-cover rounded-[5px]" />
+                  finalPremadeAvatars.length > 0 && finalPremadeAvatars?.map((avatar: any, index: number) => (
+                    <div key={index} className={`cursor-pointer rounded-[5px]  ${selectedAvatar === avatar?.avatarUrl && "active"}`} onClick={() => handleAvatarClick(avatar.avatarUrl)}>
+                      <Image
+                        unoptimized
+                        src={avatarImages[avatar?._id] ?? WhiteBg}
+                        alt={`Avatar ${index + 1}`}
+                        width={74}
+                        height={68}
+                        className="border border-[#FFE2CE] w-[74px] h-[68px] object-cover rounded-[5px]"
+                      />
                     </div>
                   ))}
               </div>

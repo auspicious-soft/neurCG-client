@@ -12,7 +12,9 @@ const Page = async () => {
   const session = await auth()
   const response = await getUserProjects(`/user/${session?.user?.id}/projects`)
   const data = await response.data
-  const ClientVideos = data?.data?.recentProjects
+  const recentVideos = data?.data?.recentProjects
+  const oldVideos = data?.data?.oldProjects
+  const ClientVideos = recentVideos?.concat(oldVideos)
   const filteredMyUploads = ClientVideos?.filter(containsMyMedia)
 
   const filteredMyImages = filteredMyUploads?.filter(containsMyImages)
