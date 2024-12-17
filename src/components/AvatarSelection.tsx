@@ -114,14 +114,21 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
   }, [finalPremadeAvatars]);
 
   // Rest of the component methods remain the same...
-  const handleAvatarClick = async (avatar: any) => {
+  const handleAvatarClick = (avatar: any) => {
+    // Find the avatar in finalPremadeAvatars
+    const selectedAvatarData = finalPremadeAvatars.find((a: any) => a.avatarUrl === avatar || a._id === avatar)
+  
+    // Set the selected avatar
     setSelectedAvatar(avatar);
-    const image = await getAvatarsUsedFromFlask(avatar)
-    setSelectedImageFromFlask(image as string)
-    setAvatarId(avatar)
-    setMyOwnImage(null)
+    
+    // Use the pre-fetched avatar image from avatarImages
+    const selectedImage = avatarImages[selectedAvatarData?._id];
+    setSelectedImageFromFlask(selectedImage);
+    
+    setAvatarId(avatar);
+    setMyOwnImage(null);
     setClickAvatar(null);
-  }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
