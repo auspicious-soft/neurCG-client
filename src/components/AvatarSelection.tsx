@@ -312,7 +312,9 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
             —— Or ——
           </h3>
           <div className="md:w-[40%] ">
-            <h3 className="text-[#6B6B6B] text-sm mb-2">Create Your Own</h3>
+            <h3 className="text-[#6B6B6B] text-sm mb-2">Create Your Own
+            </h3>
+            <p className='text-[#6B6B6B] text-sm mb-2'>Please upload a valid portrait</p>
             <div className="flex items-center gap-[21px]">
               {clickAvatar ? (
                 <Image src={clickAvatar} alt="" width={128} height={128} className="max-w-[169px] max-h-[158px] h-full w-full object-cover rounded-[5px]" />
