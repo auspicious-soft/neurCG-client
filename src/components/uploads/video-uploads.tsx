@@ -48,7 +48,7 @@ const VideoUploads = (props: VideoUploadsProps) => {
     }, [props, props?.data])
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-            {data?.map((data: any) => (
+            {data?.length > 0 ? data?.map((data: any) => (
                 <VideoCards
                     isDeletable={false}
                     key={data._id}
@@ -57,7 +57,11 @@ const VideoUploads = (props: VideoUploadsProps) => {
                     videoSrc={projectVideoLink[data._id]}
                     id={data._id}
                 />
-            ))}
+            ))
+                :
+
+                <div className="text-center">No videos uploaded yet</div>
+            }
         </div>
     )
 }
