@@ -39,7 +39,27 @@ const VideoCards: React.FC<VideoCardProps> = ({
   const closeModal = () => {
     setIsOpen(false);
   };
-
+   const handleShare = () => {
+          if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard.writeText(videoSrc).then(() => {
+                  toast.success('Link copied to clipboard');
+              }, () => {
+                  toast.error('Failed to copy link');
+              });
+          } else {
+              const textArea = document.createElement('textarea');
+              textArea.value = videoSrc;
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              if (document.execCommand('copy')) {
+                  toast.success('Link copied to clipboard');
+              } else {
+                  toast.error('Failed to copy link');
+              }
+              document.body.removeChild(textArea);
+          }
+      };
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = videoSrc;
@@ -124,7 +144,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
             <ReactPlayer url={videoSrc} width="100%" height="100%" controls />
           </div>
           <div className="flex items-center justify-end gap-5 mt-5">
-            <button>
+            <button onClick={handleShare} >
               <ShareIcon />
             </button>
             <button
