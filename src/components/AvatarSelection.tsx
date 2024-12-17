@@ -279,7 +279,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
                 ) : (
                   <Image
                     unoptimized
-                    src={selectedImageFromFlask ?? avatarImages[finalPremadeAvatars[0]?._id] ?? WhiteBg }
+                    src={(selectedImageFromFlask || avatarImages[finalPremadeAvatars[0]?._id]) ?? WhiteBg }
                     alt="Selected Avatar"
                     width={200}
                     height={200}
