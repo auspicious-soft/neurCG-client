@@ -6,10 +6,11 @@ import { getAvatarsUsedFromFlask, getMediaUrlFromFlaskProxy } from '@/utils'
 
 interface ProjectMapProps {
     data: any
+    isDeletable: boolean
 }
 
 const ProjectMap = (props: ProjectMapProps) => {
-    const { data } = props
+    const { data, isDeletable } = props
     const [projectImages, setProjectImages] = React.useState<any>([])
     const [projectVideoLink, setProjectVideoLink] = React.useState<any>([])
 
@@ -51,7 +52,7 @@ const ProjectMap = (props: ProjectMapProps) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
             {data?.map((data: any) => (
                 <VideoCards
-                    isDeletable
+                    isDeletable={isDeletable}
                     key={data._id}
                     title={data.projectName}
                     thumbnail={projectImages[data._id]}

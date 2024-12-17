@@ -15,7 +15,7 @@ interface VideoCardProps {
   videoSrc: string;
   title: string;
   thumbnail?: string;
-  isDeletable?: boolean;
+  isDeletable: boolean;
   mutate?: any
   id?: string
 }

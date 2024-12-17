@@ -15,12 +15,12 @@ const Page = async () => {
 
       <section className="my-projects-recent">
         <h2 className="section-title mb-[10px] md:mb-5">Recent</h2>
-        <ProjectMap data={ClientVideos} />
+        <ProjectMap data={ClientVideos} isDeletable={true} />
       </section>
 
       <section className="last-months mt-[30px] md:mt-[40px]">
         {LastMonthData.length > 0 && <h2 className="section-title mb-[10px] md:mb-5">Last Month</h2>}
-        <ProjectMap data={LastMonthData} />
+        <ProjectMap data={LastMonthData} isDeletable={true} />
       </section>
 
     </div>

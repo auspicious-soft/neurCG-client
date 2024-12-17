@@ -68,7 +68,7 @@ const Home = () => {
       </section>
       <section className='mt-[30px] md:mt-[50px]'>
         <h2 className="section-title mb-[10px] md:mb-5">Recent</h2>
-        <ProjectMap data={ClientVideos} />
+        <ProjectMap data={ClientVideos} isDeletable={false} />
       </section>
     </div>
   );
