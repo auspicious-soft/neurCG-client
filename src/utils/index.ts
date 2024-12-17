@@ -71,3 +71,19 @@ export const getFileNameAndExtension = (file: File) => {
     const fileExtension = file.name.substring(lastDotIndex + 1);
     return { fileName, fileExtension };
 }
+
+export const containsMyMedia = (project: any) => {
+    return ['projectAvatar', 'preferredVoice', 'audio', 'video'].some(key => project[key]?.includes('my-media'))
+}
+
+export const containsMyImages = (project: any) => {
+    return ['jpg', 'png', 'jpeg'].some(ext => project?.projectAvatar?.includes(ext) && project?.projectAvatar?.includes('my-media'))
+}
+
+export const containsMyAudio = (project: any) => {  
+    return ['mp3', 'wav', 'ogg'].some(ext => project?.audio?.includes(ext) && project?.audio?.includes('my-media'))
+}
+
+export const containsMyVideos = (project: any) => {
+    return ['mp4', 'webm', 'mkv', 'avi', 'mov'].some(ext => project?.video?.includes(ext) && project?.video?.includes('my-media'))
+}

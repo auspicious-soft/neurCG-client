@@ -24,7 +24,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
   videoSrc,
   title,
   thumbnail,
-  isDeletable = false,
+  isDeletable,
   mutate,
   id
 }) => {

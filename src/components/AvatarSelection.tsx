@@ -1,10 +1,9 @@
 import 'react-responsive-modal/styles.css';
 import React, { useState, useRef, useCallback, useEffect, use, useMemo } from "react";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "@/utils/getCroppedImg"; // Implement this function
 import { CameraIcon } from "@/utils/svgIcons";
-import Modal from "react-modal";
 import instructionimg from "@/assets/images/instruction.png";
 import useSWR from "swr";
 import { getAvatars } from "@/services/user-service";
