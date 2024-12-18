@@ -36,8 +36,7 @@ const Page = () => {
     useEffect(() => {
         const availableSeconds = totalAvailableMinutes * 60;
         if ((preferredVoice) && !isLoading) {
-            const file = preferredVoice as File;
-            const url = URL.createObjectURL(file)
+            const url = URL.createObjectURL(preferredVoice as File)
             const audio = new Audio(url);
             audio.addEventListener('loadedmetadata', () => {
                 const duration = audio.duration;                    // duration in seconds
@@ -45,19 +44,16 @@ const Page = () => {
                 URL.revokeObjectURL(url);
             })
         }
-        if(recordedVoice && !isLoading) {
-           const file = recordedVoice as File;
-           console.log('file: ', file);
-            const url = URL.createObjectURL(file)
-            const audio = new Audio(url);
-            console.log('audio: ', audio);
-            audio.addEventListener('loadedmetadata', () => {
-                const duration = audio.duration;                    // duration in seconds
-                console.log('duration: ', duration);
-                setDuration(duration)
-                URL.revokeObjectURL(url);
-            })
-        }
+        // if(recordedVoice && !isLoading) {
+        //     const url = URL.createObjectURL(recordedVoice as File)
+        //     const audio = new Audio(url);
+        //     audio.addEventListener('loadedmetadata', () => {
+        //         const duration = audio.duration                    // duration in seconds
+        //         console.log('duration: ', duration);
+        //         // setDuration(duration)
+        //         URL.revokeObjectURL(url);
+        //     })
+        // }
     if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
     }, [preferredVoice, isLoading, totalAvailableMinutes, duration, recordedVoice])
 
@@ -118,7 +114,8 @@ const Page = () => {
                 }
 
                 if (recordedVoice instanceof File) {
-                    const { fileName, fileExtension } = getFileNameAndExtension(recordedVoice);
+                    const { fileName, fileExtension } = getFileNameAndExtension(recordedVoice)
+                    setDuration(recordedVoice.size / 1000000)
                     const audioKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`;
                     const uploadResponse = await postMediaToFlaskProxy(recordedVoice, audioKey)
                     if (!uploadResponse.success) toast.error('Something went wrong. Please try again')

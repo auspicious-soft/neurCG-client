@@ -135,8 +135,8 @@ const AddAudio = (props: any) => {
             const audioBlob = new Blob(chunks, { type: mimeType });
 
             // Create a File object
-            const audioFile = new File([audioBlob], `audio-${new Date().getTime()}.wav`, {
-              type: 'audio/wav',
+            const audioFile = new File([audioBlob], `audio-${new Date().getTime()}.${mimeType.split('/')[1]}`, {
+              type: mimeType,
               lastModified: Date.now(),
             });
 
