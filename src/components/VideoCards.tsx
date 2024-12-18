@@ -95,7 +95,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
       >
         {isDeletable && (
           <button
-            className="absolute top-2 right-2 z-10"
+            className="absolute top-2 right-2 z-[1]"
             onClick={(e) => {
               e.stopPropagation();
               setIsDeleteOpen(true);
