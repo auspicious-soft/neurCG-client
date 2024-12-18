@@ -144,9 +144,9 @@ const VideoCards: React.FC<VideoCardProps> = ({
             <ReactPlayer url={videoSrc} width="100%" height="100%" controls />
           </div>
           <div className="flex items-center justify-end gap-5 mt-5">
-            <button onClick={handleShare} >
-              <ShareIcon />
-            </button>
+              {/* <button onClick={handleShare} >
+                <ShareIcon />
+              </button> */}
             <button
               className="w-[168px] text-center text-sm bg-[#E87223] text-white py-[15px] px-6 rounded-[5px]"
               onClick={handleDownload}
