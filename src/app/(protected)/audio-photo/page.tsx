@@ -34,19 +34,31 @@ const Page = () => {
     const openModal = () => setIsModalOpen(true)
 
     useEffect(() => {
-        if ((preferredVoice || recordedVoice) && !isLoading) {
-            const availableSeconds = totalAvailableMinutes * 60;
-            const file = (preferredVoice ?? recordedVoice) as File;
-            const url = URL.createObjectURL(file);
+        const availableSeconds = totalAvailableMinutes * 60;
+        if ((preferredVoice) && !isLoading) {
+            const file = preferredVoice as File;
+            const url = URL.createObjectURL(file)
             const audio = new Audio(url);
+            audio.addEventListener('loadedmetadata', () => {
+                const duration = audio.duration;                    // duration in seconds
+                setDuration(duration)
+                URL.revokeObjectURL(url);
+            })
+        }
+        if(recordedVoice && !isLoading) {
+           const file = recordedVoice as File;
+           console.log('file: ', file);
+            const url = URL.createObjectURL(file)
+            const audio = new Audio(url);
+            console.log('audio: ', audio);
             audio.addEventListener('loadedmetadata', () => {
                 const duration = audio.duration;                    // duration in seconds
                 console.log('duration: ', duration);
                 setDuration(duration)
                 URL.revokeObjectURL(url);
             })
-            if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
         }
+    if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
     }, [preferredVoice, isLoading, totalAvailableMinutes, duration, recordedVoice])
 
     useEffect(() => {
@@ -94,7 +106,7 @@ const Page = () => {
                     if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     projectAvatarUrl = imageKey
                 }
-                 
+
 
                 // Either preferredVoice or recordedVoice exists as they have different states
                 if (preferredVoice instanceof File) {

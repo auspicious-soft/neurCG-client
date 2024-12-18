@@ -337,7 +337,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
                 <button className="xl:min-w-[145px] text-xs text-[#E87223] bg-white px-4 py-[7px] mb-[10px] rounded-[3px] border border-[#E87223]" onClick={onOpenModal}>
                   Open Camera
                 </button>
-                <label className="xl:min-w-[145px] font-inter h-[32px] !text-xs bg-[#E87223] !text-white px-4 py-[8px] rounded-[3px] cursor-pointer text-center">
+                <label className="font-inter !text-xs bg-[#E87223] !text-white px-4 py-[10px] rounded-[3px] cursor-pointer text-center">
                   Browse Gallery
                   <input required={avatarId === null} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                 </label>
