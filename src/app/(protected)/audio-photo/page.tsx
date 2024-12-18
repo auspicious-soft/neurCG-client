@@ -33,6 +33,13 @@ const Page = () => {
     const totalAvailableMinutes = totalSeconds / 60
     const openModal = () => setIsModalOpen(true)
 
+    const getAudioDuration = async (file: File) => {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const arrayBuffer = await file.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        return audioBuffer.duration
+    };
+    
     useEffect(() => {
         const availableSeconds = totalAvailableMinutes * 60;
         if ((preferredVoice) && !isLoading) {
@@ -44,16 +51,15 @@ const Page = () => {
                 URL.revokeObjectURL(url);
             })
         }
-        // if(recordedVoice && !isLoading) {
-        //     const url = URL.createObjectURL(recordedVoice as File)
-        //     const audio = new Audio(url);
-        //     audio.addEventListener('loadedmetadata', () => {
-        //         const duration = audio.duration                    // duration in seconds
-        //         console.log('duration: ', duration);
-        //         // setDuration(duration)
-        //         URL.revokeObjectURL(url);
-        //     })
-        // }
+
+        if(recordedVoice && !isLoading) {
+            getAudioDuration(recordedVoice as File).then((duration) => {
+                setDuration(duration);
+            }).catch((error) => {
+                console.error('Error decoding recorded audio file:', error);
+            });
+        }
+
     if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
     }, [preferredVoice, isLoading, totalAvailableMinutes, duration, recordedVoice])
 
