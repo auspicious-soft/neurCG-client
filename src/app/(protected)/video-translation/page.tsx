@@ -3,13 +3,10 @@ import AddVideo from '@/components/AddVideo';
 import AddVoice from '@/components/AddVoice';
 import Subtitles from '@/components/Subtitles';
 import Modal from "react-modal";
-import React, { use, useEffect, useState, useTransition } from 'react';
-import AvatarSelection from '@/components/AvatarSelection';
-import TextSelection from '@/components/TextSelection';
+import React, { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { convertTextToVideo, getUserInfo, translateVideo } from '@/services/user-service';
+import { getUserInfo, translateVideo } from '@/services/user-service';
 import { useSession } from 'next-auth/react';
-import { generateSignedUrlToUploadOn, getImageUrl } from '@/actions';
 import ReactLoading from 'react-loading'
 import ProcessingLoader from "@/components/ProcessingLoader";
 import VideoResponse from "@/components/VideoResponse";

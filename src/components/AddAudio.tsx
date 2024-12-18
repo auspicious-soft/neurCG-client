@@ -135,8 +135,8 @@ const AddAudio = (props: any) => {
             const audioBlob = new Blob(chunks, { type: mimeType });
 
             // Create a File object
-            const audioFile = new File([audioBlob], "audio (1).webm", {
-              type: mimeType,
+            const audioFile = new File([audioBlob], `audio-${new Date().getTime()}.wav`, {
+              type: 'audio/wav',
               lastModified: Date.now(),
             });
 

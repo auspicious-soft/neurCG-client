@@ -67,7 +67,7 @@ const AddVideo = (props: any) => {
                 <div className="relative h-full z-[2]">
                   <video
                     src={previewVideo}
-                    className="rounded-[5px] object-cover h-full w-full"
+                    className="rounded-[5px] object-contain h-full w-full"
                     controls
                   />
                   <button

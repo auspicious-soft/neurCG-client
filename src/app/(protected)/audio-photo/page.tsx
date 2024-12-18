@@ -34,19 +34,20 @@ const Page = () => {
     const openModal = () => setIsModalOpen(true)
 
     useEffect(() => {
-        if (preferredVoice && !isLoading) {
+        if ((preferredVoice || recordedVoice) && !isLoading) {
             const availableSeconds = totalAvailableMinutes * 60;
-            const file = preferredVoice as File;
+            const file = (preferredVoice ?? recordedVoice) as File;
             const url = URL.createObjectURL(file);
             const audio = new Audio(url);
             audio.addEventListener('loadedmetadata', () => {
                 const duration = audio.duration;                    // duration in seconds
+                console.log('duration: ', duration);
                 setDuration(duration)
                 URL.revokeObjectURL(url);
             })
             if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
         }
-    }, [preferredVoice, isLoading, totalAvailableMinutes, duration])
+    }, [preferredVoice, isLoading, totalAvailableMinutes, duration, recordedVoice])
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -93,7 +94,9 @@ const Page = () => {
                     if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     projectAvatarUrl = imageKey
                 }
+                 
 
+                // Either preferredVoice or recordedVoice exists as they have different states
                 if (preferredVoice instanceof File) {
                     const { fileName, fileExtension } = getFileNameAndExtension(preferredVoice);
                     const audioKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`;
