@@ -129,17 +129,10 @@ const Page = () => {
 
                 // Upload the videoUploaded file
                 const videoUploadedFile = videoUploaded as File;
-                const uploadUrl = await generateSignedUrlToUploadOn(videoUploadedFile.name, videoUploadedFile.type, email)
-                const uploadResponse = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    body: videoUploadedFile,
-                    headers: {
-                        'Content-Type': videoUploadedFile.type,
-                    },
-                    cache: 'no-store'
-                })
-                if (!uploadResponse.ok) toast.error('Something went wrong. Please try again')
-                const videoKey = `projects/${email}/my-media/${videoUploadedFile.name}`
+                const { fileName, fileExtension } = getFileNameAndExtension(videoUploadedFile)
+                const videoKey = `projects/${email}/my-media/${fileName}-${new Date().getTime()}.${fileExtension}`
+                const uploadResponse = await postMediaToFlaskProxy(videoUploadedFile, videoKey)
+                if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
 
                 let projectAvatarUrl: string | undefined;
                 let preferredVoiceUrl: string | undefined;
