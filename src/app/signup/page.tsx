@@ -65,7 +65,7 @@ export default function Signup() {
       })
       if (resss?.success) {
         toast.success("Signed up successfully");
-        router.push("/login");
+        router.push("/verify-email");
       } else {
         toast.error(
           Array.isArray(resss?.message)
