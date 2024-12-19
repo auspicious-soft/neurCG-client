@@ -17,7 +17,7 @@ interface SideBarProps {
 const SideBar = ({ isOpen, toggleSidebar }: SideBarProps) => {
   const pathname = usePathname()
   const session = useSession()
-  const { data, isLoading, mutate } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
+  const { data, isLoading, mutate } = useSWR(session.data?.user?.id ? `/user/${session.data?.user?.id}`: null, getUserInfo, { revalidateOnFocus: false })
   const dataOfUser = data?.data.data
   const isActive = (path: string) => pathname === path ? 'active' : ''
 

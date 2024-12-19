@@ -14,6 +14,7 @@ import { convertAudioToVideo, getUserInfo } from '@/services/user-service';
 import { SECONDS_PER_CREDIT } from '@/constants';
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from '@/utils';
 import UseReload from '@/components/hooks/use-reload';
+import { getAxiosInstance } from '@/utils/axios';
 
 const Page = () => {
     const [progress, setProgress] = useState(0)
@@ -40,7 +41,7 @@ const Page = () => {
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         return audioBuffer.duration
     };
-    
+
     useEffect(() => {
         const availableSeconds = totalAvailableMinutes * 60;
         if ((preferredVoice) && !isLoading) {
@@ -53,7 +54,7 @@ const Page = () => {
             })
         }
 
-        if(recordedVoice && !isLoading) {
+        if (recordedVoice && !isLoading) {
             getAudioDuration(recordedVoice as File).then((duration) => {
                 setDuration(duration);
             }).catch((error) => {
@@ -61,7 +62,7 @@ const Page = () => {
             });
         }
 
-    if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
+        if (duration > availableSeconds) toast.warning(`Audio is too long! You have credits for ${totalAvailableMinutes.toFixed(1)} minutes of video. Please reduce the text or purchase more credits.`, { duration: 3000 })
     }, [preferredVoice, isLoading, totalAvailableMinutes, duration, recordedVoice])
 
     useEffect(() => {
@@ -161,10 +162,13 @@ const Page = () => {
             <ReactLoading type="spin" color="#E87223" height={40} width={40} />
         </div>
     }
-
+    const handleBeforeUnload = async () => {
+        const axiosInstance = await getAxiosInstance()
+        axiosInstance.patch(`/user/${session?.user?.id}/stop-project-creation`)
+    }
     return (
         <div>
-            <UseReload isLoading={isPending} />
+            <UseReload isLoading={isPending} onBeforeUnload={handleBeforeUnload} />
             <AvatarSelection
                 setAvatarId={setAvatarId}
                 setMyOwnImage={setMyOwnImage}

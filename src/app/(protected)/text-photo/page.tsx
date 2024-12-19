@@ -15,6 +15,7 @@ import useSWR from "swr";
 import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constants";
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
 import UseReload from "@/components/hooks/use-reload";
+import { getAxiosInstance } from "@/utils/axios";
 const customStyles = {
     content: {
         // width: '450px',
@@ -60,8 +61,7 @@ const Page = () => {
     const [subtitlesLanguage, setSubtitlesLanguage] = useState<string | null | undefined>();
     const [progress, setProgress] = useState(0)
     const [isPending, startTransition] = useTransition()
-
-    const { data: userData, isLoading, mutate } = useSWR(`/user/${session?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
+    const { data: userData, isLoading, mutate } = useSWR(session?.user?.id ? `/user/${session?.user?.id}` : null, getUserInfo, { revalidateOnFocus: false })
     const userCreditsLeft = userData?.data?.data?.creditsLeft || 0
     const { availableMinutes, maxCharacters } = calculateVideoCredits(userCreditsLeft);
     const [videoSrc, setVideoSrc] = useState<string | null>(null);
@@ -174,9 +174,15 @@ const Page = () => {
     const isTextTooLong = estimateVideoLengthOfText(text) > (availableMinutes * 60);
     const remainingSeconds = (availableMinutes * 60) - estimateVideoLengthOfText(text);
     const estimatedLength = estimateVideoLengthOfText(text)
+
+    const handleBeforeUnload = async () => {
+        const axiosInstance = await getAxiosInstance()
+        axiosInstance.patch(`/user/${session?.user?.id}/stop-project-creation`)
+    }
+
     return (
         <form>
-            <UseReload isLoading={isPending} />
+            <UseReload isLoading={isPending} onBeforeUnload={handleBeforeUnload} />
             <AvatarSelection
                 setAvatarId={setAvatarId}
                 setMyOwnImage={setMyOwnImage}

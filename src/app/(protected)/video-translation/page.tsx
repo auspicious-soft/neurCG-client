@@ -14,6 +14,7 @@ import useSWR from "swr";
 import { SECONDS_PER_CREDIT } from '@/constants';
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from '@/utils';
 import UseReload from '@/components/hooks/use-reload';
+import { getAxiosInstance } from '@/utils/axios';
 
 
 const customStyles = {
@@ -150,7 +151,7 @@ const Page = () => {
                     if (!uploadResponse.success) toast.error('Something went wrong. Please try again')
                     preferredVoiceUrl = audioKey
                 }
-                
+
                 const data = {
                     video: videoKey,
                     projectAvatar: projectAvatarUrl,
@@ -189,10 +190,14 @@ const Page = () => {
             <ReactLoading type="spin" color="#E87223" height={40} width={40} />
         </div>
     }
+    const handleBeforeUnload = async () => {
+        const axiosInstance = await getAxiosInstance()
+        axiosInstance.patch(`/user/${session?.user?.id}/stop-project-creation`)
+    }
 
     return (
         <div>
-            <UseReload isLoading={isPending} />
+            <UseReload isLoading={isPending} onBeforeUnload={handleBeforeUnload} />
             <AddVideo
                 videoUploaded={videoUploaded}
                 setVideoUploaded={setVideoUploaded}

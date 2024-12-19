@@ -45,7 +45,7 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
   const [customVoice, setCustomVoice] = useState<string | null>(null);
   const [customVoiceFileName, setCustomVoiceFileName] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null);
-  const { data } = useSWR(`/user/${session.data?.user?.id}`, getUserInfo, { revalidateOnFocus: false });
+  const { data } = useSWR(session.data?.user?.id ?`/user/${session.data?.user?.id}` : null, getUserInfo, { revalidateOnFocus: false });
   const planType = data?.data?.data?.planType;
   const toggleOpen = () => {
     setIsOpen(!isOpen);
