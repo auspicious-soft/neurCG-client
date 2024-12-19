@@ -1,4 +1,5 @@
 "use client";
+
 import Modal from "react-modal";
 import React, { useEffect, useState, useTransition } from 'react';
 import AvatarSelection from '@/components/AvatarSelection';
@@ -13,6 +14,7 @@ import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
 import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constants";
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
+import UseReload from "@/components/hooks/use-reload";
 const customStyles = {
     content: {
         // width: '450px',
@@ -174,6 +176,7 @@ const Page = () => {
     const estimatedLength = estimateVideoLengthOfText(text)
     return (
         <form>
+            <UseReload isLoading={isPending} />
             <AvatarSelection
                 setAvatarId={setAvatarId}
                 setMyOwnImage={setMyOwnImage}

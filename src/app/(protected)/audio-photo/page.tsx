@@ -13,6 +13,7 @@ import useSWR from 'swr';
 import { convertAudioToVideo, getUserInfo } from '@/services/user-service';
 import { SECONDS_PER_CREDIT } from '@/constants';
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from '@/utils';
+import UseReload from '@/components/hooks/use-reload';
 
 const Page = () => {
     const [progress, setProgress] = useState(0)
@@ -163,6 +164,7 @@ const Page = () => {
 
     return (
         <div>
+            <UseReload isLoading={isPending} />
             <AvatarSelection
                 setAvatarId={setAvatarId}
                 setMyOwnImage={setMyOwnImage}

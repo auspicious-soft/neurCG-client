@@ -13,6 +13,7 @@ import VideoResponse from "@/components/VideoResponse";
 import useSWR from "swr";
 import { SECONDS_PER_CREDIT } from '@/constants';
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from '@/utils';
+import UseReload from '@/components/hooks/use-reload';
 
 
 const customStyles = {
@@ -86,7 +87,7 @@ const Page = () => {
                     ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
                     canvas.toBlob((blob) => {
                         if (blob) {
-                            const thumbnailFile = new File([blob], `thumbnail.jpg`, { type: 'image/jpeg' });
+                            const thumbnailFile = new File([blob], `thumbnail-${Date.now()}.jpg`, { type: 'image/jpeg' });
                             setProjectAvatar(thumbnailFile);
                         }
                     }, 'image/jpeg');
@@ -191,6 +192,7 @@ const Page = () => {
 
     return (
         <div>
+            <UseReload isLoading={isPending} />
             <AddVideo
                 videoUploaded={videoUploaded}
                 setVideoUploaded={setVideoUploaded}
