@@ -14,6 +14,7 @@ import PrivacyPolicy from "@/components/PrivacyPolicy";
 import { CrossIcon } from "@/utils/svgIcons";
 import Link from "next/link";
 import GoogleButton from "@/components/GoogleButton";
+import { disposableEmails } from "@/utils/verify-email";
 export default function Signup() {
   const [opemModal, setOpenModal] = useState(false);
 
@@ -37,6 +38,10 @@ export default function Signup() {
       const password = formData.get("password") as string;
       const firstName = formData.get("firstName") as string;
       const lastName = formData.get("lastName") as string;
+      const emailDomain = email.split("@")[1];
+      if (disposableEmails.includes(emailDomain)) {
+        return toast.error("Email entered is not valid");
+      }
       const confirmPassword = formData.get("confirmPassword") as string;
       const isPolicyChecked = formData.get("isPolicyChecked") as string;
 
