@@ -37,7 +37,7 @@ function VerifyEmailComponent() {
         // }
     }, [router, searchParams, token, userId]);
 
-    const { isLoading, error } = useSWR(`/user/verify-email/${userId}`, verifyEmailService);
+    const { isLoading, error } = useSWR(userId ? `/user/verify-email/${userId}` : null, verifyEmailService);
 
     if (error && token && userId) return (
         <div style={containerStyle}>
