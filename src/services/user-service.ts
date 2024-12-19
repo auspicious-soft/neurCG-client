@@ -28,6 +28,11 @@ export const updateUserInfo = async (id: string, formData: any) => {
     return axiosInstance.put(id, formData);
 }
 
+export const verifyEmailService = async (route: string) => {
+    const axiosInstance = await getAxiosInstance();
+    return axiosInstance.patch(route);
+}
+
 export const getAvatars = async (route: string) => {
     const axiosInstance = await getAxiosInstance();
     return axiosInstance.get(route)

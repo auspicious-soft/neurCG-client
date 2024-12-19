@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideSideBar = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword'];
-  const hideHeader = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword'];
+  const hideSideBar = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword', '/verify-email'];
+  const hideHeader = ['/signup', '/login', '/forgotpassword', '/otp', '/newpassword', '/verify-email'];
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
