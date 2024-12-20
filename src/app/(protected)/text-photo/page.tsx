@@ -16,6 +16,7 @@ import { CHARS_PER_WORD, SECONDS_PER_CREDIT, WORDS_PER_MINUTE } from "@/constant
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
 import UseReload from "@/components/hooks/use-reload";
 import { getAxiosInstance } from "@/utils/axios";
+import ConfirmModal from "@/components/child modal/child-modal";
 const customStyles = {
     content: {
         // width: '450px',
@@ -50,6 +51,7 @@ const estimateVideoLengthOfText = (text: string): number => {
 }
 
 const Page = () => {
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const { data: session } = useSession()
     const [avatarId, setAvatarId] = useState<string | null>(null);
@@ -180,6 +182,12 @@ const Page = () => {
         axiosInstance.patch(`/user/${session?.user?.id}/stop-project-creation`)
     }
 
+    const confirmChildClose = async () => {
+        setShowConfirmModal(false);
+        setIsModalOpen(false);
+        await handleBeforeUnload();
+    }
+
     return (
         <form>
             <UseReload isLoading={isPending} onBeforeUnload={handleBeforeUnload} />
@@ -234,12 +242,19 @@ const Page = () => {
                 >
                     {!isPending ? 'Animate' : <ReactLoading type={'bars'} color={'white'} height={'40px'} width={'40px'} />}
                 </button>
+
                 <Modal
                     isOpen={isModalOpen}
-                    onRequestClose={() => setIsModalOpen(false)}
+                    onRequestClose={(e) => {
+                        if (e.type === 'click') {
+                            setShowConfirmModal(true)
+                            return
+                        }
+                        setIsModalOpen(false)
+                    }}
                     style={customStyles}
                     contentLabel="Confirm Cancel Subscription"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[50]"
                     ariaHideApp={false}
                 >
                     {(isPending && progress <= 100) ?
@@ -247,6 +262,12 @@ const Page = () => {
                         <VideoResponse modalClose={() => setIsModalOpen(false)} videoSrc={videoSrc} />
                     }
                 </Modal>
+
+                <ConfirmModal
+                    isOpen={showConfirmModal}
+                    onClose={() => setShowConfirmModal(false)}
+                    onConfirm={confirmChildClose}
+                />
             </div>
         </form>
     )

@@ -15,8 +15,10 @@ import { SECONDS_PER_CREDIT } from '@/constants';
 import { getFileNameAndExtension, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from '@/utils';
 import UseReload from '@/components/hooks/use-reload';
 import { getAxiosInstance } from '@/utils/axios';
+import ConfirmModal from "@/components/child modal/child-modal";
 
 const Page = () => {
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [progress, setProgress] = useState(0)
     const [duration, setDuration] = useState(0)
     const [recordedVoice, setRecordedVoice] = useState<string | File | null>(null)
@@ -166,6 +168,13 @@ const Page = () => {
         const axiosInstance = await getAxiosInstance()
         axiosInstance.patch(`/user/${session?.user?.id}/stop-project-creation`)
     }
+
+    const confirmChildClose = async () => {
+        setShowConfirmModal(false);
+        setIsModalOpen(false);
+        await handleBeforeUnload();
+    }
+    
     return (
         <div>
             <UseReload isLoading={isPending} onBeforeUnload={handleBeforeUnload} />
@@ -241,6 +250,11 @@ const Page = () => {
                         <ProcessingLoader progress={progress} /> : <VideoResponse modalClose={() => setIsModalOpen(false)} videoSrc={videoSrc} />
                     }
                 </Modal>
+                <ConfirmModal
+                    isOpen={showConfirmModal}
+                    onClose={() => setShowConfirmModal(false)}
+                    onConfirm={confirmChildClose}
+                />
             </div>
         </div>
     );
