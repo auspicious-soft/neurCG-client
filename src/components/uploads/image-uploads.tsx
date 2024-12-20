@@ -30,7 +30,7 @@ const ImageUploads = (props: ImageUploadsProps) => {
     }, [props, props?.data])
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-10">
-            {data.length > 0 ? data?.map((data: any, index: number) => {
+            {data?.length > 0 ? data?.map((data: any, index: number) => {
                 return <div key={index}>
                     {Object.keys(uploadedImages).length > 0 ?
                         <Image
