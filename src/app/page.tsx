@@ -1,22 +1,18 @@
 'use client'
 import Tabs from '@/components/Tabs';
-import React, { useEffect } from 'react';
+import React from 'react';
 import thumbimg1 from "@/assets/images/video1.png"
 import thumbimg2 from "@/assets/images/video2.png"
 import thumbimg3 from "@/assets/images/video3.png"
 import thumbimg4 from "@/assets/images/video4.png"
 import NeurcgCard from "@/components/NeurcgCard"
-import VideoCards from '@/components/VideoCards';
-import dynamic from "next/dynamic";
 import { redirect } from 'next/navigation';
-import { auth } from '@/auth';
 import { getUserProjects } from '@/services/user-service';
-import { getImageUrlOfS3 } from '@/utils';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import ProjectMap from '@/components/project-map';
+import GoogleAd from '@/components/hooks/google-ads';
 
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const VideoData = [
   {
     id: 1,

@@ -8,6 +8,8 @@ import dp from "@/assets/images/profilepic.png";
 import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 import { SessionProvider } from "next-auth/react";
+import Script from "next/script";
+
 
 export default function RootLayout({
   children,
@@ -28,6 +30,12 @@ export default function RootLayout({
       <head>
         <title>Maity</title>
         <link rel="icon" href="/public/vercel.svg" />
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}`}
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
       </head>
       <SessionProvider>
         <body>
