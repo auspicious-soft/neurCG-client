@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { VideoCameraIcon } from "@heroicons/react/24/solid"; // Assuming you have this icon or any other
 import { CrossIcon, UploadIcon } from "@/utils/svgIcons";
+import { toast } from "sonner";
 
 const AddVideo = (props: any) => {
   const { setVideoUploaded, setOriginalText, setTranslatedText } = props
@@ -27,6 +28,10 @@ const AddVideo = (props: any) => {
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      if (e.target.files[0].name && e.target.files[0].name.includes(' ')) {
+        toast.warning('Please upload a file with no spaces in its name. Use underscores (_) or hyphens (-) instead.', { position: "bottom-left" })
+        return
+      }
       setVideoUploaded(e.target.files[0])
       const videoUrl = URL.createObjectURL(e.target.files[0]);
       setPreviewVideo(videoUrl);
