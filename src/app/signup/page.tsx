@@ -68,7 +68,7 @@ export default function Signup() {
             Array.isArray(resss?.message)
               ? resss?.message[0].message
               : resss?.message
-          );
+          , { position: "bottom-left" });
       }
     };
     return (

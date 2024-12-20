@@ -37,7 +37,7 @@ export default function Login() {
         toast.success('Logged in successfully');
         window.location.href = '/';
       } else {
-        toast.error(Array.isArray(resss?.message) ? resss?.message[0].message : resss?.message);
+        toast.error(Array.isArray(resss?.message) ? resss?.message[0].message : resss?.message, { position: 'bottom-left' });
       }
     });
   };
@@ -82,7 +82,7 @@ export default function Login() {
                 >
                   {!isPending ? 'Login' : 'Logging in...'}
                 </button>
-                      <p className="text-gray-500 text-center m-2">Or</p> 
+                <p className="text-gray-500 text-center m-2">Or</p>
                 <GoogleButton />
                 <p className="login-desc mt-[19px]"> Don&apos;t have an account?
                   <Link href="/signup" className="text-[#e87223]"> Sign Up </Link>
