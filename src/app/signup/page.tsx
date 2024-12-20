@@ -56,22 +56,19 @@ export default function Signup() {
           "Please read the policy and accept the conditions"
         );
       }
-      const resss = await signupAction({
-        email,
-        password,
-        firstName,
-        lastName,
-        ...(referralCode && { referralCode }),
-      })
+      const resss = await signupAction({ email, password, firstName, lastName, ...(referralCode && { referralCode }) })
       if (resss?.success) {
         toast.success("Signed up successfully");
         router.push("/verify-email");
       } else {
-        toast.error(
-          Array.isArray(resss?.message)
-            ? resss?.message[0].message
-            : resss?.message
-        );
+        resss?.message == "Email already exists. Verification email sent" ?
+          toast.success("Email already exists. Verification email sent", { position: "bottom-left" })
+          :
+          toast.error(
+            Array.isArray(resss?.message)
+              ? resss?.message[0].message
+              : resss?.message
+          );
       }
     };
     return (
