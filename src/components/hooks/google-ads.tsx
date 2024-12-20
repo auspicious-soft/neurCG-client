@@ -29,10 +29,10 @@ export default function GoogleAd({ slot, format = 'auto', responsive = true, sty
             currentAd.setAttribute('data-ad-loaded', 'true');
           };
         } catch (err) {
-          console.error('AdSense error:', err)
+          console.error('AdSense error ----> ', err)
         }
       }, []) 
-
+      
  
   return (
     <ins
