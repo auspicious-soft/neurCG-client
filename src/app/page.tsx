@@ -48,6 +48,12 @@ const Home = () => {
 
   return (
     <div>
+      <div className='bg-black mb-2'>
+        <GoogleAd
+          slot="4694305978"  // Replace with your ad slot ID
+          style={{ minHeight: '250px' }}
+        />
+      </div>
       <Tabs />
       <section className=''>
         <h2 className='section-title mb-[10px] md:mb-5'>How to use Maity</h2>
