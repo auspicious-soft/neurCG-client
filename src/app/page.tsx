@@ -50,7 +50,7 @@ const Home = () => {
     <div>
       <div className='bg-black mb-2'>
         <GoogleAd
-          slot="4694305978"  // Replace with your ad slot ID
+          slot="6574363854"  // Replace with your ad slot ID
           style={{ minHeight: '250px' }}
         />
       </div>
