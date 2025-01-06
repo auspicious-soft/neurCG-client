@@ -39,6 +39,7 @@ export default function GoogleAd({ slot, format = 'auto', responsive = true, sty
       className="adsbygoogle"
       style={{
         display: 'block',
+        width: '100%',
         ...style
       }}
       data-ad-client={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}
