@@ -26,7 +26,7 @@ export default function RootLayout({
   const isAuthPage = hideSideBar.includes(pathname) || hideHeader.includes(pathname);
 
   return (
-    <html lang="en">
+    <html lang="en" className={`overflow-hidden`}>
       <head>
         <title>Maity</title>
         <link rel="icon" href="/public/vercel.svg" />
@@ -51,13 +51,13 @@ export default function RootLayout({
             )}
 
             <div className={`flex ${!isAuthPage ? ' h-[calc(100vh-104px)] md:h-[calc(100vh-110px)]' : 'h-full !overflow-visible'} flex-col lg:flex-row lg:overflow-hidden`}>
-              <div className="flex-none">
+              <div className="flex-none max-h-[calc(100vh-104px)]">
                 {!hideSideBar.includes(pathname) && (
                   <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
                 )}
               </div>
               <main
-                className={`flex-grow ${isAuthPage ? 'p-0 h-[100vh] auth-page-styles' : 'bg-[#F5F7FA] p-5 md:px-[35px] md:py-[40px] overflo-custom overflow-y-auto'}`}
+                className={`flex-grow  ${isAuthPage ? 'p-0  auth-page-styles' : 'bg-[#F5F7FA] max-h-[calc(100vh-104px)] p-5 md:px-[35px]  md:py-[40px] overflo-custom overflow-y-auto'}`}
               >
                 {children}
               </main>
