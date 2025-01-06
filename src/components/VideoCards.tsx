@@ -1,7 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import { CrossIcon, ShareIcon, VideoPlayerIcon, DeleteIcon } from "@/utils/svgIcons";
+import {
+  CrossIcon,
+  ShareIcon,
+  VideoPlayerIcon,
+  DeleteIcon,
+} from "@/utils/svgIcons";
 import Image from "next/image";
 import Modal from "react-modal";
 import deleteCross from "@/assets/images/delete.svg";
@@ -16,8 +21,8 @@ interface VideoCardProps {
   title: string;
   thumbnail?: string;
   isDeletable: boolean;
-  mutate?: any
-  id?: string
+  mutate?: any;
+  id?: string;
 }
 
 const VideoCards: React.FC<VideoCardProps> = ({
@@ -26,65 +31,79 @@ const VideoCards: React.FC<VideoCardProps> = ({
   thumbnail,
   isDeletable,
   mutate,
-  id
+  id,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = React.useTransition();  
   const router = useRouter();
   const handleCardClick = () => {
     setIsOpen(true);
   };
-
   const closeModal = () => {
     setIsOpen(false);
   };
-   const handleShare = () => {
-          if (navigator.clipboard && window.isSecureContext) {
-              navigator.clipboard.writeText(videoSrc).then(() => {
-                  toast.success('Link copied to clipboard');
-              }, () => {
-                  toast.error('Failed to copy link');
-              });
-          } else {
-              const textArea = document.createElement('textarea');
-              textArea.value = videoSrc;
-              document.body.appendChild(textArea);
-              textArea.focus();
-              textArea.select();
-              if (document.execCommand('copy')) {
-                  toast.success('Link copied to clipboard');
-              } else {
-                  toast.error('Failed to copy link');
-              }
-              document.body.removeChild(textArea);
-          }
-      };
+
   const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = videoSrc;
-    link.target = "_blank";
-    link.download = title || "video.mp4";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    fetch(videoSrc)
+      .then(response => response.blob())
+      .then(blob => {
+        const file = new File([blob], `${title || "video"}.mp4`, {
+          type: "video/mp4",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.target = "_blank";
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(() => {
+        toast.error("Failed to download video");
+      });
+  };
+
+  const handleShare = async (e: any) => {
+    e.stopPropagation();
+  
+    try {
+      const response = await fetch(videoSrc);
+      const blob = await response.blob();
+      const file = new File([blob], `${title || "video"}.mp4`, {
+        type: "video/mp4",
+      });
+  
+      const shareData = {
+        title: title,
+        files: [file],
+      };
+  
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        toast.error("Sharing not supported on this device");
+      }
+    } catch (error) {
+      toast.error("Failed to download or share video");
+      console.error("Share error:", error);
+    }
   };
 
   const handleDelete = async () => {
     startTransition(async () => {
       try {
-        const res = await deleteProject(`/user/projects/${id}`)
+        const res = await deleteProject(`/user/projects/${id}`);
         if (res.status === 200) {
-          console.log("Video Deleted Successfully")
-          window.location.reload()
-          setIsDeleteOpen(false)
+          console.log("Video Deleted Successfully");
+          window.location.reload();
+          setIsDeleteOpen(false);
           toast.success("Video Deleted Successfully");
         }
-      }
-      catch (error) {
+      } catch (error) {
         toast.error("Failed to delete video");
       }
-    })
+    });
   };
 
   return (
@@ -144,9 +163,9 @@ const VideoCards: React.FC<VideoCardProps> = ({
             <ReactPlayer url={videoSrc} width="100%" height="100%" controls />
           </div>
           <div className="flex items-center justify-end gap-5 mt-5">
-              {/* <button onClick={handleShare} >
+              <button onClick={(e)=> handleShare(e)}>
                 <ShareIcon />
-              </button> */}
+              </button>
             <button
               className="w-[168px] text-center text-sm bg-[#E87223] text-white py-[15px] px-6 rounded-[5px]"
               onClick={handleDownload}
@@ -165,15 +184,23 @@ const VideoCards: React.FC<VideoCardProps> = ({
         className="modal w-full md:max-w-[45%] h-auto p-5 rounded-[20px] overflow-y-auto relative bg-white"
         overlayClassName="z-[10] px-2 md:p-0 w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
-        <Image src={deleteCross} alt="delete" height={174} width={174} className="mx-auto" />
-        <h2 className="text-[20px] text-center leading-normal">Are you sure you want to Delete?</h2>
+        <Image
+          src={deleteCross}
+          alt="delete"
+          height={174}
+          width={174}
+          className="mx-auto"
+        />
+        <h2 className="text-[20px] text-center leading-normal">
+          Are you sure you want to Delete?
+        </h2>
         <div className="flex items-center justify-center gap-6 mt-8">
           <button
             type="button"
             onClick={handleDelete}
             className="py-[10px] px-8 bg-[#E87223] text-white rounded"
           >
-         {isPending ? "Deleting..." : "Yes Delete"}
+            {isPending ? "Deleting..." : "Yes Delete"}
           </button>
           <button
             type="button"
