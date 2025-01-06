@@ -8,28 +8,31 @@ const VideoResponse = ({
     videoSrc = 'https://videos.pexels.com/video-files/4058000/4058000-hd_1920_1080_25fps.mp4'
 }: any) => {
     const [downloading, setDownloading] = useState(false);
-
-    const handleShare = () => {
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(videoSrc).then(() => {
-                toast.success('Link copied to clipboard');
-            }, () => {
-                toast.error('Failed to copy link');
-            });
-        } else {
-            const textArea = document.createElement('textarea');
-            textArea.value = videoSrc;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            if (document.execCommand('copy')) {
-                toast.success('Link copied to clipboard');
-            } else {
-                toast.error('Failed to copy link');
-            }
-            document.body.removeChild(textArea);
-        }
-    };
+    const title = `video-file-${Date.now()}`
+     const handleShare = async (e: any) => {
+       e.stopPropagation();  
+       try {
+         const response = await fetch(videoSrc);
+         const blob = await response.blob();
+         const file = new File([blob], `${title || "video"}.mp4`, {
+           type: "video/mp4",
+         });
+     
+         const shareData = {
+           title: title,
+           files: [file],
+         };
+     
+         if (navigator.canShare && navigator.canShare(shareData)) {
+           await navigator.share(shareData);
+         } else {
+           toast.error("Sharing not supported on this device");
+         }
+       } catch (error) {
+         toast.error("Failed to download or share video");
+         console.error("Share error:", error);
+       }
+     };
 
     const handleDownload = async () => {
         const toastId = 'download-toast';
@@ -101,7 +104,7 @@ const VideoResponse = ({
             </div>
 
             <div className='flex w-full gap-5 mt-5 mb-1 justify-end'>
-                {/* <svg 
+                <svg 
                     onClick={handleShare} 
                     xmlns="http://www.w3.org/2000/svg" 
                     fill="none" 
@@ -115,7 +118,7 @@ const VideoResponse = ({
                         strokeLinejoin="round" 
                         d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" 
                     />
-                </svg> */}
+                </svg> 
 
                 <button 
                     onClick={handleDownload}
