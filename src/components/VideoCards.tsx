@@ -67,7 +67,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
   const handleShare = async (e: any) => {
     e.stopPropagation();
   
-    try {
+    // try {
       const response = await fetch(videoSrc);
       const blob = await response.blob();
       const file = new File([blob], `${title || "video"}.mp4`, {
@@ -84,10 +84,10 @@ const VideoCards: React.FC<VideoCardProps> = ({
       } else {
         toast.error("Sharing not supported on this device");
       }
-    } catch (error) {
-      toast.error("Failed to download or share video");
-      console.error("Share error:", error);
-    }
+    // } catch (error) {
+    //   toast.error("Failed to download or share video");
+    //   console.error("Share error:", error);
+    // }
   };
 
   const handleDelete = async () => {
