@@ -19,33 +19,35 @@ interface GoogleAdProps {
 }
 
 export default function GoogleAd({ slot, format = 'auto', responsive = true, style }: GoogleAdProps) {
-    useEffect(() => {
-        try {
-          const adElements = document.querySelectorAll('ins.adsbygoogle');
-          const currentAd = adElements[adElements.length - 1];
-          
-          if (currentAd && !currentAd.getAttribute('data-ad-loaded')) {
-            (window.adsbygoogle = window.adsbygoogle || [{ loaded: false, push: (params: {}) => {} }]).push({ loaded: true, push: (params: {}) => {} });
-            currentAd.setAttribute('data-ad-loaded', 'true');
-          };
-        } catch (err) {
-          console.error('AdSense error ----> ', err)
-        }
-      }, []) 
-      
- 
+  useEffect(() => {
+    try {
+      const adElements = document.querySelectorAll('ins.adsbygoogle');
+      const currentAd = adElements[adElements.length - 1];
+
+      if (currentAd && !currentAd.getAttribute('data-ad-loaded')) {
+        (window.adsbygoogle = window.adsbygoogle || [{ loaded: false, push: (params: {}) => { } }]).push({ loaded: true, push: (params: {}) => { } });
+        currentAd.setAttribute('data-ad-loaded', 'true');
+      };
+    } catch (err) {
+      console.error('AdSense error ----> ', err)
+    }
+  }, [])
+
+
   return (
-    <ins
-      className="adsbygoogle w-40"
-      style={{
-        display: 'block',
-        // width: '100%',
-        ...style
-      }}
-      data-ad-client={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}
-      data-ad-slot={slot}
-      data-ad-format={format}
-      data-full-width-responsive={responsive}
-    />
+    <div className='h-[300px]'>
+      <ins
+        className="adsbygoogle w-40"
+        style={{
+          display: 'block',
+          height: '100%',
+          ...style
+        }}
+        data-ad-client={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-full-width-responsive={responsive}
+      />
+    </div>
   )
 }

@@ -51,7 +51,7 @@ const Home = () => {
       <div className='bg-black mb-2'>
         <GoogleAd
           slot="6574363854"  // Replace with your ad slot ID
-          style={{ minHeight: '250px' }}
+          // style={{ maxHeight: '300px' }}
         />
       </div>
       <Tabs />
