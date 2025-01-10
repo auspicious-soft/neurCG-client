@@ -31,10 +31,12 @@ export default function RootLayout({
         <title>Maity</title>
         <link rel="icon" href="/public/vercel.svg" />
         <Script
+          // id="adsbygoogle-init"   
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}`}
           strategy="afterInteractive"
           crossOrigin="anonymous"
+          onError={(e) => console.error('Script failed to load', e)}  
         />
       </head>
       <SessionProvider>
