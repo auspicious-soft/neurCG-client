@@ -36,10 +36,10 @@ export default function GoogleAd({ slot, format = 'auto', responsive = true, sty
  
   return (
     <ins
-      className="adsbygoogle"
+      className="adsbygoogle w-40"
       style={{
         display: 'block',
-        width: '100%',
+        // width: '100%',
         ...style
       }}
       data-ad-client={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}

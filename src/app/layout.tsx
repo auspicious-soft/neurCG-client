@@ -51,7 +51,7 @@ export default function RootLayout({
             )}
 
             <div className={`flex ${!isAuthPage ? ' h-[calc(100vh-104px)] md:h-[calc(100vh-110px)]' : 'min-h-full h-full !overflow-visible'} flex-col lg:flex-row lg:overflow-hidden`}>
-              <div className="flex-none max-h-[calc(100vh-104px)] min-h-[calc(100vh-104px)]">
+              <div className="flex-none max-h-[calc(100vh-104px)]">
                 {!hideSideBar.includes(pathname) && (
                   <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
                 )}
