@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 import { SessionProvider } from "next-auth/react";
 import Script from "next/script";
-
+import Providers from "./(website)/components/ProgressBarProvider";
 
 export default function RootLayout({
   children,
@@ -59,7 +59,9 @@ export default function RootLayout({
                 )}
               </div>
               <main className={`flex-grow  ${isAuthPage ? 'p-0  auth-page-styles' : 'bg-[#F5F7FA] max-h-[calc(100vh-104px)] min-h-[100%] p-5 md:px-[35px]  md:py-[40px] overflo-custom overflow-y-auto'}`}>
-                {children}
+                <Providers>
+                  {children}
+                </Providers>
               </main>
             </div>
           </div>
