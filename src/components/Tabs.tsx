@@ -10,20 +10,20 @@ interface TabContent {
 
 const tabsData: TabContent[] = [
   {
-    title: "We’re excited you’re here!",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type!",
+    title: "Congrats on your start in MaiTY!",
+    content: "Welcome to MaiTY! Now you can start exploring the amazing functionalities MaiTY offers. To help you get started, here's a quick introduction to guide you through everything you can do.",
   },
   {
     title: "Create your digital twin",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type!",
+    content: "Ready to create your own digital twin? Start by selecting the service you prefer—Text & Photo or Audio & Photo—and upload a photo of yourself! Simply follow the instructions for the best results and enjoy bringing your digital twin to life!",
   },
   {
-    title: "Create your first video",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type!",
+    title: "Your Projects and Uploads Are Safe",
+    content: "Great news! Once you’ve created your videos, they’ll be securely saved in the My Projects tab, ready for you to revisit anytime. And if you’ve used your own photos or videos, you’ll find them neatly stored in the My Uploads tab. Everything you need, right at your fingertips!",
   },
   {
     title: "Translate a video",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type!",
+    content: "Transform your videos into any language you desire! With MaiTY, the audio adjusts seamlessly to the new language, and the lip-sync is perfectly aligned. Give it a try and see the magic for yourself!",
   },
 ];
 
