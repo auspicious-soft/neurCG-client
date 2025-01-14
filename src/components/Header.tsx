@@ -16,7 +16,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { signOut } from "next-auth/react";
 import { getImage, getImageUrlOfS3 } from "@/utils";
 import ReactLoading from 'react-loading'
-import previmg2 from "@/assets/images/previmg.png";
+import profilePng from "@/assets/images/profile.png";
 
 interface HeaderProps {
   notificationsCount: number;
@@ -127,8 +127,8 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
           </div>
 
           <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
-            {!isLoading && <Image
-              src={userImage as any}
+            {(!isLoading) && <Image
+              src={userImage as any || profilePng}
               alt="User Profile"
               width={34}
               height={34}
