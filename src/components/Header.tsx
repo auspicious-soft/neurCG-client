@@ -130,6 +130,7 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
             {(!isLoading) && <Image
               src={userImage as any || profilePng}
               alt="User Profile"
+              unoptimized
               width={34}
               height={34}
               className="rounded-xl w-[34px] h-[34px] "
