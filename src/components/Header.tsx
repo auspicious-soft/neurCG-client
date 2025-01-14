@@ -26,6 +26,7 @@ interface HeaderProps {
 }
 const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOpen }) => {
   const [userImage, setUserImage] = useState<{ [key: string]: string }>({})
+  const isEmpty = userImage?.src?.includes(' /_next/static/media/logo')
   const [showNotifications, setShowNotifications] = useState(false);
   const [showData, setShowData] = useState(false);
   const pathname = usePathname();
@@ -128,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
           </div>
 
           <div onClick={() => setShowData(!showData)}>
-            {(!userImage && Object?.keys(userImage).length < 0) ?
+            {isEmpty ?
               <Image
                 src={profilePng}
                 alt="User Profile"
@@ -145,8 +146,7 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
                 width={34}
                 height={34}
                 className="rounded-xl w-[34px] h-[34px] cursor-pointer"
-              />
-            }
+              />}
 
           </div>
           {showData && (
