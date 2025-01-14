@@ -57,7 +57,9 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
   }, [dataOfUser]);
   const currentPageName = pageNames[pathname] || "Home";
   
-  console.log('userImage: ', userImage);
+  console.log('userImage: ', userImage)
+  console.log('Object.keys(userImage).length: ', Object.keys(userImage).length);
+
   const handleDataShow = () => {
     setShowData(!showData);
   };
@@ -128,7 +130,7 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
           </div>
 
           <div onClick={() => setShowData(!showData)}>
-            {userImage ?
+            {Object.keys(userImage).length > 0 ?
               <Image
                 src={userImage as any}
                 alt="User Profile"
