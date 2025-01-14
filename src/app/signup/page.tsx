@@ -68,12 +68,12 @@ export default function Signup() {
             Array.isArray(resss?.message)
               ? resss?.message[0].message
               : resss?.message
-          , { position: "bottom-left" });
+            , { position: "bottom-left" });
       }
     };
     return (
-      <div className="">
-        <div className="grid md:grid-cols-2 gap-y-10 items-center">
+      <>
+        <div className="grid md:grid-cols-2 gap-y-10 items-center h-full">
           <div className="bg-[#F5F7FA] flex flex-col justify-center mobile-space lg:pl-[113px] md:pr-4 h-full">
             <div className="md:max-w-[418px] 2xl:mx-auto">
               <Image src={logo} height={100} width={200} alt="Logo" />
@@ -164,7 +164,7 @@ export default function Signup() {
                 </div>
               </form>
               <p className="login-desc mt-[20px] md:mt-[153px]">
-                Copyright © 2020 - 2025 NeurCG.
+                Copyright © 2020 - 2025 Maity.
               </p>
             </div>
           </div>
@@ -174,7 +174,7 @@ export default function Signup() {
             </div>
           </div>
         </div>
-        <Modal
+        {opemModal && <Modal
           isOpen={opemModal}
           onRequestClose={() => setOpenModal(false)}
           className="modal w-full md:max-w-[70%] h-[90vh] p-4 md:p-[30px] pt-[50px]  rounded-[20px] overflo-custom overflow-y-auto relative bg-white "
@@ -189,8 +189,8 @@ export default function Signup() {
             <CrossIcon />
           </button>
           <PrivacyPolicy />
-        </Modal>
-      </div>
+        </Modal>}
+      </>
     );
   };
 

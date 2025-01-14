@@ -52,13 +52,13 @@ export default function RootLayout({
               />
             )}
 
-            <div className={`flex ${!isAuthPage ? ' h-[calc(100vh-104px)] md:h-[calc(100vh-110px)]' : 'h-full !overflow-visible'} flex-col lg:flex-row lg:overflow-hidden`}>
+            <div className={`flex ${!isAuthPage ? ' h-[calc(100vh-104px)] md:h-[calc(100vh-110px)]' : 'h-full !overflow-auto'} flex-col lg:flex-row lg:overflow-hidden h-screen overflo-custom `}>
               <div className="flex-none max-h-[calc(100vh-104px)]">
                 {!hideSideBar.includes(pathname) && (
                   <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
                 )}
               </div>
-              <main className={`flex-grow  ${isAuthPage ? 'p-0  auth-page-styles' : 'bg-[#F5F7FA] max-h-[calc(100vh-104px)] min-h-[100%] p-5 md:px-[35px]  md:py-[40px] overflo-custom overflow-y-auto'}`}>
+              <main className={`flex-grow border-[5px] ${isAuthPage ? 'p-0  auth-page-styles' : 'bg-[#F5F7FA] max-h-[calc(100vh-104px)] min-h-[100%] p-5 md:px-[35px]  md:py-[40px] overflo-custom overflow-y-auto'}`}>
                 <Providers>
                   {children}
                 </Providers>

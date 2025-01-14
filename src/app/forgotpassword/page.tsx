@@ -37,7 +37,7 @@ export default function Home() {
   }
   return (
     <div className=" ">
-      <div className="grid md:grid-cols-2 gap-y-10 items-center">
+      <div className="grid md:grid-cols-2 gap-y-10 items-center h-full">
         {/* min-h-[100vh]  max-w-[418px] pl-[113px] pr-4 */}
         <div className=" bg-[#F5F7FA] flex flex-col justify-center lg:pl-[113px] md:pr-4 h-full">
           <div className="md:max-w-[418px] 2xl:mx-auto ">
@@ -51,7 +51,7 @@ export default function Home() {
             </form>
             <p className="login-desc text-center mt-[25px] ">Remember Your Password? <Link href="/login" className="text-[#E87223]">Login</Link> </p>
 
-            <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 NeurCG.</p>
+            <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 Maity.</p>
           </div>
         </div>
         <div className="waves">

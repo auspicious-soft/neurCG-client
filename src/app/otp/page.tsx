@@ -71,7 +71,7 @@ export default function Home() {
 
   return (
     <div className="">
-      <div className="grid md:grid-cols-2 gap-y-10 items-center">
+      <div className="grid md:grid-cols-2 gap-y-10 items-center h-full">
         <div className="bg-[#F5F7FA] flex flex-col justify-center mobile-space lg:pl-[113px] md:pr-4 h-full">
           <div className="md:max-w-[418px] 2xl:mx-auto">
             <Image src={logo} height={100} width={200} alt="" />
@@ -110,7 +110,7 @@ export default function Home() {
               </button>
             </form>
             <p className="login-desc text-center mt-3 md:mt-[25px] ">Remember Your Password? <Link href="/" className="text-[#E87223]">Login</Link> </p>
-            <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 NeurCG.</p>
+            <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 Maity.</p>
           </div>
         </div>
         <div className="waves">

@@ -42,8 +42,7 @@ export default function Login() {
     });
   };
   return (
-    <div className="">
-      <div className="grid md:grid-cols-2 gap-y-10 items-center">
+      <div className="grid md:grid-cols-2 gap-y-10 items-center h-full">
         <div className="bg-[#F5F7FA] flex flex-col justify-center mobile-space lg:pl-[113px] md:pr-4 h-full">
           <div className="md:max-w-[418px] 2xl:mx-auto">
             <Image src={logo} height={100} width={200} alt="Logo" />
@@ -89,7 +88,7 @@ export default function Login() {
                 </p>
               </div>
             </form>
-            <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 NeurCG.</p>
+            <p className="login-desc mt-[20px] md:mt-[153px]">Copyright © 2020 - 2025 Maity.</p>
           </div>
         </div>
         <div className="waves">
@@ -97,7 +96,6 @@ export default function Login() {
             <LoginCard imgSrc={loginImg} />
           </div>
         </div>
-      </div>
     </div>
   );
 }
