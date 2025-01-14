@@ -56,7 +56,8 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
     fetchUserImage()
   }, [dataOfUser]);
   const currentPageName = pageNames[pathname] || "Home";
-
+  
+  console.log('userImage: ', userImage);
   const handleDataShow = () => {
     setShowData(!showData);
   };
