@@ -26,7 +26,7 @@ interface HeaderProps {
 }
 const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOpen }) => {
   const [userImage, setUserImage] = useState<{ [key: string]: string }>({})
-  const isEmpty = userImage?.src?.includes(' /_next/static/media/logo')
+  const isEmpty = userImage?.src?.includes('/_next/static/media/logo')
   const [showNotifications, setShowNotifications] = useState(false);
   const [showData, setShowData] = useState(false);
   const pathname = usePathname();
