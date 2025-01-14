@@ -16,7 +16,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { signOut } from "next-auth/react";
 import { getImage, getImageUrlOfS3 } from "@/utils";
 import ReactLoading from 'react-loading'
-import profilePng from "@/assets/images/profile.png";
+import profilePng from "../../public/profile.png";
 
 interface HeaderProps {
   notificationsCount: number;
@@ -57,8 +57,6 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
   }, [dataOfUser]);
   const currentPageName = pageNames[pathname] || "Home";
   
-  console.log('userImage: ', userImage)
-  console.log('Object.keys(userImage).length: ', Object.keys(userImage).length);
 
   const handleDataShow = () => {
     setShowData(!showData);
@@ -130,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
           </div>
 
           <div onClick={() => setShowData(!showData)}>
-            {Object.keys(userImage).length > 0 ?
+            {(userImage && Object?.keys(userImage).length > 0) ?
               <Image
                 src={userImage as any}
                 alt="User Profile"
