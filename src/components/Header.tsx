@@ -126,15 +126,16 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
             )}
           </div>
 
-          <div className=" cursor-pointer " onClick={() => setShowData(!showData)}>
-            {(!isLoading) && userImage ? <Image
-              src={userImage as any}
-              alt="User Profile"
-              unoptimized
-              width={34}
-              height={34}
-              className="rounded-xl w-[34px] h-[34px] "
-            />
+          <div onClick={() => setShowData(!showData)}>
+            {userImage ?
+              <Image
+                src={userImage as any}
+                alt="User Profile"
+                unoptimized
+                width={34}
+                height={34}
+                className="rounded-xl w-[34px] h-[34px] cursor-pointer"
+              />
               :
               <Image
                 src={profilePng}
@@ -142,7 +143,7 @@ const Header: React.FC<HeaderProps> = ({ notificationsCount, toggleSidebar, isOp
                 unoptimized
                 width={34}
                 height={34}
-                className="rounded-xl w-[34px] h-[34px] "
+                className="rounded-xl w-[34px] h-[34px] cursor-pointer"
               />
             }
 
