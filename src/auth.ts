@@ -44,6 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               lastName: name?.split(' ')[1],
               profilePic: image?.replace("s96-c", "s192-c"),
               isGoogleUser: true
+
             })
             const dbUserId = newUser?.data?.data?._id || '';
             const dbUserReferralCode = newUser?.data?.data?.myReferralCode || '';

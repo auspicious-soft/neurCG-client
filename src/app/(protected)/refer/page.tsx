@@ -39,8 +39,8 @@ return (
                 </div>
             </div>
             <ul className='referal-list mt-7'>
-                <li className='mb-[13px]'><span><ReferralIcon /> </span>Invite a friend and both of you earn 1 referal bonus point.</li>
-                <li><span><ReferralIcon /> </span>5 referal bonus point is 30€</li>
+                <li className='mb-[13px]'><span><ReferralIcon /> </span>Invite a friend and you earn 10 credits referal bonus point and the friend will get extra 5 credits referal bonus point</li>
+                <li><span><ReferralIcon /> </span>36 credits is equal to 5€</li>
             </ul>
         </div>
     </div>
