@@ -30,9 +30,11 @@
     "react-modal": "^3.16.1",
     "react-player": "^2.16.0",
     "react-responsive-modal": "^6.4.2",
+    "react-share": "^5.1.2",
     "sharp": "^0.33.5",
     "sonner": "^1.5.0",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "twitter-api-v2": "^1.19.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.7",

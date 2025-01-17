@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
   CrossIcon,
@@ -35,13 +35,18 @@ const VideoCards: React.FC<VideoCardProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isPending, startTransition] = React.useTransition();  
+  const [isPending, startTransition] = React.useTransition();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const router = useRouter();
+  const dropdownRef = useRef(null);
+
   const handleCardClick = () => {
     setIsOpen(true);
   };
+
   const closeModal = () => {
     setIsOpen(false);
+    setIsDropdownOpen(false);
   };
 
   const handleDownload = () => {
@@ -64,30 +69,62 @@ const VideoCards: React.FC<VideoCardProps> = ({
       });
   };
 
-  const handleShare = async (e: any) => {
+  const handleLocalShare = async (e: any) => {
     e.stopPropagation();
-  
-    // try {
+
+    try {
       const response = await fetch(videoSrc);
       const blob = await response.blob();
       const file = new File([blob], `${title || "video"}.mp4`, {
         type: "video/mp4",
       });
-  
+
       const shareData = {
         title: title,
         files: [file],
       };
-  
+
       if (navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
         toast.error("Sharing not supported on this device");
       }
-    // } catch (error) {
-    //   toast.error("Failed to download or share video");
-    //   console.error("Share error:", error);
-    // }
+    } catch (error) {
+      toast.error("Failed to share content");
+    }
+
+    setIsDropdownOpen(false);
+  };
+
+  const handleSocialShare = async (platform: 'facebook' | 'twitter') => {
+    try {
+      // Fetch the video/image file
+      const response = await fetch(videoSrc);
+      const blob = await response.blob();
+      
+      // Create a File object from the blob
+      const file = new File([blob], `${title || "video"}.mp4`, {
+        type: response.headers.get('content-type') || 'video/mp4'
+      });
+
+      let result:any;
+      if (platform === 'facebook') {
+        // result = await shareToFacebook(file, title);
+      } else {
+        // result = await shareToTwitter(file, title);
+      }
+
+      if (result.success) {
+        toast.success(`Successfully shared on ${platform}`);
+      } else {
+        throw new Error(result.error || `Failed to share on ${platform}`);
+      }
+    } catch (error: any) {
+      toast.error(error.message || `Failed to share on ${platform}`);
+      console.error('Share error:', error);
+    }
+    
+    setIsDropdownOpen(false);
   };
 
   const handleDelete = async () => {
@@ -105,6 +142,19 @@ const VideoCards: React.FC<VideoCardProps> = ({
       }
     });
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (dropdownRef.current && !(dropdownRef as any).current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   return (
     <>
@@ -162,10 +212,34 @@ const VideoCards: React.FC<VideoCardProps> = ({
           <div className="h-[500px]">
             <ReactPlayer url={videoSrc} width="100%" height="100%" controls />
           </div>
-          <div className="flex items-center justify-end gap-5 mt-5">
-              <button onClick={(e)=> handleShare(e)}>
-                <ShareIcon />
-              </button>
+          <div className="flex items-center justify-end gap-5 mt-5 relative">
+            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+              <ShareIcon />
+            </button>
+
+            {isDropdownOpen && (
+              <div ref={dropdownRef} className="absolute left-0 bottom-14 bg-white shadow-md rounded mt-2 border-[1px]">
+                <button
+                  onClick={handleLocalShare}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 text-left"
+                >
+                  Share Locally
+                </button>
+                <button
+                  onClick={() => handleSocialShare('facebook')}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 text-left"
+                >
+                  Share on Facebook
+                </button>
+                <button
+                  onClick={() => handleSocialShare('twitter')}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 text-left"
+                >
+                  Share on Twitter
+                </button>
+              </div>
+            )}
+
             <button
               className="w-[168px] text-center text-sm bg-[#E87223] text-white py-[15px] px-6 rounded-[5px]"
               onClick={handleDownload}
