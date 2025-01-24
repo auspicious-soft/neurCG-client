@@ -16,9 +16,9 @@ import GoogleAd from '@/components/hooks/google-ads';
 const VideoData = [
   {
     id: 1,
-    title: "Lorem Ipsum Dummy Title",
+    title: "Text and Photo to Video",
     thumbnail: thumbimg1,
-    url: "https://youtu.be/K4TOrB7at0Y?si=zFMHw8k0jDjXiGMi"
+    url: "https://youtu.be/Vue05PRQXmA"
   },
   {
     id: 2,
