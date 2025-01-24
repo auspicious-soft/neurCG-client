@@ -22,8 +22,9 @@ const VideoData = [
   },
   {
     id: 2,
-    title: "Lorem Ipsum Dummy Title",
+    title: "Audio and Photo to Video",
     thumbnail: thumbimg2,
+    url: "https://youtu.be/Q__os6uXFos"
   },
   {
     id: 3,
