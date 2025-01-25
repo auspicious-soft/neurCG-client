@@ -28,7 +28,7 @@ const VideoData = [
   },
   {
     id: 3,
-    title: "Vido Translation",
+    title: "Video Translation",
     thumbnail: thumbimg3
     url: "https://youtu.be/Oau_CpfeN1k"
   },
