@@ -10,6 +10,7 @@ import { Toaster } from "sonner";
 import { SessionProvider } from "next-auth/react";
 import Script from "next/script";
 import Providers from "./(website)/components/ProgressBarProvider";
+import AnalyticsProvider from "@/providers/analytics-wrapper";
 
 export default function RootLayout({
   children,
@@ -58,31 +59,34 @@ export default function RootLayout({
       <SessionProvider>
         <body>
           <Toaster richColors />
-          <div>
-            {!hideHeader.includes(pathname) && (
-              <Header
-                userImage={dp}
-                notificationsCount={3}
-                toggleSidebar={toggleSidebar}
-                isOpen={isSidebarOpen}
-              />
-            )}
+          <AnalyticsProvider>
+            <div>
+              {!hideHeader.includes(pathname) && (
+                <Header
+                  userImage={dp}
+                  notificationsCount={3}
+                  toggleSidebar={toggleSidebar}
+                  isOpen={isSidebarOpen}
+                />
+              )}
 
-            <div className={`flex ${!isAuthPage ? '!h-[calc(100vh-104px)] !md:h-[calc(100vh-110px)]' : '!overflow-auto h-screen'} flex-col lg:flex-row lg:overflow-hidden overflo-custom `}>
-              <div className="flex-none max-h-[calc(100vh-104px)]">
-                {!hideSideBar.includes(pathname) && (
-                  <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-                )}
+              <div className={`flex ${!isAuthPage ? '!h-[calc(100vh-104px)] !md:h-[calc(100vh-110px)]' : '!overflow-auto h-screen'} flex-col lg:flex-row lg:overflow-hidden overflo-custom `}>
+                <div className="flex-none max-h-[calc(100vh-104px)]">
+                  {!hideSideBar.includes(pathname) && (
+                    <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                  )}
+                </div>
+                <main className={`flex-grow ${isAuthPage ? 'p-0  auth-page-styles' : 'bg-[#F5F7FA] max-h-[calc(100vh-104px)] min-h-[100%] p-5 md:px-[35px]  md:py-[40px] overflo-custom overflow-y-auto'}`}>
+                  <Providers>
+                    {children}
+                  </Providers>
+                </main>
               </div>
-              <main className={`flex-grow ${isAuthPage ? 'p-0  auth-page-styles' : 'bg-[#F5F7FA] max-h-[calc(100vh-104px)] min-h-[100%] p-5 md:px-[35px]  md:py-[40px] overflo-custom overflow-y-auto'}`}>
-                <Providers>
-                  {children}
-                </Providers>
-              </main>
             </div>
-          </div>
+          </AnalyticsProvider>
+
         </body>
       </SessionProvider>
-    </html>
+    </html >
   );
 }
