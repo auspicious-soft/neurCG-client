@@ -37,7 +37,7 @@ const NeurcgCard: React.FC<VideoCardProps> = ({ url, title, thumbnail }) => {
             <Image
               src={typeof thumbnail === "string" ? thumbnail : thumbnail.src}
               alt={title}
-              className="w-full h-[200px] rounded-lg max-h-[200px]"
+              className="w-full h-[220px] rounded-lg max-h-[220px]"
               width={500} // Adjust this size as needed
               height={200} // Adjust this size as needed
               layout="responsive"
