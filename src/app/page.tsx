@@ -16,19 +16,21 @@ import GoogleAd from '@/components/hooks/google-ads';
 const VideoData = [
   {
     id: 1,
-    title: "Lorem Ipsum Dummy Title",
+    title: "Text and Photo to Video",
     thumbnail: thumbimg1,
-    url: "https://youtu.be/K4TOrB7at0Y?si=zFMHw8k0jDjXiGMi"
+    url: "https://youtu.be/Vue05PRQXmA"
   },
   {
     id: 2,
-    title: "Lorem Ipsum Dummy Title",
+    title: "Audio and Photo to Video",
     thumbnail: thumbimg2,
+    url: "https://youtu.be/Q__os6uXFos"
   },
   {
     id: 3,
-    title: "Lorem Ipsum Dummy Title",
-    thumbnail: thumbimg3
+    title: "Video Translation",
+    thumbnail: thumbimg3,
+    url: "https://youtu.be/Oau_CpfeN1k"
   },
   {
     id: 4,
