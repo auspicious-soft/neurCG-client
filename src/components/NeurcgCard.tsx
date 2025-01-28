@@ -32,14 +32,14 @@ const NeurcgCard: React.FC<VideoCardProps> = ({ url, title, thumbnail }) => {
         className="p-1 rounded-lg bg-white cursor-pointer"
         onClick={handleCardClick}
       >
-        <div className="player-wrapper relative">
+        <div className="player-wrapper relative h-full flex flex-col gap-4">
           {thumbnail ? (
             <Image
               src={typeof thumbnail === "string" ? thumbnail : thumbnail.src}
               alt={title}
-              className="w-full h-auto rounded-lg"
+              className="w-full h-[200px] rounded-lg max-h-[200px]"
               width={500} // Adjust this size as needed
-              height={300} // Adjust this size as needed
+              height={200} // Adjust this size as needed
               layout="responsive"
             /> 
           ) : (
@@ -47,9 +47,9 @@ const NeurcgCard: React.FC<VideoCardProps> = ({ url, title, thumbnail }) => {
               <p>Video Available</p>
             </div>
           )}
-          <div className="mt-[15px] mb-[11px] flex items-center gap-[10px] px-[14px]">
+          <div className="mb-[11px] flex items-center gap-[10px] px-[14px] w-full mt-auto">
             <p className="leading-normal"><VideoPlayerIcon /></p>
-            <h3 className="text-[#3A2C23] text-sm leading-[normal] ">{title}</h3>
+            <h3 className="text-[#3A2C23] text-sm leading-[normal]">{title}</h3>
           </div>
         </div>
       </div>
