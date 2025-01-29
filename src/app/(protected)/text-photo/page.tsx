@@ -83,7 +83,7 @@ const Page = () => {
 
         if (isPending && progress < 100) {
             const estimatedSeconds = estimateVideoLengthOfText(text);
-            const totalProcessingTime = estimatedSeconds * 5 * 1000; // convert to ms
+            const totalProcessingTime = estimatedSeconds * 12 * 1000; // convert to ms
             const updateInterval = Math.max(totalProcessingTime / 50, 100); // 50 steps, minimum 100ms
             const progressIncrement = 100 / (totalProcessingTime / updateInterval);
 
