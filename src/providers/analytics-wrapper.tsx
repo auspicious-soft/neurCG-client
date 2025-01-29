@@ -1,11 +1,10 @@
-// components/AnalyticsProvider.tsx
 'use client';
 
 import { pageview, trackUserDropOff, trackUserEngagement } from '@/config/analytics';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 
-export default function AnalyticsProvider({ children }: {
+function AnalyticsProviderContent({ children }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -46,4 +45,16 @@ export default function AnalyticsProvider({ children }: {
   }, [pathname, searchParams]);
 
   return <>{children}</>;
+}
+
+export default function AnalyticsProvider({ children }: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <AnalyticsProviderContent>
+        {children}
+      </AnalyticsProviderContent>
+    </Suspense>
+  );
 }
