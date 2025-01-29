@@ -41,7 +41,7 @@ const ImageUploads = (props: ImageUploadsProps) => {
         startTransition(async () => {
             const subpath = deletableMediaUrl
             try {
-                const res = await deleteMyMedia(`/file/remove-my-media`, { subpath })
+                const res = await deleteMyMedia(`/file/remove-my-media`, { subpath, projectType: 'projectAvatar' })
                 if (res.status === 200) {
                     setIsDeleteOpen(false);
                     toast.success("Video Deleted Successfully");
