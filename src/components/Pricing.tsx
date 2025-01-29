@@ -1,11 +1,12 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { useSession } from 'next-auth/react';
 import { getAxiosInstance } from '@/utils/axios';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { buyPlan, getUserInfo } from '@/services/user-service';
+import ReactLoader from './react-loader';
 
 const PricingPlans: React.FC = () => {
   const session = useSession();
@@ -14,21 +15,23 @@ const PricingPlans: React.FC = () => {
   const interval = data?.data.data?.planInterval;
   const creditsLeft = data?.data.data?.creditsLeft;
   const [billingPeriod, setBillingPeriod] = useState<'month' | 'year'>(interval === 'month' ? 'month' : 'year');
-
+  const [isPending, startTransition] = useTransition()
   const handlePlanSelect = async (planType: string) => {
-    try {
-      const response = await buyPlan(`/user/${session.data?.user?.id}/buy-plan`, { planType, interval: billingPeriod });
-      const data = await response.data;
-      if (data.id) {
-        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
-        await stripe?.redirectToCheckout({ sessionId: data.id });
-      } else {
-        toast.error('Something went wrong. Please try again later.');
+    startTransition(async () => {
+      try {
+        const response = await buyPlan(`/user/${session.data?.user?.id}/buy-plan`, { planType, interval: billingPeriod });
+        const data = await response.data;
+        if (data.id) {
+          const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
+          await stripe?.redirectToCheckout({ sessionId: data.id });
+        } else {
+          toast.error('Something went wrong. Please try again later.');
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('An error occurred while processing your request.');
       }
-    } catch (error) {
-      console.error(error);
-      toast.error('An error occurred while processing your request.');
-    }
+    })
   }
 
   return (
@@ -62,9 +65,11 @@ const PricingPlans: React.FC = () => {
                 </ul>
               </div>
               <div>
-                <button disabled= {currentPlan === 'free'} onClick={() => handlePlanSelect('free')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
+                {!isPending ? < button disabled={currentPlan === 'free'} onClick={() => handlePlanSelect('free')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
                   {currentPlan === 'free' ? 'Current Plan' : 'Select Plan'}
                 </button>
+                  :
+                  <div className='flex justify-center items-center p-5'><ReactLoader /></div>}
               </div>
             </div>
           </div>
@@ -91,9 +96,11 @@ const PricingPlans: React.FC = () => {
               <li>Workspace Users (1)</li>
               <li>Create your avatar with just a picture (Unlimited)</li>
             </ul>
-            <button disabled={creditsLeft !== 0 && currentPlan === 'intro' && interval === billingPeriod} onClick={() => handlePlanSelect('intro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] bg-white text-[#E56F20] rounded-[10px] font-semibold font-inter">
+            {!isPending ? <button disabled={creditsLeft !== 0 && currentPlan === 'intro' && interval === billingPeriod} onClick={() => handlePlanSelect('intro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] bg-white text-[#E56F20] rounded-[10px] font-semibold font-inter">
               {currentPlan === 'intro' ? interval === billingPeriod ? 'Current Plan' : 'Select Plan' : 'Select Plan'}
             </button>
+              :
+              <div className='flex justify-center items-center p-5'><ReactLoader /></div>}
           </div>
 
           {/* Pro Plan */}
@@ -123,15 +130,17 @@ const PricingPlans: React.FC = () => {
                 </ul>
               </div>
               <div>
-                <button disabled={creditsLeft !== 0  && currentPlan === 'pro' && interval === billingPeriod} onClick={() => handlePlanSelect('pro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
+                {!isPending ? <button disabled={creditsLeft !== 0 && currentPlan === 'pro' && interval === billingPeriod} onClick={() => handlePlanSelect('pro')} className="px-4 lg:px-[50px] mt-7 py-3 text-base lg:text-[20px] text-white bg-[#E56F20] rounded-[10px] font-semibold font-inter">
                   {currentPlan === 'pro' ? interval === billingPeriod ? 'Current Plan' : 'Current Plan (Yearly)' : 'Select Plan'}
                 </button>
+                  :
+                  <div className='flex justify-center items-center p-5'><ReactLoader /></div>}
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
