@@ -263,7 +263,13 @@ const Page = () => {
                 </button>
                 <Modal
                     isOpen={isModalOpen}
-                    onRequestClose={() => setIsModalOpen(false)}
+                    onRequestClose={(e) => {
+                        if (e.type === 'click' && isPending) {
+                            setShowConfirmModal(true)
+                            return
+                        }
+                        setIsModalOpen(false)
+                    }}
                     style={customStyles}
                     contentLabel="Confirm Cancel Subscription"
                     overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"

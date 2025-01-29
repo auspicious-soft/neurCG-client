@@ -252,7 +252,7 @@
                     <Modal
                         isOpen={isModalOpen}
                         onRequestClose={(e) => {
-                            if (e.type === 'click') {
+                        if (e.type === 'click' && isPending) {
                                 setShowConfirmModal(true)
                                 return
                             }

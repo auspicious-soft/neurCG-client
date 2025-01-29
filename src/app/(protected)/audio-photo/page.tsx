@@ -234,7 +234,13 @@ const Page = () => {
                 </button>
                 <Modal
                     isOpen={isModalOpen}
-                    onRequestClose={() => setIsModalOpen(false)}
+                    onRequestClose={(e) => {
+                        if (e.type === 'click' && isPending) {
+                                setShowConfirmModal(true)
+                                return
+                            }
+                            setIsModalOpen(false)
+                        }}
                     style={{
                         content: {
                             // width: '450px',
