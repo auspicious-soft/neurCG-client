@@ -80,19 +80,25 @@ const Page = () => {
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
+
         if (isPending && progress < 100) {
+            const estimatedSeconds = estimateVideoLengthOfText(text);
+            const totalProcessingTime = estimatedSeconds * 1.2 * 1000; // Add 20% buffer and convert to ms
+            const updateInterval = Math.max(totalProcessingTime / 50, 100); // 50 steps, minimum 100ms
+            const progressIncrement = 100 / (totalProcessingTime / updateInterval);
+
             intervalId = setInterval(() => {
                 setProgress(prevProgress => {
-                    const newProgress = prevProgress + Math.floor(Math.random() * 30);
+                    const newProgress = prevProgress + progressIncrement;
                     return newProgress > 100 ? 100 : newProgress;
                 });
-            }, 1500)
+            }, updateInterval);
         }
-        return () => {
-            if (intervalId) clearInterval(intervalId)
-        }
-    }, [isPending, progress])
 
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [isPending, progress, text]);
     const handleAnimateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         if (isLoading) {
