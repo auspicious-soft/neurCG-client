@@ -48,6 +48,13 @@ export const deleteProject = async (route: string) => {
     return axiosInstance.delete(route)
 }
 
+export const deleteMyMedia = async (route: string, payload: any) => {
+    const axiosInstance = await getAxiosInstance();
+    return axiosInstance.delete(route, { data: payload })
+}
+
+
+
 export const convertTextToVideo = async (id: string, payload: any) => {
     const axiosInstance = await getAxiosInstance()
     return axiosInstance.post(id, payload, {
@@ -68,6 +75,11 @@ export const translateVideo = async (id: string, payload: any) => {
         timeout: 600000
     })
 }
+
+
+
+
+
 
 export const buyPlan = async (route: string, payload: any) => {
     const axiosInstance = await getAxiosInstance();

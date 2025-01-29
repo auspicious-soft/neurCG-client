@@ -101,13 +101,13 @@ const VideoCards: React.FC<VideoCardProps> = ({
       // Fetch the video/image file
       const response = await fetch(videoSrc);
       const blob = await response.blob();
-      
+
       // Create a File object from the blob
       const file = new File([blob], `${title || "video"}.mp4`, {
         type: response.headers.get('content-type') || 'video/mp4'
       });
 
-      let result:any;
+      let result: any;
       if (platform === 'facebook') {
         // result = await shareToFacebook(file, title);
       } else {
@@ -123,7 +123,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
       toast.error(error.message || `Failed to share on ${platform}`);
       console.error('Share error:', error);
     }
-    
+
     setIsDropdownOpen(false);
   };
 
@@ -173,26 +173,28 @@ const VideoCards: React.FC<VideoCardProps> = ({
             <DeleteIcon />
           </button>
         )}
-        <div className="player-wrapper relative">
+        <div className="player-wrapper relative h-full flex flex-col gap-4">
           {thumbnail ? (
-            <Image
-              src={thumbnail}
-              alt={title}
-              className="w-full h-auto rounded-lg"
-              width={500}
-              height={300}
-              layout="responsive"
-            />
+            <div className="h-auto">
+              <Image
+                src={thumbnail}
+                alt={title}
+                className="w-full rounded-lg object-fit"
+                width={500}
+                height={300}
+                layout="responsive"
+              />
+            </div>
           ) : (
             <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
               <p>Click to Play Video</p>
             </div>
           )}
-          <div className="mt-[15px] mb-[11px] flex items-center gap-[10px] px-[14px]">
+          <div className="mt-auto mb-[11px] flex items-center gap-[10px] px-[14px]">
             <p>
               <VideoPlayerIcon />
             </p>
-            <h3 className="text-[#3A2C23] text-sm">{title}</h3>
+            <h3 className="text-[#3A2C23] text-sm ">{title}</h3>
           </div>
         </div>
       </div>
