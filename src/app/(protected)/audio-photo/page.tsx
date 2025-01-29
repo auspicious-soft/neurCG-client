@@ -69,18 +69,24 @@ const Page = () => {
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
+
         if (isPending && progress < 100) {
+            const estimatedProcessingTime = duration * 12 * 1000; // convert to ms
+            const updateInterval = Math.max(estimatedProcessingTime / 50, 100); // 50 steps, minimum 100ms
+            const progressIncrement = 100 / (estimatedProcessingTime / updateInterval);
+
             intervalId = setInterval(() => {
-                setProgress(prevProgress => {
-                    const newProgress = prevProgress + Math.floor(Math.random() * 30);
-                    return newProgress > 100 ? 100 : newProgress;
+                setProgress((prevProgress: number) => {
+                    const newProgress = prevProgress + progressIncrement;
+                    return newProgress > 100 ? 100 : Math.floor(newProgress);
                 });
-            }, 1500)
+            }, updateInterval);
         }
+
         return () => {
-            if (intervalId) clearInterval(intervalId)
-        }
-    }, [isPending, progress])
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [isPending, progress, duration]);
 
     const handleAnimateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()

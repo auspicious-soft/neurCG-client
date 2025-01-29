@@ -53,18 +53,25 @@ const Page = () => {
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
+
         if (isPending && progress < 100) {
+            // Estimate processing time based on video duration
+            const estimatedProcessingTime = videoDuration * 12 * 1000; // 12 seconds per second of video, in ms
+            const updateInterval = Math.max(estimatedProcessingTime / 50, 100); // 50 steps, minimum 100ms
+            const progressIncrement = 100 / (estimatedProcessingTime / updateInterval);
+
             intervalId = setInterval(() => {
-                setProgress(prevProgress => {
-                    const newProgress = prevProgress + Math.floor(Math.random() * 30);
-                    return newProgress > 100 ? 100 : newProgress;
+                setProgress((prevProgress: number) => {
+                    const newProgress = prevProgress + progressIncrement;
+                    return newProgress > 100 ? 100 : Math.floor(newProgress);
                 });
-            }, 1500)
+            }, updateInterval);
         }
+
         return () => {
-            if (intervalId) clearInterval(intervalId)
-        }
-    }, [isPending, progress])
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [isPending, progress, videoDuration]);
 
 
     useEffect(() => {
