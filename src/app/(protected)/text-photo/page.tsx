@@ -83,14 +83,14 @@ const Page = () => {
 
         if (isPending && progress < 100) {
             const estimatedSeconds = estimateVideoLengthOfText(text);
-            const totalProcessingTime = estimatedSeconds * 2.4 * 1000; // convert to ms
+            const totalProcessingTime = estimatedSeconds * 5 * 1000; // convert to ms
             const updateInterval = Math.max(totalProcessingTime / 50, 100); // 50 steps, minimum 100ms
             const progressIncrement = 100 / (totalProcessingTime / updateInterval);
 
             intervalId = setInterval(() => {
                 setProgress((prevProgress:any) => {
                     const newProgress = prevProgress + progressIncrement;
-                    return newProgress > 100 ? 100 : newProgress.toFixed(0);
+                    return newProgress > 100 ? 100 : Math.floor(newProgress);
                 });
             }, updateInterval);
         }
