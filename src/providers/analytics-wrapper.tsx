@@ -5,9 +5,7 @@ import { pageview, trackUserDropOff, trackUserEngagement } from '@/config/analyt
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function AnalyticsProvider({
-  children,
-}: {
+export default function AnalyticsProvider({ children }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
