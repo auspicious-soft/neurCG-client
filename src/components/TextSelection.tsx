@@ -85,7 +85,7 @@ const TextSelection: React.FC<TextSelectionProps> = ({
   useEffect(() => {
     if (textAreaRef.current) {
       const updateHeight = () => {
-        setParentHeight(textAreaRef.current!.clientHeight + 134);
+        setParentHeight(textAreaRef?.current!?.clientHeight + 134);
       };
       updateHeight();
       const resizeObserver = new ResizeObserver(() => {
@@ -165,7 +165,7 @@ const TextSelection: React.FC<TextSelectionProps> = ({
                 required
                 value={text}
                 ref={textAreaRef}
-                className="text-area md:h-[240px] resize"
+                className="text-area md:h-[240px] resize-y"
                 onChange={(e) => setText(e.target.value)}
               ></textarea>
             </label>
