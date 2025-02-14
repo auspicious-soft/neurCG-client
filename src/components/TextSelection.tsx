@@ -15,21 +15,6 @@ interface VoiceOption {
   audioSrc: string;
 }
 
-const voiceOptions: VoiceOption[] = [
-  {
-    value: "david_gotham",
-    label: "David Gotham",
-    gender: "male",
-    audioSrc: "/public/assets/audio/audio1.mp3",
-  },
-  {
-    value: "sanya_jean",
-    label: "Sanya Jean",
-    gender: "female",
-    audioSrc: "/public/assets/audio/audio2.mp3",
-  },
-  // Add more voices as needed
-];
 
 interface TextSelectionProps {
   setText: (text: string) => void;
@@ -69,11 +54,6 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
     }
   }, [isOpen, isPredefinedSelected, preferredVoice]);
 
-  // const handleVoiceSelect = (option: VoiceOption | null) => {
-  //   setPreferredVoice(option ? option.value : null);
-  //   setCustomVoice(null); // Clear custom voice when a predefined one is selected
-  //   setCustomVoiceFileName(null); // Clear custom voice file name
-  // };
 
   const playAudio = (audioSrc: string) => {
     const audio = new Audio(audioSrc);
