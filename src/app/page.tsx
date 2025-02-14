@@ -34,8 +34,9 @@ const VideoData = [
   },
   {
     id: 4,
-    title: "Lorem Ipsum Dummy Title",
-    thumbnail: thumbimg4
+    title: "Upgrade Your Plan",
+    thumbnail: thumbimg4,
+    url: "https://youtu.be/6zDHPu5h9gE"
   },
 ]
 
