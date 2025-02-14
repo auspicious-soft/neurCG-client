@@ -77,7 +77,7 @@ export const containsMyMedia = (project: any) => {
 }
 
 export const containsMyImages = (project: any) => {
-    return ['jpg', 'png', 'jpeg'].some(ext => project?.projectAvatar?.includes(ext) && project?.projectAvatar?.includes('my-media'))
+    return ['jpg', 'png', 'jpeg', 'gif', 'bmp', 'svg', 'webp', 'tiff', 'ico', 'heic'].some(ext => project?.projectAvatar?.includes(ext) && project?.projectAvatar?.includes('my-media'))
 }
 
 export const containsMyAudio = (project: any) => {  

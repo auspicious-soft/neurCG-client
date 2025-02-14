@@ -13,6 +13,7 @@ interface ImageUploadsProps {
 }
 const ImageUploads = (props: ImageUploadsProps) => {
     const { data } = props
+    console.log('data: ', data);
     const [uploadedImages, setUploadedImages] = React.useState<any>([])
     const [isDeleteOpen, setIsDeleteOpen] = React.useState<any>(false)
     const [deletableMediaUrl, setDeletableMediaUrl] = React.useState<any>()

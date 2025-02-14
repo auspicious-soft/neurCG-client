@@ -55,9 +55,7 @@
         const [isModalOpen, setIsModalOpen] = useState(false)
         const { data: session } = useSession()
         const [avatarId, setAvatarId] = useState<string | null>(null);
-        console.log('avatarId: ', avatarId);
         const [myOwnImage, setMyOwnImage] = useState<File | null>(null);
-        console.log('myOwnImage: ', myOwnImage);
         const [text, setText] = useState<string>('');
         const [textLanguage, setTextLanguage] = useState<string>('');
         const [preferredVoice, setPreferredVoice] = useState<string | File | null>(null)
