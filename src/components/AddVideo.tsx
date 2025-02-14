@@ -107,10 +107,11 @@ const AddVideo = (props: any) => {
                 <option value="Spanish"  >Spanish</option>
                 <option value="French"  >French</option>
                 <option value="German"  >German</option>
+                <option value="Polish"  >Polish</option>
+                <option value="Portuguese"  >Portuguese</option>
                 <option value="Italian"  >Italian</option>
                 <option value="Japanese"  >Japanese</option>
                 <option value="Korean"  >Korean</option>
-                <option value="Portuguese"  >Portuguese</option>
                 <option value="Russian"  >Russian</option>
                 <option value="Chinese"  >Chinese</option>
                 <option value="Hindi"  >Hindi</option>
@@ -124,10 +125,11 @@ const AddVideo = (props: any) => {
                 <option value="Spanish"  >Spanish</option>
                 <option value="French"  >French</option>
                 <option value="German"  >German</option>
+                <option value="Polish"  >Italian</option>
+                <option value="Portuguese"  >Portuguese</option>
                 <option value="Italian"  >Italian</option>
                 <option value="Japanese"  >Japanese</option>
                 <option value="Korean"  >Korean</option>
-                <option value="Portuguese"  >Portuguese</option>
                 <option value="Russian"  >Russian</option>
                 <option value="Chinese"  >Chinese</option>
                 <option value="Hindi"  >Hindi</option>
