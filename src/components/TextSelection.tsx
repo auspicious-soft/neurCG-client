@@ -15,28 +15,38 @@ interface VoiceOption {
   audioSrc: string;
 }
 
-
 interface TextSelectionProps {
   setText: (text: string) => void;
   setTextLanguage: (language: string) => void;
   setPreferredVoice: React.Dispatch<React.SetStateAction<string | File | null>>; // Updated to handle both string and File
-  preferredVoice: string | File | null
-  text: string
+  preferredVoice: string | File | null;
+  text: string;
 }
 
-const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage, setPreferredVoice, preferredVoice, text }) => {
+const TextSelection: React.FC<TextSelectionProps> = ({
+  setText,
+  setTextLanguage,
+  setPreferredVoice,
+  preferredVoice,
+  text,
+}) => {
   const session = useSession();
   const [isOpen, setIsOpen] = useState(true);
   const [customVoice, setCustomVoice] = useState<string | null>(null);
-  const [customVoiceFileName, setCustomVoiceFileName] = useState<string | null>(null)
+  const [customVoiceFileName, setCustomVoiceFileName] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const { data } = useSWR(session.data?.user?.id ?`/user/${session.data?.user?.id}` : null, getUserInfo, { revalidateOnFocus: false });
+  const { data } = useSWR(
+    session.data?.user?.id ? `/user/${session.data?.user?.id}` : null,
+    getUserInfo,
+    { revalidateOnFocus: false }
+  );
   const planType = data?.data?.data?.planType;
   const toggleOpen = () => {
     setIsOpen(!isOpen);
-  }
+  };
   const [isPredefinedSelected, setIsPredefinedSelected] = useState(false);
 
+  // Update expand/collapse area
   useEffect(() => {
     if (contentRef.current) {
       if (isOpen) {
@@ -47,13 +57,46 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
         contentRef.current.style.opacity = "0";
       }
     }
-    setIsPredefinedSelected(typeof preferredVoice === "string")
+    setIsPredefinedSelected(typeof preferredVoice === "string");
     if (isPredefinedSelected) {
       setCustomVoice(null);
       setCustomVoiceFileName(null);
     }
   }, [isOpen, isPredefinedSelected, preferredVoice]);
 
+  // Trigger parent's maxHeight update on text content changes
+  useEffect(() => {
+    if (contentRef.current) {
+      const resizeObserver = new ResizeObserver(() => {
+        if (isOpen && contentRef.current) {
+          contentRef.current.style.maxHeight = contentRef.current.scrollHeight + "px";
+        }
+      });
+      resizeObserver.observe(contentRef.current);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [isOpen]);
+
+  // Observe the textarea for resizing from the bottom right
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const [parentHeight, setParentHeight] = useState(0);
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const updateHeight = () => {
+        setParentHeight(textAreaRef.current!.clientHeight + 134);
+      };
+      updateHeight();
+      const resizeObserver = new ResizeObserver(() => {
+        updateHeight();
+      });
+      resizeObserver.observe(textAreaRef.current);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [textAreaRef]);
 
   const playAudio = (audioSrc: string) => {
     const audio = new Audio(audioSrc);
@@ -81,9 +124,13 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
       <span className="flex items-center gap-[10px]">
         {option.label}{" "}
         {option.gender === "male" ? (
-          <span><MaleIcon /></span>
+          <span>
+            <MaleIcon />
+          </span>
         ) : (
-          <span><FemaleIcon /></span>
+          <span>
+            <FemaleIcon />
+          </span>
         )}
       </span>
       <SpeakerWaveIcon
@@ -94,16 +141,16 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
   );
 
   return (
-    <div className="mt-5 bg-white rounded-lg p-[15px] md:p-[30px] shadow-[0_0_40px_0_rgba(235,130,60,0.06)]">
+    <div className={`height-${parentHeight} mt-5 bg-white rounded-lg p-[15px] md:p-[30px] shadow-[0_0_40px_0_rgba(235,130,60,0.06)]`}>
       <h2
-        className={`section-title dropdown-title ${isOpen ? 'active' : ''}`}
+        className={`section-title dropdown-title ${isOpen ? "active" : ""}`}
         onClick={toggleOpen}
       >
         Text
       </h2>
       <div
         ref={contentRef}
-        className={`overflow-hidden transition-[max-height] duration-500 ease-in-out`}
+        className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
         style={{
           maxHeight: isOpen ? contentRef.current?.scrollHeight : 0,
           opacity: isOpen ? 1 : 0,
@@ -111,52 +158,58 @@ const TextSelection: React.FC<TextSelectionProps> = ({ setText, setTextLanguage,
       >
         <div className="mt-5 text-selecion grid md:grid-cols-[minmax(0,_7fr)_minmax(0,_5fr)] gap-5">
           <div>
-            <label htmlFor="" className="grid gap-2">
+            <label className="grid gap-2">
               Enter Your Text Here
               <textarea
-                name=""
-                id=""
                 rows={5}
                 required
                 value={text}
-                className="text-area md:h-[240px]"
+                ref={textAreaRef}
+                className="text-area md:h-[240px] resize"
                 onChange={(e) => setText(e.target.value)}
               ></textarea>
             </label>
           </div>
           <div>
-            <label htmlFor="" className="grid gap-2 mb-5">
+            <label className="grid gap-2 mb-5">
               Text Language
-              <select required name="" id="" onChange={(e) => setTextLanguage(e.target.value)}>
-                <option value=""  >Language Select</option>
-                <option value="English"  >English</option>
-                <option value="Spanish"  >Spanish</option>
-                <option value="French"  >French</option>
-                <option value="German"  >German</option>
-                <option value="Italian"  >Italian</option>
-                <option value="Portuguese"  >Portuguese</option>
-                <option value="Polish"  >Polish</option>
+              <select required onChange={(e) => setTextLanguage(e.target.value)}>
+                <option value="">Language Select</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Polish">Polish</option>
               </select>
             </label>
             <div className="mb-5">
               <PreferredVoice setPreferredVoice={setPreferredVoice} preferredVoice={preferredVoice} />
             </div>
-            <label htmlFor="" className="grid gap-2">
+            <label className="grid gap-2">
               <p className="flex justify-between items-center font-inter">
                 Use Your Own Voice
-                <span className="flex items-center gap-2 text-xs"><CrownIcon />Premium</span>
+                <span className="flex items-center gap-2 text-xs">
+                  <CrownIcon />
+                  Premium
+                </span>
               </p>
               <div className="flex items-center justify-between relative border border-[#FFE2CE] py-2 pl-[18px] pr-[5px] md:pr-2 rounded-[5px] h-[45px] md:h-[50px]">
                 <input
                   type="file"
                   accept="audio/*"
-                  disabled={planType !== 'pro'}
+                  disabled={planType !== "pro"}
                   onChange={handleCustomVoiceChange}
-                  className={`${planType !== 'pro' && 'cursor-not-allowed'} absolute top-0 left-0 h-full w-full opacity-0 !p-0`}
+                  className={`${
+                    planType !== "pro" && "cursor-not-allowed"
+                  } absolute top-0 left-0 h-full w-full opacity-0 !p-0`}
                 />
                 <div className="w-full flex items-center justify-between">
-                  <p className="text-[#828282] text-sm">{customVoiceFileName || "Browse"}</p> {/* Display file name or "Browse" */}
-                  <button className="text-xs bg-[#E87223] text-white px-[28px] py-[9px] rounded-[3px]">Browse</button>
+                  <p className="text-[#828282] text-sm">{customVoiceFileName || "Browse"}</p>
+                  <button className="text-xs bg-[#E87223] text-white px-[28px] py-[9px] rounded-[3px]">
+                    Browse
+                  </button>
                 </div>
               </div>
             </label>
