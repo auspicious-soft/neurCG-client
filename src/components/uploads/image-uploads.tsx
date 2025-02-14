@@ -13,15 +13,22 @@ interface ImageUploadsProps {
 }
 const ImageUploads = (props: ImageUploadsProps) => {
     const { data } = props
-    console.log('data: ', data);
+    const uniqueProjects = data.reduce((acc: any, project: any) => {
+        if (!acc.some((p:any) => p.projectAvatar === project.projectAvatar)) {
+            acc.push(project);
+        }
+        return acc;
+    }, []);
+
+
     const [uploadedImages, setUploadedImages] = React.useState<any>([])
     const [isDeleteOpen, setIsDeleteOpen] = React.useState<any>(false)
     const [deletableMediaUrl, setDeletableMediaUrl] = React.useState<any>()
     const [isPending, startTransition] = React.useTransition();
     useEffect(() => {
         const fetchUploadedImages = async () => {
-            if (Array.isArray(props?.data)) {
-                const imagesPromise = props.data.map(async (project: any) => {
+            if (Array.isArray(uniqueProjects)) {
+                const imagesPromise = uniqueProjects.map(async (project: any) => {
                     const imageUrl = await getAvatarsUsedFromFlask(project.projectAvatar)
                     return { projectId: project._id, imageUrl }
                 })
@@ -56,8 +63,8 @@ const ImageUploads = (props: ImageUploadsProps) => {
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-10">
-            {data?.length > 0 ?
-                data?.map((data: any, index: number) => {
+            {uniqueProjects?.length > 0 ?
+                uniqueProjects?.map((data: any, index: number) => {
                     return <div key={index}>
                         {Object.keys(uploadedImages).length > 0 ?
                             <div className='relative'>
