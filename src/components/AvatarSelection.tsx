@@ -38,7 +38,13 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
     const clientRecentVideos = projectData?.data?.data?.recentProjects || [];
     const clientOldVideos = projectData?.data?.data?.oldProjects || [];
     const ClientVideos = [...clientRecentVideos, ...clientOldVideos];
-    return ClientVideos
+    const uniqueClientVideos = ClientVideos.reduce((acc: any, curr: any) => {
+      if (!acc.some((p: any) => p.projectAvatar === curr.projectAvatar)) {
+        acc.push(curr)
+      }
+      return acc;
+    })
+    return uniqueClientVideos
       .filter(containsMyImages)
       .map((data: any) => ({
         _id: data._id,
@@ -117,14 +123,14 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
   const handleAvatarClick = (avatar: any) => {
     // Find the avatar in finalPremadeAvatars
     const selectedAvatarData = finalPremadeAvatars.find((a: any) => a.avatarUrl === avatar || a._id === avatar)
-  
+
     // Set the selected avatar
     setSelectedAvatar(avatar);
-    
+
     // Use the pre-fetched avatar image from avatarImages
     const selectedImage = avatarImages[selectedAvatarData?._id];
     setSelectedImageFromFlask(selectedImage);
-    
+
     setAvatarId(avatar);
     setMyOwnImage(null);
     setClickAvatar(null);
@@ -286,7 +292,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
                 ) : (
                   <Image
                     unoptimized
-                    src={(selectedImageFromFlask || avatarImages[finalPremadeAvatars[0]?._id]) ?? WhiteBg }
+                    src={(selectedImageFromFlask || avatarImages[finalPremadeAvatars[0]?._id]) ?? WhiteBg}
                     alt="Selected Avatar"
                     width={200}
                     height={200}
