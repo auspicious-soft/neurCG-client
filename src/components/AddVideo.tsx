@@ -113,6 +113,7 @@ const AddVideo = (props: any) => {
                 <option value="Portuguese"  >Portuguese</option>
                 <option value="Russian"  >Russian</option>
                 <option value="Chinese"  >Chinese</option>
+                <option value="Hindi"  >Hindi</option>
               </select>
             </label>
             <label htmlFor="" className="grid gap-2">
@@ -129,6 +130,7 @@ const AddVideo = (props: any) => {
                 <option value="Portuguese"  >Portuguese</option>
                 <option value="Russian"  >Russian</option>
                 <option value="Chinese"  >Chinese</option>
+                <option value="Hindi"  >Hindi</option>
               </select>
             </label>
           </div>
