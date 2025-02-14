@@ -43,7 +43,7 @@ const AvatarSelection: React.FC<AvatarSelectionProps> = ({ setAvatarId, setMyOwn
         acc.push(curr)
       }
       return acc;
-    })
+    }, []) 
     return uniqueClientVideos
       .filter(containsMyImages)
       .map((data: any) => ({
