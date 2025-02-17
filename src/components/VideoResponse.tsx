@@ -28,8 +28,9 @@ const VideoResponse = ({
          } else {
            toast.error("Sharing not supported on this device");
          }
-       } catch (error) {
-         toast.error("Failed to download or share video");
+       } 
+       catch (error) {
+        //  toast.error("Failed to download or share video");
          console.error("Share error:", error);
        }
      };
@@ -65,7 +66,7 @@ const VideoResponse = ({
             toast.success('Download completed!');
         } catch (error) {
             console.error('Download error:', error);
-            toast.error('Failed to download video');
+            // toast.error('Failed to download video');
         } finally {
             toast.dismiss(toastId)
             setDownloading(false);
