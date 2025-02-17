@@ -215,7 +215,10 @@ const VideoCards: React.FC<VideoCardProps> = ({
             <ReactPlayer url={videoSrc} width="100%" height="100%" controls />
           </div>
           <div className="flex items-center justify-end gap-5 mt-5 relative">
-            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+            <button 
+            // onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onClick={handleLocalShare}
+              >
               <ShareIcon />
             </button>
 
@@ -227,7 +230,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
                 >
                   Share Locally
                 </button>
-                <button
+                {/* <button
                   onClick={() => handleSocialShare('facebook')}
                   className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 text-left"
                 >
@@ -238,7 +241,7 @@ const VideoCards: React.FC<VideoCardProps> = ({
                   className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 text-left"
                 >
                   Share on Twitter
-                </button>
+                </button> */}
               </div>
             )}
 
