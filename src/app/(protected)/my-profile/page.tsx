@@ -4,10 +4,10 @@ import Image from "next/image";
 import previmg2 from "@/assets/images/previmg.png";
 import { EditImgIcon } from "@/utils/svgIcons";
 import useSWR from "swr";
-import { useSession } from "next-auth/react";
-import { cancelSubscription, getUserInfo, updateUserInfo } from "@/services/user-service";
+import { signOut, useSession } from "next-auth/react";
+import { cancelSubscription, deleteUserService, getUserInfo, updateUserInfo } from "@/services/user-service";
 import { toast } from "sonner";
-import { deleteMediaFromFlaskProxy, getImageUrlOfS3, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
+import { deleteMediaFromFlaskProxy, getMediaUrlFromFlaskProxy, postMediaToFlaskProxy } from "@/utils";
 import Modal from "react-modal";
 import { deleteImageFromS3, generateSignedUrlToUploadOn } from "@/actions";
 
@@ -21,7 +21,7 @@ type FormData = {
   city: string;
   homeAddress: string;
   profilePic: File | null;
-}
+};
 
 const customStyles = {
   content: {
@@ -38,8 +38,9 @@ const customStyles = {
 };
 
 const Page = () => {
+  const [isPending, startTransition] = React.useTransition();
   const { data: session, update } = useSession();
-  const { data, isLoading, mutate } = useSWR(`/user/${session?.user?.id}`, getUserInfo, { revalidateOnFocus: false })
+  const { data, isLoading, mutate } = useSWR(`/user/${session?.user?.id}`, getUserInfo, { revalidateOnFocus: false });
   const user = data?.data?.data;
   const CreditScores = [
     {
@@ -67,7 +68,8 @@ const Page = () => {
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false); // Cancel subscription modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Delete profile modal
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -86,7 +88,9 @@ const Page = () => {
 
       if (user.profilePic) {
         const fetchProfilePic = async () => {
-          const imageUrl = user.profilePic.includes('lh3.googleusercontent.com') ? user.profilePic : await getMediaUrlFromFlaskProxy(user.profilePic);
+          const imageUrl = user.profilePic.includes('lh3.googleusercontent.com')
+            ? user.profilePic
+            : await getMediaUrlFromFlaskProxy(user.profilePic);
           setImagePreview(imageUrl);
         };
         fetchProfilePic();
@@ -128,31 +132,29 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      delete (formData as any).email
-      const formDataToSend = formData
-      const imageKey = `projects/${session?.user?.email}/my-media/${typeof (formData as any)?.profilePic === 'string' ? (formData as any).profilePic : formData?.profilePic?.name}`
+      delete (formData as any).email;
+      const formDataToSend = formData;
+      const imageKey = `projects/${session?.user?.email}/my-media/${typeof (formData as any)?.profilePic === 'string' ? (formData as any).profilePic : formData?.profilePic?.name}`;
 
       if (formData.profilePic && typeof formData.profilePic !== 'string') {
-        const imageUploadToFlask = await postMediaToFlaskProxy(formData.profilePic, imageKey)
+        const imageUploadToFlask = await postMediaToFlaskProxy(formData.profilePic, imageKey);
         if (!imageUploadToFlask.success) {
           toast.error("Something went wrong");
-          return
+          return;
         }
 
-        // const imageKey = `projects/${session?.user?.email}/my-media/${formData.profilePic.name}`;
-        // Delete the old image from the S3 bucket
         if (!user?.profilePic?.includes('lh3.googleusercontent.com')) {
           await deleteMediaFromFlaskProxy(user?.profilePic);
         }
-        (formDataToSend as any).profilePic = imageKey
+        (formDataToSend as any).profilePic = imageKey;
       }
-      if ((formData as any).profilePic == '' || typeof (formData as any).profilePic !== 'string' || (formData as any).profilePic === undefined || imageKey === user?.profilePic) {
-        delete (formDataToSend as any).profilePic
+      if ((formData as any).profilePic === '' || typeof (formData as any).profilePic !== 'string' || (formData as any).profilePic === undefined || imageKey === user?.profilePic) {
+        delete (formDataToSend as any).profilePic;
       }
       const response = await updateUserInfo(`/user/${session?.user?.id}`, formDataToSend);
-      mutate()
+      mutate();
       if (formData.profilePic) {
         await update({
           ...session,
@@ -162,7 +164,7 @@ const Page = () => {
           },
         });
       }
-      setIsSubmitting(false)
+      setIsSubmitting(false);
       toast.success("Profile updated successfully");
     } catch (error) {
       toast.error("Something went wrong");
@@ -172,8 +174,11 @@ const Page = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const openDeleteModal = () => setIsDeleteModalOpen(true);
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
   const confirmCancelSubscription = async () => {
-    const response = await cancelSubscription(`/user/${session?.user?.id}/cancel-subscription`, { subscriptionId: user?.planOrSubscriptionId })
+    const response = await cancelSubscription(`/user/${session?.user?.id}/cancel-subscription`, { subscriptionId: user?.planOrSubscriptionId });
     if (response.data.success) {
       toast.success("Subscription cancelled successfully");
       mutate();
@@ -182,6 +187,30 @@ const Page = () => {
       toast.error("Something went wrong");
     }
   };
+
+  const confirmDeleteProfile = () => {
+    startTransition(async () => {
+      if (user?.planType !== "free") {
+        await cancelSubscription(`/user/${session?.user?.id}/cancel-subscription`, { subscriptionId: user?.planOrSubscriptionId });
+      }
+      const response = await deleteUserService(`/user/${session?.user?.id}`)
+
+      if (response.data.success) {
+        toast.success("Profile deleted successfully", {
+          position: 'bottom-left'
+        });
+        setTimeout(() => {
+          signOut({ redirectTo: '/login' })
+        }, 1000);
+      }
+      else {
+        toast.error("Failed to delete profile", {
+          position: 'bottom-left'
+        });
+      }
+    })
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -307,7 +336,6 @@ const Page = () => {
         </div>
       </form>
 
-
       <div className="bg-white rounded-[8px] p-5 md:p-[30px] mt-8 shadow-md">
         <h2 className="text-xl font-semibold mb-4">Plans & Subscription</h2>
         <div className="text-lg font-medium">
@@ -345,18 +373,45 @@ const Page = () => {
         )}
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Delete Profile Section */}
+      <div className="mt-8 flex w-full justify-end">
+        <button
+          onClick={openDeleteModal}
+          className="bg-red-600 text-white py-3 px-6 rounded-md hover:bg-red-700 transition duration-200"
+        >
+          Delete Profile
+        </button>
+      </div>
+
+      {/* Cancel Subscription Modal */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         style={customStyles}
         contentLabel="Confirm Cancel Subscription"
-        ariaHideApp={false} // Add this line to disable aria app element error
+        ariaHideApp={false}
       >
         <h2>Are you sure you want to cancel your subscription?</h2>
         <div className="flex justify-end mt-4">
           <button onClick={closeModal} className="mr-4 px-4 rounded">No</button>
-          <button onClick={confirmCancelSubscription} className="px-4 py-2  bg-red-600 text-white rounded">Yes</button>
+          <button onClick={confirmCancelSubscription} className="px-4 py-2 bg-red-600 text-white rounded">Yes</button>
+        </div>
+      </Modal>
+
+      {/* Delete Profile Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={closeDeleteModal}
+        style={customStyles}
+        contentLabel="Confirm Delete Profile"
+        ariaHideApp={false}
+      >
+        <h2>Are you sure you want to delete your profile? This action cannot be undone.</h2>
+        <div className="flex justify-end mt-4">
+          <button onClick={closeDeleteModal} className="mr-4 px-4 rounded">No</button>
+          {!isPending ? <button onClick={confirmDeleteProfile} className="px-4 py-2 bg-red-600 text-white rounded">Yes, Delete the Account</button>
+            :
+            <button className="px-4 py-2 bg-red-600 text-white rounded">Deleting...</button>}
         </div>
       </Modal>
     </div>

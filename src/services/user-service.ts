@@ -79,6 +79,10 @@ export const translateVideo = async (id: string, payload: any) => {
 
 
 
+export const deleteUserService = async (route: string) => {
+    const axiosInstance = await getAxiosInstance()
+    return axiosInstance.delete(route)
+}
 
 
 export const buyPlan = async (route: string, payload: any) => {
